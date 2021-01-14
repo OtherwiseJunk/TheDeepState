@@ -16,7 +16,7 @@ namespace TheDeepState.Modules
 			string user = (Context.Message.Author as IGuildUser).Nickname ?? Context.Message.Author.Username;
 
 			await Context.Message.DeleteAsync();
-			await Context.Channel.SendMessageAsync($"**{user}**:👏 {string.Join(" 👏 ", msg.Split(' '))} 👏");
+			await Context.Channel.SendMessageAsync($"**{user}:** 👏 {string.Join(" 👏 ", msg.Split(' '))} 👏");
 		}
 	}
 }
