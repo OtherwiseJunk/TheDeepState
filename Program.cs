@@ -1,10 +1,12 @@
 ﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using TheDeepState.Constants;
+using TheDeepState.Modules;
 
 namespace TheDeepState
 {
@@ -12,11 +14,13 @@ namespace TheDeepState
 	{
 		private readonly DiscordSocketClient _client;
 		private readonly CommandService _commands;
+		private readonly IServiceProvider _services;
 
 		private Program()
 		{
 			_client = new DiscordSocketClient();
 			_commands = new CommandService();
+			_services = ConfigureServices();
 			_client.Log += Log;
 			_commands.Log += Log;
 		}
@@ -40,6 +44,16 @@ namespace TheDeepState
 			await Task.Delay(-1);
 		}
 
+		private static IServiceProvider ConfigureServices()
+		{
+			//We don't have any services currently for DI
+			//but once we do this is where we would add them.
+			var map = new ServiceCollection();
+				//.AddSingleton<SomeServiceClass>()
+				//.AddSingleton<SomeServiceInferface,SomeServiceClass>()
+
+			return map.BuildServiceProvider();
+		}
 		private Task Log(LogMessage msg)
 		{
 			Console.WriteLine($"[{DateTime.Now.ToString("g")}] ({msg.Source}): {msg.Message}");
@@ -47,12 +61,9 @@ namespace TheDeepState
 		}
 		public async Task InstallCommandsAsync()
 		{
-			_client.MessageReceived += HandleCommandAsync;
+			await _commands.AddModuleAsync<MalarkeyModule>(_services);
 
-			//This will find all the Discord Modules in the current assumbly.
-			//Additional assemblies can be specified depending on needs.
-			await _commands.AddModulesAsync(assembly: Assembly.GetEntryAssembly(),
-											services: null);
+			_client.MessageReceived += HandleCommandAsync;
 		}
 		private async Task HandleCommandAsync(SocketMessage messageParam)
 		{
@@ -70,7 +81,7 @@ namespace TheDeepState
 
 			var context = new SocketCommandContext(_client, message);
 
-			await _commands.ExecuteAsync(
+			var test = await _commands.ExecuteAsync(
 				context: context,
 				argPos: argPos,
 				services: null);
