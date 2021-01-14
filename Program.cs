@@ -1,4 +1,7 @@
-﻿using Discord;
+﻿using DartsDiscordBots.Modules.Help;
+using DartsDiscordBots.Modules.Bot;
+using DartsDiscordBots.Modules.Indecision;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +10,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using TheDeepState.Constants;
 using TheDeepState.Modules;
+using DartsDiscordBots.Modules.Help.Interfaces;
+using TheDeepState.Models;
+using DartsDiscordBots.Modules.Bot.Interfaces;
 
 namespace TheDeepState
 {
@@ -19,8 +25,8 @@ namespace TheDeepState
 		private Program()
 		{
 			_client = new DiscordSocketClient();
-			_commands = new CommandService();
 			_services = ConfigureServices();
+			_commands = new CommandService();			
 			_client.Log += Log;
 			_commands.Log += Log;
 		}
@@ -48,9 +54,9 @@ namespace TheDeepState
 		{
 			//We don't have any services currently for DI
 			//but once we do this is where we would add them.
-			var map = new ServiceCollection();
-				//.AddSingleton<SomeServiceClass>()
-				//.AddSingleton<SomeServiceInferface,SomeServiceClass>()
+			var map = new ServiceCollection()
+				.AddSingleton<IHelpConfig, HelpConfig>()
+				.AddSingleton<IBotInformation, BotInformation>();				
 
 			return map.BuildServiceProvider();
 		}
@@ -62,6 +68,10 @@ namespace TheDeepState
 		public async Task InstallCommandsAsync()
 		{
 			await _commands.AddModuleAsync<MalarkeyModule>(_services);
+			await _commands.AddModuleAsync<HelpModule>(_services);
+			await _commands.AddModuleAsync<IndecisionModule>(_services);
+			await _commands.AddModuleAsync<BotModule>(_services);
+
 
 			_client.MessageReceived += HandleCommandAsync;
 		}
@@ -84,7 +94,7 @@ namespace TheDeepState
 			var test = await _commands.ExecuteAsync(
 				context: context,
 				argPos: argPos,
-				services: null);
+				services: _services);
 		}
 	}
 }
