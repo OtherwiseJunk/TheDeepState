@@ -39,9 +39,19 @@ namespace TheDeepState
 			Console.WriteLine($"{BotProperties.InternalName} has been INITIALIZED");
 
 			await InstallCommandsAsync();
-			//Eventually rig this up to take environment variables for docker support.
-			Console.WriteLine("Please provide the bot token:");
-			var token = Console.ReadLine();
+
+			string token = Environment.GetEnvironmentVariable("DEEPSTATE");
+			Console.WriteLine("Attempting to retrieve bot token from Environment...");
+
+			if (string.IsNullOrEmpty(token))
+			{
+				Console.WriteLine("Please provide the bot token:");
+				token = Console.ReadLine();
+			}
+			else
+			{
+				Console.WriteLine("Success!");
+			}
 
 			await _client.LoginAsync(TokenType.Bot, token);
 			await _client.StartAsync();
