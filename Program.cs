@@ -23,7 +23,10 @@ namespace TheDeepState
 		private readonly DiscordSocketClient _client;
 		private readonly CommandService _commands;
 		private readonly IServiceProvider _services;
+		private readonly Random _rand;
+
 		private readonly List<string> RankNerdResponses = new List<string>
+
 		{
 			"https://m.media-amazon.com/images/I/91umiveo5mL._SS500_.jpg",
 			"https://i.imgur.com/PvT6XMa.gif",
@@ -31,7 +34,14 @@ namespace TheDeepState
 			"https://i.gifer.com/9clm.gif",
 			"https://i.imgur.com/Ek2X3Hw.gif"
 		};
-		private readonly Random _rand;
+
+		private readonly List<string> ReactableEmotes = new List<string>
+		{
+			SharedConstants.BogId,
+			SharedConstants.ConcernedFroggyId,
+			SharedConstants.ThisTBHId,
+			SharedConstants.ForeheadID
+		};		
 
 		private Program()
 		{
@@ -113,19 +123,7 @@ namespace TheDeepState
 			}
 			if (PercentileCheck(1))
 			{
-				await message.AddReactionAsync(Emote.Parse(SharedConstants.BogId));
-			}
-			else if (PercentileCheck(1))
-			{
-				await message.AddReactionAsync(Emote.Parse(SharedConstants.ThisTBHId));
-			}
-			else if (PercentileCheck(1))
-			{
-				await message.AddReactionAsync(Emote.Parse(SharedConstants.ConcernedFroggyId));
-			}
-			else if(PercentileCheck(1))
-			{
-				await message.AddReactionAsync(Emote.Parse(SharedConstants.ForeheadID));
+				await message.AddReactionAsync(Emote.Parse(ReactableEmotes.GetRandom()));
 			}
 			// Determine if the message is a command based on the prefix and make sure no bots trigger commands
 			if (!(message.HasCharPrefix(BotProperties.CommandPrefix, ref argPos) ||
