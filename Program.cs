@@ -13,6 +13,8 @@ using TheDeepState.Modules;
 using DartsDiscordBots.Modules.Help.Interfaces;
 using TheDeepState.Models;
 using DartsDiscordBots.Modules.Bot.Interfaces;
+using System.Collections.Generic;
+using DartsDiscordBots.Utilities;
 
 namespace TheDeepState
 {
@@ -21,14 +23,24 @@ namespace TheDeepState
 		private readonly DiscordSocketClient _client;
 		private readonly CommandService _commands;
 		private readonly IServiceProvider _services;
+		private readonly List<string> RankNerdResponses = new List<string>
+		{
+			"https://m.media-amazon.com/images/I/91umiveo5mL._SS500_.jpg",
+			"https://i.imgur.com/PvT6XMa.gif",
+			"https://i.imgur.com/1Y8Czxu.gif",
+			"https://i.gifer.com/9clm.gif",
+			"https://i.imgur.com/Ek2X3Hw.gif"
+		};
+		private readonly Random _rand;
 
 		private Program()
 		{
 			_client = new DiscordSocketClient();
 			_services = ConfigureServices();
-			_commands = new CommandService();			
+			_commands = new CommandService();
 			_client.Log += Log;
 			_commands.Log += Log;
+			_rand = new Random(DateTime.Now.Millisecond);						 
 		}
 
 		public static void Main(string[] args)
@@ -66,7 +78,7 @@ namespace TheDeepState
 			//but once we do this is where we would add them.
 			var map = new ServiceCollection()
 				.AddSingleton<IHelpConfig, HelpConfig>()
-				.AddSingleton<IBotInformation, BotInformation>();				
+				.AddSingleton<IBotInformation, BotInformation>();
 
 			return map.BuildServiceProvider();
 		}
@@ -87,17 +99,39 @@ namespace TheDeepState
 		}
 		private async Task HandleCommandAsync(SocketMessage messageParam)
 		{
+
 			//Don't process the command if it was a system message
 			var message = messageParam as SocketUserMessage;
 			if (message == null) return;
 
 			int argPos = 0;
 
+			if (message.Content.ToLower() == "!rank" && PercentileCheck(1))
+			{
+				await message.Channel.SendMessageAsync(RankNerdResponses.GetRandom());
+				return;
+			}
+			if (PercentileCheck(1))
+			{
+				await message.AddReactionAsync(Emote.Parse(SharedConstants.BogId));
+			}
+			else if (PercentileCheck(1))
+			{
+				await message.AddReactionAsync(Emote.Parse(SharedConstants.ThisTBHId));
+			}
+			else if (PercentileCheck(1))
+			{
+				await message.AddReactionAsync(Emote.Parse(SharedConstants.ConcernedFroggyId));
+			}
+			else if(PercentileCheck(1))
+			{
+				await message.AddReactionAsync(Emote.Parse(SharedConstants.ForeheadID));
+			}
 			// Determine if the message is a command based on the prefix and make sure no bots trigger commands
 			if (!(message.HasCharPrefix(BotProperties.CommandPrefix, ref argPos) ||
-				message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
-				message.Author.IsBot)
-				return;
+					message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
+					message.Author.IsBot)
+					return;
 
 			var context = new SocketCommandContext(_client, message);
 
@@ -105,6 +139,12 @@ namespace TheDeepState
 				context: context,
 				argPos: argPos,
 				services: _services);
+
+		}
+
+		public bool PercentileCheck(int successCheck)
+		{
+			return _rand.Next(1, 100) <= successCheck;
 		}
 	}
 }

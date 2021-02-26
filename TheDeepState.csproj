@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DDB" Version="0.6.4" />
+    <PackageReference Include="DDB" Version="0.6.7" />
     <PackageReference Include="Discord.Net" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="TraceLd.MineStatSharp" Version="1.0.0" />
