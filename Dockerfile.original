@@ -5,10 +5,10 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 WORKDIR /src
-COPY ["TheDeepState.csproj", "./"]
-RUN dotnet restore "TheDeepState.csproj"
+COPY ["TheDeepState.csproj", ""]
+RUN dotnet restore "./TheDeepState.csproj"
 COPY . .
-WORKDIR "/src/"
+WORKDIR "/src/."
 RUN dotnet build "TheDeepState.csproj" -c Release -o /app/build
 
 FROM build AS publish
