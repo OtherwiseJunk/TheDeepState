@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TheDeepState": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
