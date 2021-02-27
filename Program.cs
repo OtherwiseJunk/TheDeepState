@@ -40,7 +40,9 @@ namespace TheDeepState
 			SharedConstants.BogId,
 			SharedConstants.ConcernedFroggyId,
 			SharedConstants.ThisTBHId,
-			SharedConstants.ForeheadID
+			SharedConstants.ForeheadID,
+			SharedConstants.BooHooCrackerID,
+			SharedConstants.LaughingFaceID
 		};		
 
 		private Program()

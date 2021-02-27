@@ -17,6 +17,8 @@ namespace TheDeepState.Constants
 		public static string ConcernedFroggyId = "<:concernfroggy:737512429310836806>";
 		public static string ThisTBHId = "<:ThisTBH:339832219818524672>";
 		public static string ForeheadID = "<:4head:724065591077371915>";
+		public static string LaughingFaceID = "<:emoji:707407221792702525>";
+		public static string BooHooCrackerID = "<:boohoocracker:757423331036102688>";
 		#endregion
 
 		#endregion
