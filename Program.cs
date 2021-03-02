@@ -117,16 +117,18 @@ namespace TheDeepState
 			if (message == null) return;
 
 			int argPos = 0;
-
-			if (message.Content.ToLower() == "!rank" && PercentileCheck(1))
-			{
-				await message.Channel.SendMessageAsync(RankNerdResponses.GetRandom());
-				return;
-			}
-			if (PercentileCheck(1))
-			{
-				await message.AddReactionAsync(Emote.Parse(ReactableEmotes.GetRandom()));
-			}
+			if(message.Channel.Id != SharedConstants.SelfCareChannelId)
+			{				
+				if (message.Content.ToLower() == "!rank" && PercentileCheck(1))
+				{
+					await message.Channel.SendMessageAsync(RankNerdResponses.GetRandom());
+					return;
+				}
+				if (PercentileCheck(1))
+				{
+					await message.AddReactionAsync(Emote.Parse(ReactableEmotes.GetRandom()));
+				}
+			}			
 			// Determine if the message is a command based on the prefix and make sure no bots trigger commands
 			if (!(message.HasCharPrefix(BotProperties.CommandPrefix, ref argPos) ||
 					message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
