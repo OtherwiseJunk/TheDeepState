@@ -124,7 +124,7 @@ namespace TheDeepState
 					await message.Channel.SendMessageAsync(RankNerdResponses.GetRandom());
 					return;
 				}
-				if (PercentileCheck(1))
+				if (PercentileCheck(1) & PercentileCheck(40))
 				{
 					if (PercentileCheck(1))
 					{
