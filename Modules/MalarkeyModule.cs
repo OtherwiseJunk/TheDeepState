@@ -99,6 +99,10 @@ namespace TheDeepState.Modules
 			Random rand = new Random(seed);
 			List<string> words = messageToMockify.ToLower().Split(' ').ToList();
 			string mockifiedMessage = "";
+			
+			double oneThird = 1 / 3.0;
+			double chance = oneThird;
+			bool capitalize = rand.Next() % 2 == 0;
 
 			foreach (string word in words)
 			{
@@ -106,12 +110,18 @@ namespace TheDeepState.Modules
 				{
 					if (Char.IsLetter(letter))
 					{
-						if (rand.Next() % 2 == 0)
-						{
-							mockifiedMessage += Char.ToUpper(letter);
+						// The new algorithm guarantees that there is never a run of greater than three characters with the same capitalization status.
+						// Essentially, the chance of switching capitalization increases each time it doesn't switch.
+						// Note that it doesn't increment if the current character isn't a letter. This shouldn't matter much.
+						if (rand.NextDouble() < chance) {
+							capitalize = !capitalize;							
+							chance = oneThird;
+						} else {							
+							chance += oneThird;
 						}
-						else
-						{
+						if (capitalize) {
+							mockifiedMessage += Char.ToUpper(letter);
+						} else {
 							mockifiedMessage += letter;
 						}
 					}
