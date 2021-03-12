@@ -15,6 +15,10 @@ using TheDeepState.Models;
 using DartsDiscordBots.Modules.Bot.Interfaces;
 using System.Collections.Generic;
 using DartsDiscordBots.Utilities;
+using System.Linq;
+using DartsDiscordBots.Modules.Chat;
+using DartsDiscordBots.Services.Interfaces;
+using DartsDiscordBots.Services;
 
 namespace TheDeepState
 {
@@ -42,7 +46,8 @@ namespace TheDeepState
 			SharedConstants.ThisTBHId,
 			SharedConstants.ForeheadID,
 			SharedConstants.BooHooCrackerID,
-			SharedConstants.LaughingFaceID
+			SharedConstants.LaughingFaceID,
+			SharedConstants.BonkID
 		};		
 
 		private Program()
@@ -64,6 +69,7 @@ namespace TheDeepState
 
 			await InstallCommandsAsync();
 
+
 			string token = Environment.GetEnvironmentVariable("DEEPSTATE");
 			Console.WriteLine("Attempting to retrieve bot token from Environment...");
 
@@ -83,14 +89,14 @@ namespace TheDeepState
 			// Block this task until the program is closed.
 			await Task.Delay(-1);
 		}
-
 		private static IServiceProvider ConfigureServices()
 		{
 			//We don't have any services currently for DI
 			//but once we do this is where we would add them.
 			var map = new ServiceCollection()
 				.AddSingleton<IHelpConfig, HelpConfig>()
-				.AddSingleton<IBotInformation, BotInformation>();
+				.AddSingleton<IBotInformation, BotInformation>()
+				.AddSingleton<IMessageReliabilityService, MessageReliabilityService>();
 
 			return map.BuildServiceProvider();
 		}
@@ -105,7 +111,7 @@ namespace TheDeepState
 			await _commands.AddModuleAsync<HelpModule>(_services);
 			await _commands.AddModuleAsync<IndecisionModule>(_services);
 			await _commands.AddModuleAsync<BotModule>(_services);
-
+			await _commands.AddModuleAsync<ChatModule>(_services);
 
 			_client.MessageReceived += HandleCommandAsync;
 		}
@@ -118,7 +124,8 @@ namespace TheDeepState
 
 			int argPos = 0;
 			if(message.Channel.Id != SharedConstants.SelfCareChannelId)
-			{				
+			{
+				if (message.Content.ToLower() == "!rank") Console.WriteLine("Rolling for rank...");
 				if (message.Content.ToLower() == "!rank" && PercentileCheck(1))
 				{					
 					await message.Channel.SendMessageAsync(RankNerdResponses.GetRandom());
@@ -128,7 +135,7 @@ namespace TheDeepState
 				{
 					if (PercentileCheck(1))
 					{
-						await message.AddReactionAsync(Emote.Parse(SharedConstants.Gwalms));
+						await message.AddReactionAsync(Emote.Parse(SharedConstants.GwalmsID));
 					}
 					else
 					{

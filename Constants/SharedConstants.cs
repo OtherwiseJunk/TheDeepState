@@ -6,10 +6,6 @@ namespace TheDeepState.Constants
 {
 	public class SharedConstants
 	{
-		#region String Formats
-		public static string ReplacedMessageFormat(string username, string modifiedMessage) => $"**{username}:** {modifiedMessage}";
-		#endregion
-
 		#region Discord ID Variables
 
 		#region Emote Ids
@@ -19,7 +15,8 @@ namespace TheDeepState.Constants
 		public static string ForeheadID = "<:4head:724065591077371915>";
 		public static string LaughingFaceID = "<:emoji:707407221792702525>";
 		public static string BooHooCrackerID = "<:boohoo_cracker:783170303559729162>";
-		public static string Gwalms = "<:gwalms:793892038134857728>";
+		public static string GwalmsID = "<:gwalms:793892038134857728>";
+		public static string BonkID = "<:bonk:759126452112326697>";
 		#endregion
 
 		#region Channel Ids
