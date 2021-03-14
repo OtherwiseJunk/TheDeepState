@@ -63,10 +63,12 @@ namespace TheDeepState
 
 		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
 		{
-			if (reaction.User.Value == message.Value.Author && channel.Id != SharedConstants.SelfCareChannelId)
+			IMessage msg = channel.GetMessageAsync(message.Id).Result;
+
+			if (reaction.UserId == msg.Author.Id && channel.Id != SharedConstants.SelfCareChannelId)
 			{
-				await channel.SendMessageAsync("" + Emote.Parse(SharedConstants.YouAreWhiteID), messageReference: message.Value.Reference, allowedMentions: AllowedMentions.All);
-				await channel.SendMessageAsync("BOOHOO CRACKER!");
+				await channel.SendMessageAsync("" + Emote.Parse(SharedConstants.YouAreWhiteID), messageReference: new MessageReference(msg.Id), allowedMentions: AllowedMentions.All);
+				await channel.SendMessageAsync("BOOHOO CRACKER!", messageReference: new MessageReference(msg.Id), allowedMentions: AllowedMentions.All);
 			}
 		}
 
