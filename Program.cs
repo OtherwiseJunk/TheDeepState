@@ -68,7 +68,7 @@ namespace TheDeepState
 			if (reaction.UserId == msg.Author.Id && channel.Id != SharedConstants.SelfCareChannelId)
 			{
 				await channel.SendMessageAsync("" + Emote.Parse(SharedConstants.YouAreWhiteID), messageReference: new MessageReference(msg.Id), allowedMentions: AllowedMentions.All);
-				await channel.SendMessageAsync("BOOHOO CRACKER!", messageReference: new MessageReference(msg.Id), allowedMentions: AllowedMentions.All);
+				await channel.SendMessageAsync(msg.Author.Mention+" BOOHOO CRACKER!", messageReference: new MessageReference(msg.Id), allowedMentions: AllowedMentions.All);
 			}
 		}
 
