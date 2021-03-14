@@ -17,6 +17,7 @@ namespace TheDeepState.Constants
 		public static string BooHooCrackerID = "<:boohoo_cracker:783170303559729162>";
 		public static string GwalmsID = "<:gwalms:793892038134857728>";
 		public static string BonkID = "<:bonk:759126452112326697>";
+		public static string YouAreWhiteID = "<:white:785272845890486293>";
 		#endregion
 
 		#region Channel Ids

@@ -57,7 +57,17 @@ namespace TheDeepState
 			_commands = new CommandService();
 			_client.Log += Log;
 			_commands.Log += Log;
-			_rand = new Random(DateTime.Now.Millisecond);						 
+			_rand = new Random(DateTime.Now.Millisecond);
+			_client.ReactionAdded += OnReact;
+		}
+
+		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
+		{
+			if (reaction.User.Value == message.Value.Author && channel.Id != SharedConstants.SelfCareChannelId)
+			{
+				await channel.SendMessageAsync("" + Emote.Parse(SharedConstants.YouAreWhiteID), messageReference: message.Value.Reference, allowedMentions: AllowedMentions.All);
+				await channel.SendMessageAsync("BOOHOO CRACKER!");
+			}
 		}
 
 		public static void Main(string[] args)
