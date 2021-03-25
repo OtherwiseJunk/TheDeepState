@@ -63,6 +63,10 @@ namespace TheDeepState
 
 		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
 		{
+			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name))
+			{
+				return;
+			}
 			IMessage msg = channel.GetMessageAsync(message.Id).Result;
 			if( msg.Reactions.Count == 1)
 			{
@@ -71,6 +75,10 @@ namespace TheDeepState
 				{
 					await msg.AddReactionAsync(Emote.Parse(SharedConstants.YouAreWhiteID));
 					await channel.SendMessageAsync($"{msg.Author.Mention} {SharedConstants.SelfReactResponses.GetRandom()}", messageReference: new MessageReference(msg.Id), allowedMentions: AllowedMentions.All);
+					if(msg.Author.Id == SharedConstants.TheCheatingUser)
+					{
+						await channel.SendMessageAsync($"WE GOT HIM! {channel.GetUserAsync(SharedConstants.ThePoliceUser).Result.Mention}");
+					}
 				}
 			}			
 		}

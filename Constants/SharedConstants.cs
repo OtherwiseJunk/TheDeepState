@@ -25,6 +25,11 @@ namespace TheDeepState.Constants
 		public static ulong SelfCareChannelId = 736092567497867284;
 		#endregion
 
+		#region User Ids
+		public static ulong ThePoliceUser = 151162710757867521;
+		public static ulong TheCheatingUser = 696443422130831370;
+		#endregion
+
 		#endregion
 
 		#region String Lists
@@ -36,6 +41,14 @@ namespace TheDeepState.Constants
 			"We get it, you want us to notice you.",
 			"BOOHOO CRACKER! No body cares about your self-react, plus you're white.",
 			$"{Emote.Parse(YouAreWhiteID)} SELF-REACT DETECTED {Emote.Parse(YouAreWhiteID)}."
+		};
+		#endregion
+
+		#region Emote Lists
+		public static List<string> VotingEmotes = new List<string>
+		{
+			"✅",
+		    "❌"
 		};
 		#endregion
 	}
