@@ -67,8 +67,15 @@ namespace TheDeepState
 			{
 				return;
 			}
+			
 			IMessage msg = channel.GetMessageAsync(message.Id).Result;
-			if( msg.Reactions.Count == 1)
+			Emote reactionEmote = (Emote) reaction.Emote;
+
+			if (SharedConstants.EmoteNameandId(reactionEmote.Name,reactionEmote.Id) == SharedConstants.QIID && msg.Reactions[Emote.Parse(SharedConstants.QIID)].ReactionCount == 1)
+			{
+				await channel.SendMessageAsync(SharedConstants.KlaxonResponse, messageReference: new MessageReference(msg.Id));
+			}			
+			else if( msg.Reactions.Count == 1)
 			{
 				Console.WriteLine(msg.Reactions.First().Value.ReactionCount);
 				if (msg.Reactions.First().Value.ReactionCount == 1 && reaction.UserId == msg.Author.Id && channel.Id != SharedConstants.SelfCareChannelId)

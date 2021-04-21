@@ -19,6 +19,7 @@ namespace TheDeepState.Constants
 		public static string GwalmsID = "<:gwalms:793892038134857728>";
 		public static string BonkID = "<:bonk:759126452112326697>";
 		public static string YouAreWhiteID = "<:white:785272845890486293>";
+		public static string QIID = "<:QI:824733109240332308>";
 		#endregion
 
 		#region Channel Ids
@@ -48,8 +49,16 @@ namespace TheDeepState.Constants
 		public static List<string> VotingEmotes = new List<string>
 		{
 			"✅",
-		    "❌"
+			"❌"
 		};
+		#endregion
+
+		#region Strings
+		public static string KlaxonResponse = "https://www.youtube.com/watch?v=xU5mOT57ghM";
+		#endregion
+
+		#region String Formats
+		public static string EmoteNameandId(string name, ulong id) => $"<:{name}:{id}>";
 		#endregion
 	}
 }
