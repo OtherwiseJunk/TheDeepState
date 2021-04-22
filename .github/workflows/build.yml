@@ -23,6 +23,9 @@ jobs:
       run: dotnet build --no-restore TheDeepState.sln
     - name: Test
       run: dotnet test --no-build --verbosity normal TheDeepState.sln
+    - name: failing step
+      continue-on-error: true
+      run: dotnet restore
     - name: Build and push Docker images
       uses: docker/build-push-action@v2.4.0
       with:
