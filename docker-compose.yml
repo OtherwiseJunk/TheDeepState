@@ -3,10 +3,9 @@ version: '3.4'
 services:
   deepstate_bot:
     restart: always
-    image: ${DOCKER_REGISTRY-}thedeepstate
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: otherwisejunk/thedeepstate
+    environment:
+      DEEPSTATE: $DEEPSTATE
   deepstate_db:
     restart: always
     image: postgres:alpine
