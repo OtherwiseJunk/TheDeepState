@@ -20,6 +20,8 @@ using DartsDiscordBots.Modules.Chat;
 using DartsDiscordBots.Services.Interfaces;
 using DartsDiscordBots.Services;
 using System.Text.RegularExpressions;
+using DeepState.Data.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace TheDeepState
 {
@@ -30,6 +32,7 @@ namespace TheDeepState
 		private readonly IServiceProvider _services;
 		private readonly Random _rand;
 		private readonly string _meRegex = @"(de*r?p)\s*(sta*te*)";
+		private readonly string _dbConnectionString;
 
 		private readonly List<string> RankNerdResponses = new List<string>
 
@@ -61,6 +64,7 @@ namespace TheDeepState
 			_commands.Log += Log;
 			_rand = new Random(DateTime.Now.Millisecond);
 			_client.ReactionAdded += OnReact;
+			_dbConnectionString = Environment.GetEnvironmentVariable("DATABASE");
 		}
 
 		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
@@ -128,7 +132,11 @@ namespace TheDeepState
 			var map = new ServiceCollection()
 				.AddSingleton<IHelpConfig, HelpConfig>()
 				.AddSingleton<IBotInformation, BotInformation>()
-				.AddSingleton<IMessageReliabilityService, MessageReliabilityService>();
+				.AddSingleton<IMessageReliabilityService, MessageReliabilityService>()
+				.AddDbContext<OOCDBContext>(options =>
+				{
+					options.UseSqlServer();
+				});
 
 			return map.BuildServiceProvider();
 		}

@@ -1,10 +1,16 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace DeepState.Data.Context
 {
-	class OOCDBContext
+	public class OOCDBContext : DbContext
 	{
+		public OOCDBContext(DbContextOptions options) : base(options)
+		{
+		}
+
+		public DbSet<OOCItem> OutOfContextRecords { get; set; }
 	}
 }
