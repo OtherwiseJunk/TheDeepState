@@ -29,7 +29,7 @@ namespace TheDeepState
 		private readonly CommandService _commands;
 		private readonly IServiceProvider _services;
 		private readonly Random _rand;
-		private readonly string _meRegex;
+		private readonly string _meRegex = "(de*r?p)/\s*(sta*te*)";
 
 		private readonly List<string> RankNerdResponses = new List<string>
 
@@ -61,7 +61,6 @@ namespace TheDeepState
 			_commands.Log += Log;
 			_rand = new Random(DateTime.Now.Millisecond);
 			_client.ReactionAdded += OnReact;
-			_meRegex = "(de*r?p)\s*(sta*te*)";
 		}
 
 		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
