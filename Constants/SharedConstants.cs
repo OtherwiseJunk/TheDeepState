@@ -20,6 +20,8 @@ namespace TheDeepState.Constants
 		public static string BonkID = "<:bonk:759126452112326697>";
 		public static string YouAreWhiteID = "<:white:785272845890486293>";
 		public static string QIID = "<:QI:824733109240332308>";
+		public static string RomneyRightEyeID = "<:romneyrighteye:809203888858464307>";
+		public static string RomneyLeftEyeID = "<:romneylefteye:809203904071598180>";
 		#endregion
 
 		#region Channel Ids

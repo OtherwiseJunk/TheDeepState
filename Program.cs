@@ -19,6 +19,7 @@ using System.Linq;
 using DartsDiscordBots.Modules.Chat;
 using DartsDiscordBots.Services.Interfaces;
 using DartsDiscordBots.Services;
+using System.Text.RegularExpressions;
 
 namespace TheDeepState
 {
@@ -28,6 +29,7 @@ namespace TheDeepState
 		private readonly CommandService _commands;
 		private readonly IServiceProvider _services;
 		private readonly Random _rand;
+		private readonly string _meRegex;
 
 		private readonly List<string> RankNerdResponses = new List<string>
 
@@ -48,7 +50,7 @@ namespace TheDeepState
 			SharedConstants.BooHooCrackerID,
 			SharedConstants.LaughingFaceID,
 			SharedConstants.BonkID
-		};		
+		};
 
 		private Program()
 		{
@@ -59,6 +61,7 @@ namespace TheDeepState
 			_commands.Log += Log;
 			_rand = new Random(DateTime.Now.Millisecond);
 			_client.ReactionAdded += OnReact;
+			_meRegex = "(de*r?p).*(state)";
 		}
 
 		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
@@ -67,27 +70,27 @@ namespace TheDeepState
 			{
 				return;
 			}
-			
-			IMessage msg = channel.GetMessageAsync(message.Id).Result;
-			Emote reactionEmote = (Emote) reaction.Emote;
 
-			if (SharedConstants.EmoteNameandId(reactionEmote.Name,reactionEmote.Id) == SharedConstants.QIID && msg.Reactions[Emote.Parse(SharedConstants.QIID)].ReactionCount == 1)
+			IMessage msg = channel.GetMessageAsync(message.Id).Result;
+			Emote reactionEmote = (Emote)reaction.Emote;
+
+			if (SharedConstants.EmoteNameandId(reactionEmote.Name, reactionEmote.Id) == SharedConstants.QIID && msg.Reactions[Emote.Parse(SharedConstants.QIID)].ReactionCount == 1)
 			{
 				await channel.SendMessageAsync(SharedConstants.KlaxonResponse, messageReference: new MessageReference(msg.Id));
-			}			
-			else if( msg.Reactions.Count == 1)
+			}
+			else if (msg.Reactions.Count == 1)
 			{
 				Console.WriteLine(msg.Reactions.First().Value.ReactionCount);
 				if (msg.Reactions.First().Value.ReactionCount == 1 && reaction.UserId == msg.Author.Id && channel.Id != SharedConstants.SelfCareChannelId)
 				{
 					await msg.AddReactionAsync(Emote.Parse(SharedConstants.YouAreWhiteID));
 					await channel.SendMessageAsync($"{msg.Author.Mention} {SharedConstants.SelfReactResponses.GetRandom()}", messageReference: new MessageReference(msg.Id), allowedMentions: AllowedMentions.All);
-					if(msg.Author.Id == SharedConstants.TheCheatingUser)
+					if (msg.Author.Id == SharedConstants.TheCheatingUser)
 					{
 						await channel.SendMessageAsync($"WE GOT HIM! {channel.GetUserAsync(SharedConstants.ThePoliceUser).Result.Mention}");
 					}
 				}
-			}			
+			}
 		}
 
 		public static void Main(string[] args)
@@ -147,17 +150,16 @@ namespace TheDeepState
 		}
 		private async Task HandleCommandAsync(SocketMessage messageParam)
 		{
-
 			//Don't process the command if it was a system message
 			var message = messageParam as SocketUserMessage;
 			if (message == null) return;
 
 			int argPos = 0;
-			if(message.Channel.Id != SharedConstants.SelfCareChannelId)
+			if (message.Channel.Id != SharedConstants.SelfCareChannelId)
 			{
 				if (message.Content.ToLower() == "!rank") Console.WriteLine("Rolling for rank...");
 				if (message.Content.ToLower() == "!rank" && PercentileCheck(1))
-				{					
+				{
 					await message.Channel.SendMessageAsync(RankNerdResponses.GetRandom());
 					return;
 				}
@@ -170,27 +172,52 @@ namespace TheDeepState
 					else
 					{
 						await message.AddReactionAsync(Emote.Parse(ReactableEmotes.GetRandom()));
-					}					
+					}
 				}
-			}			
+			}
 			// Determine if the message is a command based on the prefix and make sure no bots trigger commands
 			if (!(message.HasCharPrefix(BotProperties.CommandPrefix, ref argPos) ||
 					message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
 					message.Author.IsBot)
-					return;
+				return;
 
 			var context = new SocketCommandContext(_client, message);
 
-			var test = await _commands.ExecuteAsync(
+			var isSuccess = await _commands.ExecuteAsync(
 				context: context,
 				argPos: argPos,
 				services: _services);
+
+			if (IsMentioningMe(messageParam) && !message.Author.IsBot)
+			{
+				await messageParam.AddReactionAsync(Emote.Parse(SharedConstants.RomneyLeftEyeID));
+				await messageParam.AddReactionAsync(Emote.Parse(SharedConstants.RomneyRightEyeID));
+			}
 
 		}
 
 		public bool PercentileCheck(int successCheck)
 		{
 			return _rand.Next(1, 100) <= successCheck;
+		}
+
+		public bool IsMentioningMe(SocketMessage discordMessage)
+		{
+			IMessage replyingToMessage = discordMessage.Reference != null ? discordMessage.Channel.GetMessageAsync(discordMessage.Reference.MessageId.Value).Result : null;
+
+			if (discordMessage.MentionedUsers.Contains(_client.CurrentUser))
+			{
+				return true;
+			}
+			if (replyingToMessage != null && replyingToMessage.Author.Id == _client.CurrentUser.Id)
+			{
+				return true;
+			}
+			if (Regex.IsMatch(discordMessage.Content, _meRegex, RegexOptions.IgnoreCase))
+			{
+				return true;
+			}
+			return false;
 		}
 	}
 }
