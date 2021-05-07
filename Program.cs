@@ -150,9 +150,18 @@ namespace TheDeepState
 		}
 		private async Task HandleCommandAsync(SocketMessage messageParam)
 		{
+
+			
+
 			//Don't process the command if it was a system message
 			var message = messageParam as SocketUserMessage;
 			if (message == null) return;
+
+			if (IsMentioningMe(messageParam) && !message.Author.IsBot)
+			{
+				messageParam.AddReactionAsync(Emote.Parse(SharedConstants.RomneyRightEyeID));
+				messageParam.AddReactionAsync(Emote.Parse(SharedConstants.RomneyLeftEyeID));
+			}
 
 			int argPos = 0;
 			if (message.Channel.Id != SharedConstants.SelfCareChannelId)
@@ -187,12 +196,6 @@ namespace TheDeepState
 				context: context,
 				argPos: argPos,
 				services: _services);
-
-			if (IsMentioningMe(messageParam) && !message.Author.IsBot)
-			{
-				await messageParam.AddReactionAsync(Emote.Parse(SharedConstants.RomneyLeftEyeID));
-				await messageParam.AddReactionAsync(Emote.Parse(SharedConstants.RomneyRightEyeID));
-			}
 
 		}
 
