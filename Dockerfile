@@ -9,15 +9,15 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
 ARG TOKEN
 WORKDIR /src/
-COPY ["DeepState.csproj", "./"]
+COPY ["DeepState/DeepState.csproj", "./"]
 RUN dotnet restore "DeepState.csproj"
 COPY . .
 WORKDIR "/src/"
-RUN dotnet build "DeepState.csproj" -c Release -o /app/build
+RUN dotnet build "TheDeepState.sln" -c Release -o /app/build
 
 FROM build AS publish
 ARG TOKEN
-RUN dotnet publish "DeepState.csproj" -c Release -o /app/publish
+RUN dotnet publish "TheDeepState.sln" -c Release -o /app/publish
 
 FROM base AS final
 ARG TOKEN
