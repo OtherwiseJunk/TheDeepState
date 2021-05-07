@@ -1,8 +1,0 @@
-version: '3.4'
-
-services:
-  deepstate:
-    image: ${DOCKER_REGISTRY-}deepstate
-    build:
-      context: .
-      dockerfile: .
