@@ -1,15 +1,8 @@
 version: '3.4'
 
 services:
-  deepstate_bot:
-    restart: always
-    image: otherwisejunk/thedeepstate
-    environment:
-      DEEPSTATE: $DEEPSTATE
-  deepstate_db:
-    restart: always
-    image: postgres:alpine
-    volumes:
-      - ./database:/var/lib.postgressql/data
-    ports:
-      - 5432:5432
+  deepstate:
+    image: ${DOCKER_REGISTRY-}deepstate
+    build:
+      context: .
+      dockerfile: .
