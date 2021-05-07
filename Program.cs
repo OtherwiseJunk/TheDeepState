@@ -29,7 +29,7 @@ namespace TheDeepState
 		private readonly CommandService _commands;
 		private readonly IServiceProvider _services;
 		private readonly Random _rand;
-		private readonly string _meRegex = "(de*r?p)/\s*(sta*te*)";
+		private readonly string _meRegex = @"(de*r?p)\s*(sta*te*)";
 
 		private readonly List<string> RankNerdResponses = new List<string>
 
