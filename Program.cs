@@ -61,7 +61,7 @@ namespace TheDeepState
 			_commands.Log += Log;
 			_rand = new Random(DateTime.Now.Millisecond);
 			_client.ReactionAdded += OnReact;
-			_meRegex = "(de*r?p).*(sta*te*)";
+			_meRegex = "(de*r?p)\s*(sta*te*)";
 		}
 
 		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
