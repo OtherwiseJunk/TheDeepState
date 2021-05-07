@@ -22,5 +22,10 @@ jobs:
     - name: Build
       run: dotnet build --no-restore TheDeepState.sln
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal TheDeepState.sln
+    - name: Build and push Docker images
+      uses: docker/build-push-action@v2.4.0
+      with:
+        tags: otherwisejunk/thedeepstate
+
 
