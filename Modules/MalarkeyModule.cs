@@ -58,7 +58,7 @@ namespace TheDeepState.Modules
 		[Summary("It's The Weekend, Ladies and Gentleman!")]
 		public async Task TheWeekend()
 		{
-			await Context.Channel.SendMessageAsync("https://www.youtube.com/watch?v=dLD1i5lVgjw");
+			await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/745024703365644320/840383340790939658/theweekend.mp4");
 		}
 	}
 }
