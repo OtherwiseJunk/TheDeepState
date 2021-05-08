@@ -53,5 +53,12 @@ namespace TheDeepState.Modules
 				await Context.Channel.SendMessageAsync("Server is offline!");
 			}
 		}
+
+		[Command("weekend")]
+		[Summary("It's The Weekend, Ladies and Gentleman!")]
+		public async Task TheWeekend()
+		{
+			await Context.Channel.SendMessageAsync("https://www.youtube.com/watch?v=dLD1i5lVgjw");
+		}
 	}
 }
