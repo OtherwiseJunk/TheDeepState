@@ -1,7 +1,7 @@
 ﻿using DartsDiscordBots.Modules.Help.Interfaces;
-using TheDeepState.Constants;
+using DeepState.Constants;
 
-namespace TheDeepState.Models
+namespace DeepState.Models
 {
 	public class HelpConfig : IHelpConfig
 	{

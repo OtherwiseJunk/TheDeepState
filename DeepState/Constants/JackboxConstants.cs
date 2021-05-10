@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TheDeepState.Interfaces;
+using DeepState.Interfaces;
 
-namespace TheDeepState.Constants
+namespace DeepState.Constants
 {
 	public class JackboxConstants : IJackboxConstants
 	{

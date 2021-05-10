@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TheDeepState.Constants;
+using DeepState.Constants;
 using TraceLd.MineStatSharp;
 
-namespace TheDeepState.Modules
+namespace DeepState.Modules
 {
 	public class MalarkeyModule : ModuleBase
 	{
