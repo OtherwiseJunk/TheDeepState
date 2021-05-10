@@ -1,0 +1,11 @@
+version: '3.4'
+
+services:
+  deepstate_db:
+    restart: always
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    environment:
+      - SA_PASSWORD=$SA_PASSWORD
+      - ACCEPT_EULA=Y
+    ports:
+      - "5434:1433"

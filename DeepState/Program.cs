@@ -6,12 +6,11 @@ using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Reflection;
 using System.Threading.Tasks;
-using TheDeepState.Constants;
-using TheDeepState.Modules;
+using DeepState.Constants;
+using DeepState.Modules;
 using DartsDiscordBots.Modules.Help.Interfaces;
-using TheDeepState.Models;
+using DeepState.Models;
 using DartsDiscordBots.Modules.Bot.Interfaces;
 using System.Collections.Generic;
 using DartsDiscordBots.Utilities;
@@ -22,8 +21,9 @@ using DartsDiscordBots.Services;
 using System.Text.RegularExpressions;
 using DeepState.Data.Context;
 using Microsoft.EntityFrameworkCore;
+using DeepState.Service;
 
-namespace TheDeepState
+namespace DeepState
 {
 	public class Program
 	{
@@ -32,7 +32,7 @@ namespace TheDeepState
 		private readonly IServiceProvider _services;
 		private readonly Random _rand;
 		private readonly string _meRegex = @"(de*r?p)\s*(sta*te*)";
-		private readonly string _dbConnectionString;
+		private static string _dbConnectionString;
 
 		private readonly List<string> RankNerdResponses = new List<string>
 
@@ -57,14 +57,16 @@ namespace TheDeepState
 
 		private Program()
 		{
+			_dbConnectionString = Environment.GetEnvironmentVariable("DATABASE");
+
 			_client = new DiscordSocketClient();
 			_services = ConfigureServices();
+			_services.GetService<OOCDBContext>().Database.EnsureCreated();
 			_commands = new CommandService();
 			_client.Log += Log;
 			_commands.Log += Log;
 			_rand = new Random(DateTime.Now.Millisecond);
 			_client.ReactionAdded += OnReact;
-			_dbConnectionString = Environment.GetEnvironmentVariable("DATABASE");
 		}
 
 		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
@@ -133,9 +135,10 @@ namespace TheDeepState
 				.AddSingleton<IHelpConfig, HelpConfig>()
 				.AddSingleton<IBotInformation, BotInformation>()
 				.AddSingleton<IMessageReliabilityService, MessageReliabilityService>()
+				.AddSingleton<ImagingService>()
 				.AddDbContext<OOCDBContext>(options =>
 				{
-					options.UseSqlServer();
+					options.UseSqlServer(_dbConnectionString);
 				});
 
 			return map.BuildServiceProvider();
@@ -152,6 +155,8 @@ namespace TheDeepState
 			await _commands.AddModuleAsync<IndecisionModule>(_services);
 			await _commands.AddModuleAsync<BotModule>(_services);
 			await _commands.AddModuleAsync<ChatModule>(_services);
+			await _commands.AddModuleAsync<OutOfContextModule>(_services);
+
 
 			_client.MessageReceived += HandleCommandAsync;
 		}
@@ -166,8 +171,8 @@ namespace TheDeepState
 
 			if (IsMentioningMe(messageParam) && !message.Author.IsBot)
 			{
-				messageParam.AddReactionAsync(Emote.Parse(SharedConstants.RomneyRightEyeID));
-				messageParam.AddReactionAsync(Emote.Parse(SharedConstants.RomneyLeftEyeID));
+				_ = messageParam.AddReactionAsync(Emote.Parse(SharedConstants.RomneyRightEyeID));
+				_ = messageParam .AddReactionAsync(Emote.Parse(SharedConstants.RomneyLeftEyeID));
 			}
 
 			int argPos = 0;

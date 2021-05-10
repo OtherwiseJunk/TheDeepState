@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TheDeepState.Constants
+﻿namespace DeepState.Constants
 {
 	public class BotProperties
 	{
-		public static string InternalName = "TheDeepState";
+		public static string InternalName = "DeepState";
 		public static char CommandPrefix = '>';
 	}
 }
