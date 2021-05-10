@@ -53,5 +53,12 @@ namespace DeepState.Modules
 				await Context.Channel.SendMessageAsync("Server is offline!");
 			}
 		}
+
+		[Command("weekend")]
+		[Summary("It's The Weekend, Ladies and Gentleman!")]
+		public async Task TheWeekend()
+		{
+			await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/745024703365644320/840383340790939658/theweekend.mp4");
+		}
 	}
 }
