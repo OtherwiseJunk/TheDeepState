@@ -71,13 +71,15 @@ namespace DeepState
 
 		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
 		{
-			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name))
-			{
-				return;
-			}
+
 
 			IMessage msg = channel.GetMessageAsync(message.Id).Result;
 			Emote reactionEmote = (Emote)reaction.Emote;
+
+			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name) || msg.Author.IsBot)
+			{
+				return;
+			}
 
 			if (SharedConstants.EmoteNameandId(reactionEmote.Name, reactionEmote.Id) == SharedConstants.QIID && msg.Reactions[Emote.Parse(SharedConstants.QIID)].ReactionCount == 1)
 			{
