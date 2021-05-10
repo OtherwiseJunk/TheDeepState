@@ -12,7 +12,7 @@ namespace DeepState.Service
 			using (var client = new HttpClient())
 			{
 				byte[] bytes = await client.GetByteArrayAsync(url);
-				return "image/jpeg;base64," + Convert.ToBase64String(bytes);
+				return Convert.ToBase64String(bytes);
 			}
 		}
 	}

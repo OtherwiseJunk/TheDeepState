@@ -1,6 +1,14 @@
 version: '3.4'
 
 services:
+  deepstate_bot:
+    restart: always
+    image: otherwisejunk/thedeepstate
+    depends_on:
+     - deepstate_db
+    environment:
+     - DEEPSTATE=$DEEPSTATE
+     - DATABASE=$DATABASE
   deepstate_db:
     restart: always
     image: mcr.microsoft.com/mssql/server:2017-latest
@@ -8,4 +16,7 @@ services:
       - SA_PASSWORD=$SA_PASSWORD
       - ACCEPT_EULA=Y
     ports:
-      - "5434:1433"
+      - "1433:1433"
+    volumes:
+      - /home/mssql/:/var/opt/mssql/
+      - /var/opt/mssql/data
