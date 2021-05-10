@@ -7,6 +7,7 @@ using Discord.Commands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DeepState.Modules
@@ -36,9 +37,7 @@ namespace DeepState.Modules
 			"Libcraft actually believes this."
 		};
 
-		[Command("ooc"), Alias("libcraftmoment")]
-		[Summary("Returns a random entry from the databse of base64 image strings.")]
-		public async Task RetrieveRandomOutOfContext()
+		public void SendRandomOOCItem()
 		{
 			OOCItem pulledItem = _DBContext.GetRandomRecord();
 			IGuildUser reportingUser = Context.Guild.GetUserAsync(pulledItem.ReportingUserId).Result;
@@ -47,8 +46,15 @@ namespace DeepState.Modules
 			string base64 = pulledItem.Base64Image.Replace("image/jpeg;base64,", "");
 			string msg = String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername);
 
-			await Context.Channel.SendMessageAsync(msg);
-			await Context.Channel.SendFileAsync(Converters.GetImageStreamFromBase64(base64), "OOCLibCraft.png");
+			_ = Context.Channel.SendMessageAsync(msg).Result;
+			_ = Context.Channel.SendFileAsync(Converters.GetImageStreamFromBase64(base64), "OOCLibCraft.png");
+		}
+
+		[Command("ooc"), Alias("libcraftmoment")]
+		[Summary("Returns a random entry from the databse of base64 image strings.")]
+		public async Task RetrieveRandomOutOfContext()
+		{
+			new Thread(SendRandomOOCItem).Start();			
 		}
 
 		[Command("ooclog")]
