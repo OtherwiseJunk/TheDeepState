@@ -1,8 +1,11 @@
-﻿using DeepState.Data.Context;
+﻿using DartsDiscordBots.Utilities;
+using DeepState.Data;
+using DeepState.Data.Context;
 using DeepState.Service;
 using Discord;
 using Discord.Commands;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,6 +15,7 @@ namespace DeepState.Modules
 	{
 		private OOCDBContext _DBContext { get; set; }
 		private ImagingService _imageService {get;set;}
+		private string OOCCaptionFormat = "{0} Originally reported by {1}";
 
 		public OutOfContextModule(OOCDBContext context, ImagingService imageService)
 		{
@@ -19,8 +23,36 @@ namespace DeepState.Modules
 			_imageService = imageService;
 		}
 
+		private List<string> OOCQuipFormats = new List<string>
+		{
+			"Another Libcraft Banger.",
+			"Still can't believe they said this...",
+			"SMDH, really?",
+			"Ok, friend, whatever you say.",
+			"Ban them tbh.",
+			"A Libcraft Classic.",
+			"This awful take brought to you by Libcraft.",
+			"They're a genius!",
+			"Libcraft actually believes this."
+		};
+
+		[Command("ooc"), Alias("libcraftmoment")]
+		[Summary("Returns a random entry from the databse of base64 image strings.")]
+		public async Task RetrieveRandomOutOfContext()
+		{
+			OOCItem pulledItem = _DBContext.GetRandomRecord();
+			IGuildUser reportingUser = Context.Guild.GetUserAsync(pulledItem.ReportingUserId).Result;
+			string reportingUsername = reportingUser.Nickname != null ? reportingUser.Nickname : reportingUser.Username;
+			//Supports messages originally logged when I was first writing this. We shouldn't attach the image/jpeg;base64, text anymore.
+			string base64 = pulledItem.Base64Image.Replace("image/jpeg;base64,", "");
+			string msg = String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername);
+
+			await Context.Channel.SendMessageAsync(msg);
+			await Context.Channel.SendFileAsync(Converters.GetImageStreamFromBase64(base64), "OOCLibCraft.png");
+		}
+
 		[Command("ooclog")]
-		[Summary("Makes a jackbox poll, and will announce a winner after 5 mintues. User must provide a comma separated list of the jack.")]
+		[Summary("Logs the base64 string of the image in the message this command is responding to.")]
 		public async Task LogOutOfContext()
 		{
 			if(Context.Message.ReferencedMessage != null)
