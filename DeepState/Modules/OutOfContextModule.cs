@@ -59,6 +59,54 @@ namespace DeepState.Modules
 			_ = Context.Channel.SendFileAsync(Converters.GetImageStreamFromBase64(base64), "OOCLibCraft.png", String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername));
 		}
 
+		public void DeleteTriggeringMessage(IMessage message)
+		{
+			//Wait a minute, then delete triggering message
+			Thread.Sleep(60 * 1000);
+			_ = message.DeleteAsync();
+		}
+
+		[Command("oocdelete"), Alias("oocdel"), RequireUserPermission(ChannelPermission.ManageMessages)]
+		[Summary("Allows the mods to delete the OOCRecord that the triggering message is responding to.")]
+		public async Task DeleteOOCItem()
+		{
+			if (Context.Message.ReferencedMessage != null)
+			{
+				IMessage messageRepliedTo = await Context.Channel.GetMessageAsync(Context.Message.ReferencedMessage.Id);
+				//We only want to log messages with a single identifiable image
+				if (messageRepliedTo.Attachments.Count == 1)
+				{
+					try
+					{
+						string base64Image = await _imageService.GetBase64ImageFromURL(messageRepliedTo.Attachments.First().Url);
+						if (_DBContext.ImageExists(base64Image))
+						{
+							_DBContext.DeleteImage(base64Image);
+							await Context.Message.AddReactionAsync(new Emoji("✅"));
+							new Thread(() => { DeleteTriggeringMessage(Context.Message); }).Start();
+						}
+						else
+						{
+							await Context.Channel.SendMessageAsync("Sorry, looks like someone may have already logged that one, friend.");
+						}
+					}
+					catch (Exception ex)
+					{
+						await Context.Channel.SendMessageAsync("Sorry, I failed to encode that image, maybe there's a problem with that file?");
+						Console.WriteLine(ex.Message);
+					}
+				}
+				else
+				{
+					await Context.Channel.SendMessageAsync($"There's {messageRepliedTo.Attachments.Count} attachments on this message, I need a message with exactly 1!");
+				}
+			}
+			else
+			{
+				await Context.Channel.SendMessageAsync("Sorry, I don't see a message you're replying to here...");
+			}
+		}
+
 		[Command("ooc"), Alias("libcraftmoment"), RequireGuild("698639095940907048")]
 		[Summary("Returns a random entry from the databse of base64 image strings.")]
 		public async Task RetrieveRandomOutOfContext()
@@ -66,7 +114,7 @@ namespace DeepState.Modules
 			new Thread(SendRandomOOCItem).Start();			
 		}
 
-		[Command("ooclog"), RequireGuild("698639095940907048")]
+		[Command("ooclog"), /*RequireGuild("698639095940907048")*/]
 		[Summary("Logs the base64 string of the image in the message this command is responding to.")]
 		public async Task LogOutOfContext()
 		{
@@ -82,7 +130,8 @@ namespace DeepState.Modules
 						if (!_DBContext.ImageExists(base64Image))
 						{
 							_DBContext.AddRecord(Context.Message.Author.Id, base64Image);
-							await Context.Channel.SendMessageAsync("Ok, I've logged this as a PATENTED LIBCRAFT MOMENT");
+							await Context.Message.AddReactionAsync(new Emoji("✅"));
+							new Thread(() => { DeleteTriggeringMessage(Context.Message); }).Start();
 						}
 						else
 						{
