@@ -171,7 +171,13 @@ namespace DeepState
 			var message = messageParam as SocketUserMessage;
 			if (message == null) return;
 
-			if (IsMentioningMe(messageParam) && !message.Author.IsBot)
+			if (message.Author.IsBot)
+			{
+				//We don't want to process messages from bots. Screw bots, all my homies hate bots.
+				return;
+			}
+
+			if (IsMentioningMe(messageParam))
 			{
 				_ = messageParam.AddReactionAsync(Emote.Parse(SharedConstants.RomneyRightEyeID));
 				_ = messageParam .AddReactionAsync(Emote.Parse(SharedConstants.RomneyLeftEyeID));
@@ -198,10 +204,9 @@ namespace DeepState
 					}
 				}
 			}
-			// Determine if the message is a command based on the prefix and make sure no bots trigger commands
+			// Determine if the message is a command based on the prefix
 			if (!(message.HasCharPrefix(BotProperties.CommandPrefix, ref argPos) ||
-					message.HasMentionPrefix(_client.CurrentUser, ref argPos)) ||
-					message.Author.IsBot)
+					message.HasMentionPrefix(_client.CurrentUser, ref argPos)))
 				return;
 
 			var context = new SocketCommandContext(_client, message);

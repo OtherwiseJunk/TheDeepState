@@ -3,7 +3,7 @@
     "DeepState": {
       "commandName": "Project",
       "environmentVariables": {
-        "DATABASE": "Server=localhost,5434;Database=OOC;User Id=sa;Password=ASecureP4sswordYanno?"
+        "DATABASE": "Server=localhost,1433;Database=OOC;User Id=sa;Password=ASecureP4sswordYanno?"
       }
     },
     "Docker": {

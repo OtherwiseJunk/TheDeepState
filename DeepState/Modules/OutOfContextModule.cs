@@ -1,4 +1,5 @@
-﻿using DartsDiscordBots.Utilities;
+﻿using DartsDiscordBots.Permissions;
+using DartsDiscordBots.Utilities;
 using DeepState.Data;
 using DeepState.Data.Context;
 using DeepState.Service;
@@ -34,7 +35,9 @@ namespace DeepState.Modules
 			"A Libcraft Classic.",
 			"This awful take brought to you by Libcraft.",
 			"They're a genius!",
-			"Libcraft actually believes this."
+			"Libcraft actually believes this.",
+			"Yikes Sweety, let's unpack this...",
+			"Yikes Sweaty, let's unpack this..."
 		};
 
 		public void SendRandomOOCItem()
@@ -44,20 +47,18 @@ namespace DeepState.Modules
 			string reportingUsername = reportingUser.Nickname != null ? reportingUser.Nickname : reportingUser.Username;
 			//Supports messages originally logged when I was first writing this. We shouldn't attach the image/jpeg;base64, text anymore.
 			string base64 = pulledItem.Base64Image.Replace("image/jpeg;base64,", "");
-			string msg = String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername);
 
-			_ = Context.Channel.SendMessageAsync(msg).Result;
-			_ = Context.Channel.SendFileAsync(Converters.GetImageStreamFromBase64(base64), "OOCLibCraft.png");
+			_ = Context.Channel.SendFileAsync(Converters.GetImageStreamFromBase64(base64), "OOCLibCraft.png", String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername));
 		}
 
-		[Command("ooc"), Alias("libcraftmoment")]
+		[Command("ooc"), Alias("libcraftmoment"), RequireGuild("698639095940907048")]
 		[Summary("Returns a random entry from the databse of base64 image strings.")]
 		public async Task RetrieveRandomOutOfContext()
 		{
 			new Thread(SendRandomOOCItem).Start();			
 		}
 
-		[Command("ooclog")]
+		[Command("ooclog"), RequireGuild("698639095940907048")]
 		[Summary("Logs the base64 string of the image in the message this command is responding to.")]
 		public async Task LogOutOfContext()
 		{
