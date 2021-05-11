@@ -43,7 +43,7 @@ namespace DeepState.Modules
 		public void SendRandomOOCItem(IGuild triggeringGuild, IMessageChannel triggeringChannel)
 		{
 			OOCItem pulledItem = _DBContext.GetRandomRecord();
-			IGuildUser reportingUser = triggeringGuild.GetUserAsync(pulledItem.ReportingUserId).Result;
+			IGuildUser reportingUser = triggeringGuild.GetUserAsync(pulledItem.ReportingUserId, CacheMode.AllowDownload).Result;
 			string reportingUsername;
 			if (reportingUser != null)
 			{
@@ -107,7 +107,7 @@ namespace DeepState.Modules
 			}
 		}
 
-		[Command("ooc"), Alias("libcraftmoment"), RequireGuild("698639095940907048")]
+		[Command("ooc"), Alias("libcraftmoment"), /*RequireGuild("698639095940907048")*/]
 		[Summary("Returns a random entry from the databse of base64 image strings.")]
 		public async Task RetrieveRandomOutOfContext()
 		{
