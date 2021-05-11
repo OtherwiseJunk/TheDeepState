@@ -107,7 +107,7 @@ namespace DeepState.Modules
 			}
 		}
 
-		[Command("ooc"), Alias("libcraftmoment"), /*RequireGuild("698639095940907048")*/]
+		[Command("ooc"), Alias("libcraftmoment"), RequireGuild("698639095940907048")]
 		[Summary("Returns a random entry from the databse of base64 image strings.")]
 		public async Task RetrieveRandomOutOfContext()
 		{
