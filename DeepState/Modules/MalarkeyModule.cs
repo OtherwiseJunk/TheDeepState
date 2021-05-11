@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TheDeepState.Constants;
+using DeepState.Constants;
 using TraceLd.MineStatSharp;
 
-namespace TheDeepState.Modules
+namespace DeepState.Modules
 {
 	public class MalarkeyModule : ModuleBase
 	{
@@ -52,6 +52,13 @@ namespace TheDeepState.Modules
 			{
 				await Context.Channel.SendMessageAsync("Server is offline!");
 			}
+		}
+
+		[Command("weekend")]
+		[Summary("It's The Weekend, Ladies and Gentleman!")]
+		public async Task TheWeekend()
+		{
+			await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/745024703365644320/840383340790939658/theweekend.mp4");
 		}
 	}
 }

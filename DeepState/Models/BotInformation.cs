@@ -1,9 +1,6 @@
 ﻿using DartsDiscordBots.Modules.Bot.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace TheDeepState.Models
+namespace DeepState.Models
 {
 	public class BotInformation : IBotInformation
 	{

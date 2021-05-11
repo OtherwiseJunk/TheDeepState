@@ -4,12 +4,19 @@ services:
   deepstate_bot:
     restart: always
     image: otherwisejunk/thedeepstate
+    depends_on:
+     - deepstate_db
     environment:
-      DEEPSTATE: $DEEPSTATE
+     - DEEPSTATE=$DEEPSTATE
+     - DATABASE=$DATABASE
   deepstate_db:
     restart: always
-    image: postgres:alpine
-    volumes:
-      - ./database:/var/lib.postgressql/data
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    environment:
+      - SA_PASSWORD=$SA_PASSWORD
+      - ACCEPT_EULA=Y
     ports:
-      - 5432:5432
+      - "1433:1433"
+    volumes:
+      - /home/mssql/:/var/opt/mssql/
+      - /var/opt/mssql/data

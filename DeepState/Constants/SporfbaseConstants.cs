@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace TheDeepState.Constants
+﻿namespace DeepState.Constants
 {
 	public class SporfbaseConstants
 	{

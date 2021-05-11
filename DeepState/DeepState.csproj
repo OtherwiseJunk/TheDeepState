@@ -8,11 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DDB" Version="0.7.6" />
+    <PackageReference Include="DDB" Version="0.7.11" />
     <PackageReference Include="Discord.Net" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="TraceLd.MineStatSharp" Version="1.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DeepState.Data\DeepState.Data.csproj" />
   </ItemGroup>
 
 </Project>
