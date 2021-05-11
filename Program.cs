@@ -79,7 +79,6 @@ namespace TheDeepState
 			}
 			else if (msg.Reactions.Count == 1)
 			{
-				Console.WriteLine(msg.Reactions.First().Value.ReactionCount);
 				if (msg.Reactions.First().Value.ReactionCount == 1 && reaction.UserId == msg.Author.Id && channel.Id != SharedConstants.SelfCareChannelId)
 				{
 					await msg.AddReactionAsync(Emote.Parse(SharedConstants.YouAreWhiteID));
