@@ -51,6 +51,11 @@ namespace DeepState.Modules
 			}
 			else
 			{
+				Console.WriteLine("Looks like our lookup on the user failed...");
+				Console.WriteLine($"User is null: {reportingUser == null}");
+				Console.WriteLine($"User Nickname is null: {reportingUser.Nickname == null}");
+				Console.WriteLine($"User NickName: {reportingUser.Nickname ?? reportingUser.Nickname: 'null'}");
+
 				reportingUsername = "A mysterious stranger, who is probably hot";
 			}
 			//Supports messages originally logged when I was first writing this. We shouldn't attach the image/jpeg;base64, text anymore.
@@ -66,7 +71,7 @@ namespace DeepState.Modules
 			_ = message.DeleteAsync();
 		}
 
-		[Command("oocdelete"), Alias("oocdel"), RequireUserPermission(ChannelPermission.ManageMessages)]
+		[Command("oocdelete"), Alias("oocdel"), RequireUserPermission(ChannelPermission.ManageMessages), RequireGuild("698639095940907048")]
 		[Summary("Allows the mods to delete the OOCRecord that the triggering message is responding to.")]
 		public async Task DeleteOOCItem()
 		{
@@ -114,7 +119,7 @@ namespace DeepState.Modules
 			new Thread(SendRandomOOCItem).Start();			
 		}
 
-		[Command("ooclog"), /*RequireGuild("698639095940907048")*/]
+		[Command("ooclog"), RequireGuild("698639095940907048")]
 		[Summary("Logs the base64 string of the image in the message this command is responding to.")]
 		public async Task LogOutOfContext()
 		{
