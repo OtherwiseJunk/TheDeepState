@@ -44,7 +44,15 @@ namespace DeepState.Modules
 		{
 			OOCItem pulledItem = _DBContext.GetRandomRecord();
 			IGuildUser reportingUser = Context.Guild.GetUserAsync(pulledItem.ReportingUserId).Result;
-			string reportingUsername = reportingUser.Nickname != null ? reportingUser.Nickname : reportingUser.Username;
+			string reportingUsername;
+			if (reportingUser != null)
+			{
+				reportingUsername = reportingUser.Nickname != null ? reportingUser.Nickname : reportingUser.Username;
+			}
+			else
+			{
+				reportingUsername = "A mysterious stranger, who is probably hot";
+			}
 			//Supports messages originally logged when I was first writing this. We shouldn't attach the image/jpeg;base64, text anymore.
 			string base64 = pulledItem.Base64Image.Replace("image/jpeg;base64,", "");
 
