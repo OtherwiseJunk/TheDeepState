@@ -66,7 +66,7 @@ namespace DeepState.Modules
 			_ = message.DeleteAsync();
 		}
 
-		[Command("oocdelete"), Alias("oocdel"), RequireUserPermission(ChannelPermission.ManageMessages), RequireGuild("698639095940907048")]
+		[Command("oocdelete"), Alias("oocdel"), RequireUserPermission(ChannelPermission.ManageMessages), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
 		[Summary("Allows the mods to delete the OOCRecord that the triggering message is responding to.")]
 		public async Task DeleteOOCItem()
 		{
@@ -107,14 +107,14 @@ namespace DeepState.Modules
 			}
 		}
 
-		[Command("ooc"), Alias("libcraftmoment"), RequireGuild("698639095940907048")]
+		[Command("ooc"), Alias("libcraftmoment"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
 		[Summary("Returns a random entry from the databse of base64 image strings.")]
 		public async Task RetrieveRandomOutOfContext()
 		{
 			new Thread(() => { SendRandomOOCItem(Context.Guild, Context.Channel); }).Start();			
 		}
 
-		[Command("ooclog"), RequireGuild("698639095940907048")]
+		[Command("ooclog"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
 		[Summary("Logs the base64 string of the image in the message this command is responding to.")]
 		public async Task LogOutOfContext()
 		{
