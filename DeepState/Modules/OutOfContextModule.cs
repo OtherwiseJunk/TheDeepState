@@ -40,28 +40,23 @@ namespace DeepState.Modules
 			"Yikes Sweaty, let's unpack this..."
 		};
 
-		public void SendRandomOOCItem()
+		public void SendRandomOOCItem(IGuild triggeringGuild, IMessageChannel triggeringChannel)
 		{
 			OOCItem pulledItem = _DBContext.GetRandomRecord();
-			IGuildUser reportingUser = Context.Guild.GetUserAsync(pulledItem.ReportingUserId).Result;
+			IGuildUser reportingUser = triggeringGuild.GetUserAsync(pulledItem.ReportingUserId).Result;
 			string reportingUsername;
 			if (reportingUser != null)
 			{
 				reportingUsername = reportingUser.Nickname != null ? reportingUser.Nickname : reportingUser.Username;
 			}
 			else
-			{
-				Console.WriteLine("Looks like our lookup on the user failed...");
-				Console.WriteLine($"User is null: {reportingUser == null}");
-				Console.WriteLine($"User Nickname is null: {reportingUser.Nickname == null}");
-				Console.WriteLine($"User NickName: {reportingUser.Nickname ?? reportingUser.Nickname: 'null'}");
-
+			{				
 				reportingUsername = "A mysterious stranger, who is probably hot";
 			}
 			//Supports messages originally logged when I was first writing this. We shouldn't attach the image/jpeg;base64, text anymore.
 			string base64 = pulledItem.Base64Image.Replace("image/jpeg;base64,", "");
 
-			_ = Context.Channel.SendFileAsync(Converters.GetImageStreamFromBase64(base64), "OOCLibCraft.png", String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername));
+			_ = triggeringChannel.SendFileAsync(Converters.GetImageStreamFromBase64(base64), "OOCLibCraft.png", String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername));
 		}
 
 		public void DeleteTriggeringMessage(IMessage message)
@@ -116,7 +111,7 @@ namespace DeepState.Modules
 		[Summary("Returns a random entry from the databse of base64 image strings.")]
 		public async Task RetrieveRandomOutOfContext()
 		{
-			new Thread(SendRandomOOCItem).Start();			
+			new Thread(() => { SendRandomOOCItem(Context.Guild, Context.Channel); }).Start();			
 		}
 
 		[Command("ooclog"), RequireGuild("698639095940907048")]
