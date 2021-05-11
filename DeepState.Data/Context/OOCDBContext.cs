@@ -18,6 +18,14 @@ namespace DeepState.Data.Context
 			return OutOfContextRecords.FirstOrDefaultAsync(oocr => oocr.Base64Image == base64Image).Result != null;
 		}
 
+		public void DeleteImage(string base64Image)
+		{
+			OOCItem itemToDelete = OutOfContextRecords.FirstOrDefaultAsync(oocr => oocr.Base64Image == base64Image).Result;
+			OutOfContextRecords.Remove(itemToDelete);
+
+			SaveChanges();
+		}
+
 		public void AddRecord(ulong reportingUserId, string base64Image)
 		{
 			OutOfContextRecords.Add(new OOCItem
@@ -27,7 +35,7 @@ namespace DeepState.Data.Context
 				DateStored = DateTime.Now
 			});
 
-			this.SaveChanges();
+			SaveChanges();
 		}
 
 		public OOCItem GetRandomRecord()
