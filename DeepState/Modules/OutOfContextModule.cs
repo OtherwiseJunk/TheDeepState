@@ -16,7 +16,7 @@ namespace DeepState.Modules
 	public class OutOfContextModule : ModuleBase
 	{
 		private OOCDBContext _DBContext { get; set; }
-		private ImagingService _imageService {get;set;}
+		private ImagingService _imageService { get; set; }
 		private string OOCCaptionFormat = "{0} Originally reported by {1}";
 
 		public OutOfContextModule(OOCDBContext context, ImagingService imageService)
@@ -50,7 +50,7 @@ namespace DeepState.Modules
 				reportingUsername = reportingUser.Nickname != null ? reportingUser.Nickname : reportingUser.Username;
 			}
 			else
-			{				
+			{
 				reportingUsername = "A mysterious stranger, who is probably hot";
 			}
 			//Supports messages originally logged when I was first writing this. We shouldn't attach the image/jpeg;base64, text anymore.
@@ -107,14 +107,14 @@ namespace DeepState.Modules
 			}
 		}
 
-		[Command("ooc"), Alias("libcraftmoment"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
+		[Command("ooc"), Alias("libcraftmoment"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 }), RequireChannel(new ulong[] { 718986327642734654, 777400598789095445, 716841087137873920, 176357319687405569 })]
 		[Summary("Returns a random entry from the databse of base64 image strings.")]
 		public async Task RetrieveRandomOutOfContext()
 		{
 			new Thread(() => { SendRandomOOCItem(Context.Guild, Context.Channel); }).Start();			
 		}
 
-		[Command("ooclog"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
+		[Command("ooclog"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 }), RequireChannel(new ulong[] { 718986327642734654, 777400598789095445, 716841087137873920, 176357319687405569 })]
 		[Summary("Logs the base64 string of the image in the message this command is responding to.")]
 		public async Task LogOutOfContext()
 		{
