@@ -22,6 +22,7 @@ using System.Text.RegularExpressions;
 using DeepState.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using DeepState.Service;
+using System.Threading;
 
 namespace DeepState
 {
@@ -69,23 +70,17 @@ namespace DeepState
 			_client.ReactionAdded += OnReact;
 		}
 
-		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
+		public async Task KlaxonCheck(Emote reactionEmote, ISocketMessageChannel channel, IMessage msg)		
 		{
-
-
-			IMessage msg = channel.GetMessageAsync(message.Id).Result;
-			Emote reactionEmote = (Emote)reaction.Emote;
-
-			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name) || msg.Author.IsBot)
-			{
-				return;
-			}
-
 			if (SharedConstants.EmoteNameandId(reactionEmote.Name, reactionEmote.Id) == SharedConstants.QIID && msg.Reactions[Emote.Parse(SharedConstants.QIID)].ReactionCount == 1)
 			{
 				await channel.SendMessageAsync(SharedConstants.KlaxonResponse, messageReference: new MessageReference(msg.Id));
 			}
-			else if (msg.Reactions.Count == 1)
+		}
+
+		public async Task SelfReactCheck(SocketReaction reaction, IMessage msg, ISocketMessageChannel channel)
+		{
+			if (msg.Reactions.Count == 1)
 			{
 				if (msg.Reactions.First().Value.ReactionCount == 1 && reaction.UserId == msg.Author.Id && channel.Id != SharedConstants.SelfCareChannelId)
 				{
@@ -97,6 +92,21 @@ namespace DeepState
 					}
 				}
 			}
+		}
+
+		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
+		{
+			IMessage msg = channel.GetMessageAsync(message.Id).Result;
+			Emote reactionEmote = (Emote)reaction.Emote;
+
+			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name) || msg.Author.IsBot)
+			{
+				return;
+			}
+
+			new Thread(async () => { await KlaxonCheck(reactionEmote, channel, msg); }).Start();
+			new Thread(async () => { await SelfReactCheck(reaction, msg, channel); }).Start();
+			
 		}
 
 		public static void Main(string[] args)
@@ -161,6 +171,40 @@ namespace DeepState
 
 			_client.MessageReceived += HandleCommandAsync;
 		}
+
+		public async Task EgoCheck(SocketMessage msg)
+		{
+			if (IsMentioningMe(msg))
+			{
+				_ = msg.AddReactionAsync(Emote.Parse(SharedConstants.RomneyRightEyeID));
+				_ = msg.AddReactionAsync(Emote.Parse(SharedConstants.RomneyLeftEyeID));
+			}
+		}
+
+		public async Task RandomReactCheck(SocketMessage msg)
+		{
+			if (msg.Channel.Id != SharedConstants.SelfCareChannelId)
+			{
+				if (msg.Content.ToLower() == "!rank") Console.WriteLine("Rolling for rank...");
+				if (msg.Content.ToLower() == "!rank" && PercentileCheck(1))
+				{
+					await msg.Channel.SendMessageAsync(RankNerdResponses.GetRandom());
+					return;
+				}
+				if (PercentileCheck(1) & PercentileCheck(40))
+				{
+					if (PercentileCheck(1))
+					{
+						await msg.AddReactionAsync(Emote.Parse(SharedConstants.GwalmsID));
+					}
+					else
+					{
+						await msg.AddReactionAsync(Emote.Parse(ReactableEmotes.GetRandom()));
+					}
+				}
+			}
+		}
+
 		private async Task HandleCommandAsync(SocketMessage messageParam)
 		{
 
@@ -176,33 +220,11 @@ namespace DeepState
 				return;
 			}
 
-			if (IsMentioningMe(messageParam))
-			{
-				_ = messageParam.AddReactionAsync(Emote.Parse(SharedConstants.RomneyRightEyeID));
-				_ = messageParam .AddReactionAsync(Emote.Parse(SharedConstants.RomneyLeftEyeID));
-			}
+			new Thread(async () => { await EgoCheck(messageParam); }).Start();
+			new Thread(async () => { await RandomReactCheck(messageParam); }).Start();
 
 			int argPos = 0;
-			if (message.Channel.Id != SharedConstants.SelfCareChannelId)
-			{
-				if (message.Content.ToLower() == "!rank") Console.WriteLine("Rolling for rank...");
-				if (message.Content.ToLower() == "!rank" && PercentileCheck(1))
-				{
-					await message.Channel.SendMessageAsync(RankNerdResponses.GetRandom());
-					return;
-				}
-				if (PercentileCheck(1) & PercentileCheck(40))
-				{
-					if (PercentileCheck(1))
-					{
-						await message.AddReactionAsync(Emote.Parse(SharedConstants.GwalmsID));
-					}
-					else
-					{
-						await message.AddReactionAsync(Emote.Parse(ReactableEmotes.GetRandom()));
-					}
-				}
-			}
+			
 			// Determine if the message is a command based on the prefix
 			if (!(message.HasCharPrefix(BotProperties.CommandPrefix, ref argPos) ||
 					message.HasMentionPrefix(_client.CurrentUser, ref argPos)))
