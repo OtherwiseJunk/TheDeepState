@@ -70,15 +70,17 @@ namespace DeepState
 			_client.ReactionAdded += OnReact;
 		}
 
-		public async Task KlaxonCheck(Emote reactionEmote, ISocketMessageChannel channel, IMessage msg)		
+		public async Task KlaxonCheck(IEmote reactionEmote, ISocketMessageChannel channel, IMessage msg)		
 		{
-			if (SharedConstants.EmoteNameandId(reactionEmote.Name, reactionEmote.Id) == SharedConstants.QIID && msg.Reactions[Emote.Parse(SharedConstants.QIID)].ReactionCount == 1)
+			//If it's an Emote, extract the ID. Otherwise we will not need it.
+			ulong? emoteId = (reactionEmote as Emote) != null ? (ulong?)(reactionEmote as Emote).Id : null;
+			if (SharedConstants.EmoteNameandId(reactionEmote.Name, emoteId) == SharedConstants.QIID && msg.Reactions[Emote.Parse(SharedConstants.QIID)].ReactionCount == 1)
 			{
 				await channel.SendMessageAsync(SharedConstants.KlaxonResponse, messageReference: new MessageReference(msg.Id));
 			}
 		}
 
-		public async Task SelfReactCheck(SocketReaction reaction, IMessage msg, ISocketMessageChannel channel)
+		public async Task SelfReactCheck(SocketReaction reaction, ISocketMessageChannel channel, IMessage msg)
 		{
 			if (msg.Reactions.Count == 1)
 			{
@@ -94,18 +96,44 @@ namespace DeepState
 			}
 		}
 
+		private async Task ClearDeepStateReactionCheck(IEmote reactionEmote, ISocketMessageChannel channel, IMessage msg)
+		{
+			//Check for the clearing reaction emote, and do no clear if the author is Deep State.
+			if (SharedConstants.ClearingEmotes.Contains(reactionEmote.Name) && msg.Author != _client.CurrentUser)
+			{
+				foreach (var reaction in msg.Reactions)
+				{
+					if (reaction.Value.IsMe)
+					{
+						await msg.RemoveReactionAsync(reaction.Key, _client.CurrentUser);
+					}
+				}
+			}
+		}
+
 		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
 		{
+			IEmote reactionEmote;
 			IMessage msg = channel.GetMessageAsync(message.Id).Result;
-			Emote reactionEmote = (Emote)reaction.Emote;
+			if((reaction.Emote as Emote) != null)
+			{
+				reactionEmote = (Emote)reaction.Emote;
+			}
+			else
+			{
+				reactionEmote = (Emoji)reaction.Emote;
+			}
+
+			//One of the voting reactions, :x:, can also be used to clear DeepState reacts, so we run this regardless.
+			new Thread(async () => { _ = ClearDeepStateReactionCheck(reactionEmote, channel, msg); }).Start();
 
 			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name) || msg.Author.IsBot)
 			{
 				return;
 			}
 
-			new Thread(async () => { await KlaxonCheck(reactionEmote, channel, msg); }).Start();
-			new Thread(async () => { await SelfReactCheck(reaction, msg, channel); }).Start();
+			new Thread(async () => { _ = KlaxonCheck(reactionEmote, channel, msg); }).Start();
+			new Thread(async () => { _ = SelfReactCheck(reaction, channel, msg); }).Start();
 			
 		}
 

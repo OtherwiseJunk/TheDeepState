@@ -87,7 +87,7 @@ namespace DeepState.Modules
 						}
 						else
 						{
-							await Context.Channel.SendMessageAsync("Sorry, looks like someone may have already logged that one, friend.");
+							await Context.Channel.SendMessageAsync("Sorry, looks like that image doesn't exist, friend.");
 						}
 					}
 					catch (Exception ex)

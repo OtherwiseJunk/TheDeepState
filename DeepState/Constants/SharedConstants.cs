@@ -51,6 +51,12 @@ namespace DeepState.Constants
 			"✅",
 			"❌"
 		};
+
+		public static List<string> ClearingEmotes = new List<string>
+		{
+			"📵",
+			"❌"
+		};
 		#endregion
 
 		#region Strings
@@ -58,7 +64,7 @@ namespace DeepState.Constants
 		#endregion
 
 		#region String Formats
-		public static string EmoteNameandId(string name, ulong id) => $"<:{name}:{id}>";
+		public static string EmoteNameandId(string name, ulong? id) => $"<:{name}:{id}>";
 		#endregion
 	}
 }
