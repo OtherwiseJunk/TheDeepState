@@ -32,7 +32,7 @@ namespace DeepState.Constants
 		{
 			SelfCareChannelId,
 			SeriousDiscussionChannelId
-		}
+		};
 		#endregion
 
 		#region User Ids
