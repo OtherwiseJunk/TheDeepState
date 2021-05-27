@@ -24,6 +24,15 @@ namespace DeepState.Constants
 
 		#region Channel Ids
 		public static ulong SelfCareChannelId = 736092567497867284;
+		public static ulong SeriousDiscussionChannelId = 732019626367516682;
+		#endregion
+
+		#region Channel Lists
+		public static List<ulong> NoAutoReactsChannel = new List<ulong>
+		{
+			SelfCareChannelId,
+			SeriousDiscussionChannelId
+		}
 		#endregion
 
 		#region User Ids

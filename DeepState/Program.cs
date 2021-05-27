@@ -211,7 +211,7 @@ namespace DeepState
 
 		public async Task RandomReactCheck(SocketMessage msg)
 		{
-			if (msg.Channel.Id != SharedConstants.SelfCareChannelId)
+			if (!SharedConstants.NoAutoReactsChannel.Contains(msg.Channel.Id))
 			{
 				if (msg.Content.ToLower() == "!rank") Console.WriteLine("Rolling for rank...");
 				if (msg.Content.ToLower() == "!rank" && PercentileCheck(1))
