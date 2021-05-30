@@ -52,6 +52,27 @@ namespace DeepState.Constants
 			"BOOHOO CRACKER! No body cares about your self-react, plus you're white.",
 			$"{Emote.Parse(YouAreWhiteID)} SELF-REACT DETECTED {Emote.Parse(YouAreWhiteID)}."
 		};
+
+		public static readonly List<string> RankNerdResponses = new List<string>
+
+		{
+			"https://m.media-amazon.com/images/I/91umiveo5mL._SS500_.jpg",
+			"https://i.imgur.com/PvT6XMa.gif",
+			"https://i.imgur.com/1Y8Czxu.gif",
+			"https://i.gifer.com/9clm.gif",
+			"https://i.imgur.com/Ek2X3Hw.gif"
+		};
+
+		public static readonly List<string> ReactableEmotes = new List<string>
+		{
+			SharedConstants.BogId,
+			SharedConstants.ConcernedFroggyId,
+			SharedConstants.ThisTBHId,
+			SharedConstants.ForeheadID,
+			SharedConstants.BooHooCrackerID,
+			SharedConstants.LaughingFaceID,
+			SharedConstants.BonkID
+		};
 		#endregion
 
 		#region Emote Lists

@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DeepState.Data.Context;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using DeepState.Data.Models;
 
 namespace DeepState.Data.Services
@@ -60,7 +58,7 @@ namespace DeepState.Data.Services
 
 		public double RollPayout()
 		{
-			Random rand = new Random(DateTime.Now.Millisecond * DateTime.Now.Second);
+			Random rand = new Random(Guid.NewGuid().GetHashCode());
 			double roll = (rand.NextDouble() + 0.01) * LARGEST_PAYOUT;
 			return roll >= SMALLEST_PAYOUT ? roll : SMALLEST_PAYOUT;
 		}
