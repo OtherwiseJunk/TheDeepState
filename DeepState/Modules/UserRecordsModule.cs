@@ -23,7 +23,7 @@ namespace DeepState.Modules
 			ulong userId = Context.Message.Author.Id;
 			if (_UserRecordsService.UserRecordExists(userId, guildId))
 			{
-				_ = Context.Channel.SendMessageAsync($"Looks like you have {_UserRecordsService.GetUserBalance(userId, guildId).ToString("F8")} libcoins.");
+				_ = Context.Channel.SendMessageAsync($"Looks like you have {_UserRecordsService.GetUserBalance(userId, guildId).ToString("F8")} libcoins.",);
 			}
 			else
 			{

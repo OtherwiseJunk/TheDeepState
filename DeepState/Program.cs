@@ -62,13 +62,22 @@ namespace DeepState
 		{
 			_client = new DiscordSocketClient();
 			_services = ConfigureServices();
-			_services.GetService<OOCDBContext>().Database.EnsureCreated();
-			_services.GetService<GuildUserRecordContext>().Database.EnsureCreated();
+			ConfigureDatabases();
 			_commands = new CommandService();
 			_client.Log += Log;
 			_commands.Log += Log;
 			_rand = new Random(DateTime.Now.Millisecond);
 			_client.ReactionAdded += OnReact;
+		}
+
+		private void ConfigureDatabases()
+		{
+			var oocContext = _services.GetService<OOCDBContext>();
+			oocContext.Database.EnsureCreated();
+			oocContext.Database.Migrate();
+			var userRecordContext = _services.GetService<GuildUserRecordContext>();
+			userRecordContext.Database.EnsureCreated();
+			userRecordContext.Database.Migrate();
 		}
 
 		public async Task KlaxonCheck(IEmote reactionEmote, ISocketMessageChannel channel, IMessage msg)
