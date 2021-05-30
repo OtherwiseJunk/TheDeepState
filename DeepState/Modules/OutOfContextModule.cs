@@ -68,7 +68,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("oocdelete"), Alias("oocdel"), RequireUserPermission(ChannelPermission.ManageMessages), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
-		[Summary("Allows the mods to delete the OOCRecord that the triggering message is responding to.")]
+		[Summary("Allows users with the Manage Messages privilege to delete the OOCRecord that the triggering message is responding to.")]
 		public async Task DeleteOOCItem()
 		{
 			if (Context.Message.ReferencedMessage != null)
@@ -116,7 +116,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("ooclog"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 }), RequireChannel(new ulong[] { 718986327642734654, 777400598789095445, 716841087137873920, 176357319687405569, 701194133074608198, 831675528431403039 })]
-		[Summary("Logs the base64 string of the image in the message this command is responding to.")]
+		[Summary("Stores the attached image in the message this command is replying to.")]
 		public async Task LogOutOfContext()
 		{
 			if(Context.Message.ReferencedMessage != null)

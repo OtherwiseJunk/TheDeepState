@@ -22,6 +22,7 @@ using DeepState.Data.Services;
 using DeepState.Handlers;
 using Utils = DeepState.Utilities.Utilities;
 using DeepState.Utilities;
+using OMH = DartsDiscordBots.Handlers.OnMessageHandlers;
 
 namespace DeepState
 {
@@ -111,6 +112,7 @@ namespace DeepState
 
 
 			_client.MessageReceived += OnMessage;
+			_client.MessageReceived += (async (SocketMessage messageParam) => { _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix); });
 		}
 		private async Task OnMessage(SocketMessage messageParam)
 		{
@@ -127,21 +129,6 @@ namespace DeepState
 			new Thread(() => { OnMessageHandlers.EgoCheck(messageParam, Utils.IsMentioningMe(messageParam, _client.CurrentUser)); }).Start();
 			new Thread(async () => { await OnMessageHandlers.RandomReactCheck(messageParam); }).Start();
 			new Thread(async () => { await LibcraftCoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
-
-			int argPos = 0;
-
-			// Determine if the message is a command based on the prefix
-			if (!(message.HasCharPrefix(BotProperties.CommandPrefix, ref argPos) ||
-					message.HasMentionPrefix(_client.CurrentUser, ref argPos)))
-				return;
-
-			var context = new SocketCommandContext(_client, message);
-
-			var isSuccess = await _commands.ExecuteAsync(
-				context: context,
-				argPos: argPos,
-				services: _services);
-
 		}
 		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
 		{
