@@ -4,5 +4,6 @@
 	{
 		public static string InternalName = "DeepState";
 		public static char CommandPrefix = '>';
+		public static readonly string SelfIdentifyingRegex = @"(de*r?p)\s*(sta*te*)";
 	}
 }
