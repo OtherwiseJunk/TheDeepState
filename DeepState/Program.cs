@@ -241,7 +241,7 @@ namespace DeepState
 		public async Task LibcraftCoinCheck()
 		{
 			Random rand = new Random(DateTime.Now.Millisecond * DateTime.Now.Second);
-			int nextDuration = 10000;//rand.Next(60000, 240000);
+			int nextDuration = rand.Next(60000, 240000);
 			UserRecordsService service = _services.GetRequiredService<UserRecordsService>();
 			lock (DictionaryLock)
 			{
