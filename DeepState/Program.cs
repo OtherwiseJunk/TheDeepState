@@ -23,17 +23,19 @@ using DeepState.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using DeepState.Service;
 using System.Threading;
+using DeepState.Data.Services;
 
 namespace DeepState
 {
 	public class Program
 	{
+		private Dictionary<ulong, List<ulong>> LCCListOfActiveUsersByGuild = new Dictionary<ulong, List<ulong>>();
+		private object DictionaryLock = new object();
 		private readonly DiscordSocketClient _client;
 		private readonly CommandService _commands;
 		private readonly IServiceProvider _services;
 		private readonly Random _rand;
 		private readonly string _meRegex = @"(de*r?p)\s*(sta*te*)";
-		private static string _dbConnectionString;
 
 		private readonly List<string> RankNerdResponses = new List<string>
 
@@ -58,11 +60,10 @@ namespace DeepState
 
 		private Program()
 		{
-			_dbConnectionString = Environment.GetEnvironmentVariable("DATABASE");
-
 			_client = new DiscordSocketClient();
 			_services = ConfigureServices();
 			_services.GetService<OOCDBContext>().Database.EnsureCreated();
+			_services.GetService<GuildUserRecordContext>().Database.EnsureCreated();
 			_commands = new CommandService();
 			_client.Log += Log;
 			_commands.Log += Log;
@@ -70,7 +71,7 @@ namespace DeepState
 			_client.ReactionAdded += OnReact;
 		}
 
-		public async Task KlaxonCheck(IEmote reactionEmote, ISocketMessageChannel channel, IMessage msg)		
+		public async Task KlaxonCheck(IEmote reactionEmote, ISocketMessageChannel channel, IMessage msg)
 		{
 			//If it's an Emote, extract the ID. Otherwise we will not need it.
 			ulong? emoteId = (reactionEmote as Emote) != null ? (ulong?)(reactionEmote as Emote).Id : null;
@@ -115,7 +116,7 @@ namespace DeepState
 		{
 			IEmote reactionEmote;
 			IMessage msg = channel.GetMessageAsync(message.Id).Result;
-			if((reaction.Emote as Emote) != null)
+			if ((reaction.Emote as Emote) != null)
 			{
 				reactionEmote = (Emote)reaction.Emote;
 			}
@@ -134,7 +135,7 @@ namespace DeepState
 
 			new Thread(async () => { _ = KlaxonCheck(reactionEmote, channel, msg); }).Start();
 			new Thread(async () => { _ = SelfReactCheck(reaction, channel, msg); }).Start();
-			
+
 		}
 
 		public static void Main(string[] args)
@@ -163,6 +164,7 @@ namespace DeepState
 			await _client.LoginAsync(TokenType.Bot, token);
 			await _client.StartAsync();
 
+			LibcraftCoinCheck();
 			// Block this task until the program is closed.
 			await Task.Delay(-1);
 		}
@@ -175,10 +177,12 @@ namespace DeepState
 				.AddSingleton<IBotInformation, BotInformation>()
 				.AddSingleton<IMessageReliabilityService, MessageReliabilityService>()
 				.AddSingleton<ImagingService>()
-				.AddDbContext<OOCDBContext>(options =>
-				{
-					options.UseSqlServer(_dbConnectionString);
-				});
+				.AddSingleton<OutOfContextService>()
+				.AddSingleton<UserRecordsService>()
+				.AddDbContext<OOCDBContext>()
+				.AddDbContext<GuildUserRecordContext>()
+				.AddDbContextFactory<OOCDBContext>()
+				.AddDbContextFactory<GuildUserRecordContext>();
 
 			return map.BuildServiceProvider();
 		}
@@ -195,6 +199,7 @@ namespace DeepState
 			await _commands.AddModuleAsync<BotModule>(_services);
 			await _commands.AddModuleAsync<ChatModule>(_services);
 			await _commands.AddModuleAsync<OutOfContextModule>(_services);
+			await _commands.AddModuleAsync<UserRecordsModule>(_services);
 
 
 			_client.MessageReceived += HandleCommandAsync;
@@ -233,10 +238,51 @@ namespace DeepState
 			}
 		}
 
+		public async Task LibcraftCoinCheck()
+		{
+			Random rand = new Random(DateTime.Now.Millisecond * DateTime.Now.Second);
+			int nextDuration = 10000;//rand.Next(60000, 240000);
+			UserRecordsService service = _services.GetRequiredService<UserRecordsService>();
+			lock (DictionaryLock)
+			{
+				foreach (ulong guildId in LCCListOfActiveUsersByGuild.Keys)
+				{
+					foreach (ulong userId in LCCListOfActiveUsersByGuild[guildId])
+					{
+						service.IssuePayout(userId, guildId);
+					}
+				}
+				LCCListOfActiveUsersByGuild = new Dictionary<ulong, List<ulong>>();
+			}
+
+			Thread.Sleep(nextDuration);
+			_ = LibcraftCoinCheck();
+		}
+		public async Task LibcraftCoinMessageHandler(SocketMessage msg)
+		{
+			ulong messageUserId = msg.Author.Id;
+			ulong messageGuildId = ((IGuildChannel)msg.Channel).GuildId;
+			lock (DictionaryLock)
+			{
+				if (LCCListOfActiveUsersByGuild.Keys.Contains(messageGuildId))
+				{
+					if (!LCCListOfActiveUsersByGuild[messageGuildId].Contains(messageUserId))
+					{
+						LCCListOfActiveUsersByGuild[messageGuildId].Add(messageUserId);
+					}
+				}
+				else
+				{
+
+					LCCListOfActiveUsersByGuild[messageGuildId] = new List<ulong> { messageUserId };
+				}
+			}
+		}
+
 		private async Task HandleCommandAsync(SocketMessage messageParam)
 		{
 
-			
+
 
 			//Don't process the command if it was a system message
 			var message = messageParam as SocketUserMessage;
@@ -250,9 +296,10 @@ namespace DeepState
 
 			new Thread(async () => { await EgoCheck(messageParam); }).Start();
 			new Thread(async () => { await RandomReactCheck(messageParam); }).Start();
+			new Thread(async () => { await LibcraftCoinMessageHandler(messageParam); }).Start();
 
 			int argPos = 0;
-			
+
 			// Determine if the message is a command based on the prefix
 			if (!(message.HasCharPrefix(BotProperties.CommandPrefix, ref argPos) ||
 					message.HasMentionPrefix(_client.CurrentUser, ref argPos)))
