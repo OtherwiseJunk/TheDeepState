@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace DeepState.Data
+namespace DeepState.Data.Models
 {
 	public class OOCItem
 	{

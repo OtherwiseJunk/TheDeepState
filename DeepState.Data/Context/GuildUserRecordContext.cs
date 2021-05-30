@@ -1,18 +1,20 @@
-﻿using Discord;
+﻿using DeepState.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
-using DartsDiscordBots.Utilities;
-using DeepState.Data.Models;
+using System.Collections.Generic;
+using System.Text;
 
 namespace DeepState.Data.Context
 {
-	public class OOCDBContext : DbContext
+	public class GuildUserRecordContext : DbContext
 	{
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("DATABASE"));
 		}
 
-		public DbSet<OOCItem> OutOfContextRecords { get; set; }
+		public DbSet<UserRecord> UserRecords { get; set; }
+
+		
 	}
 }

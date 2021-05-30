@@ -1,6 +1,6 @@
 ﻿using DartsDiscordBots.Permissions;
 using DartsDiscordBots.Utilities;
-using DeepState.Data;
+using DeepState.Data.Models;
 using DeepState.Data.Context;
 using DeepState.Service;
 using Discord;
@@ -10,18 +10,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DeepState.Data.Services;
 
 namespace DeepState.Modules
 {
 	public class OutOfContextModule : ModuleBase
 	{
-		private OOCDBContext _DBContext { get; set; }
+		private OutOfContextService _OOCService { get; set; }
 		private ImagingService _imageService { get; set; }
 		private string OOCCaptionFormat = "{0} Originally reported by {1}";
 
-		public OutOfContextModule(OOCDBContext context, ImagingService imageService)
+		public OutOfContextModule(OutOfContextService oocService, ImagingService imageService)
 		{
-			_DBContext = context;
+			_OOCService = oocService;
 			_imageService = imageService;
 		}
 
@@ -42,7 +43,7 @@ namespace DeepState.Modules
 
 		public void SendRandomOOCItem(IGuild triggeringGuild, IMessageChannel triggeringChannel)
 		{
-			OOCItem pulledItem = _DBContext.GetRandomRecord();
+			OOCItem pulledItem = _OOCService.GetRandomRecord();
 			IGuildUser reportingUser = triggeringGuild.GetUserAsync(pulledItem.ReportingUserId, CacheMode.AllowDownload).Result;
 			string reportingUsername;
 			if (reportingUser != null)
@@ -79,9 +80,9 @@ namespace DeepState.Modules
 					try
 					{
 						string base64Image = await _imageService.GetBase64ImageFromURL(messageRepliedTo.Attachments.First().Url);
-						if (_DBContext.ImageExists(base64Image))
+						if (_OOCService.ImageExists(base64Image))
 						{
-							_DBContext.DeleteImage(base64Image);
+							_OOCService.DeleteImage(base64Image);
 							await Context.Message.AddReactionAsync(new Emoji("✅"));
 							new Thread(() => { DeleteTriggeringMessage(Context.Message); }).Start();
 						}
@@ -127,9 +128,9 @@ namespace DeepState.Modules
 					try
 					{
 						string base64Image = await _imageService.GetBase64ImageFromURL(messageRepliedTo.Attachments.First().Url);
-						if (!_DBContext.ImageExists(base64Image))
+						if (!_OOCService.ImageExists(base64Image))
 						{
-							_DBContext.AddRecord(Context.Message.Author.Id, base64Image);
+							_OOCService.AddRecord(Context.Message.Author.Id, base64Image);
 							await Context.Message.AddReactionAsync(new Emoji("✅"));
 							new Thread(() => { DeleteTriggeringMessage(Context.Message); }).Start();
 						}
