@@ -74,10 +74,8 @@ namespace DeepState
 		{
 			var oocContext = _services.GetService<OOCDBContext>();
 			oocContext.Database.EnsureCreated();
-			oocContext.Database.Migrate();
 			var userRecordContext = _services.GetService<GuildUserRecordContext>();
 			userRecordContext.Database.EnsureCreated();
-			userRecordContext.Database.Migrate();
 		}
 
 		public async Task KlaxonCheck(IEmote reactionEmote, ISocketMessageChannel channel, IMessage msg)
