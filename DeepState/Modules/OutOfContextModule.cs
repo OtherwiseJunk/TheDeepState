@@ -84,6 +84,7 @@ namespace DeepState.Modules
 						{
 							_OOCService.DeleteImage(base64Image);
 							await Context.Message.AddReactionAsync(new Emoji("✅"));
+							_ = messageRepliedTo.AddReactionAsync(Emote.Parse("❌"));
 							new Thread(() => { DeleteTriggeringMessage(Context.Message); }).Start();
 						}
 						else
@@ -132,6 +133,7 @@ namespace DeepState.Modules
 						{
 							_OOCService.AddRecord(Context.Message.Author.Id, base64Image);
 							await Context.Message.AddReactionAsync(new Emoji("✅"));
+							_ = messageRepliedTo.AddReactionAsync(Emote.Parse("📷"));
 							new Thread(() => { DeleteTriggeringMessage(Context.Message); }).Start();
 						}
 						else
