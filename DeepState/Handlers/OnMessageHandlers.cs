@@ -34,24 +34,21 @@ namespace DeepState.Handlers
 		}
 		public static async Task RandomReactCheck(SocketMessage msg)
 		{
-			if (!SharedConstants.NoAutoReactsChannel.Contains(msg.Channel.Id))
+			if (msg.Content.ToLower() == "!rank") Console.WriteLine("Rolling for rank...");
+			if (msg.Content.ToLower() == "!rank" && Utils.PercentileCheck(1))
 			{
-				if (msg.Content.ToLower() == "!rank") Console.WriteLine("Rolling for rank...");
-				if (msg.Content.ToLower() == "!rank" && Utils.PercentileCheck(1))
+				await msg.Channel.SendMessageAsync(SharedConstants.RankNerdResponses.GetRandom());
+				return;
+			}
+			if (Utils.PercentileCheck(1) & Utils.PercentileCheck(40))
+			{
+				if (Utils.PercentileCheck(1))
 				{
-					await msg.Channel.SendMessageAsync(SharedConstants.RankNerdResponses.GetRandom());
-					return;
+					await msg.AddReactionAsync(Emote.Parse(SharedConstants.GwalmsID));
 				}
-				if (Utils.PercentileCheck(1) & Utils.PercentileCheck(40))
+				else
 				{
-					if (Utils.PercentileCheck(1))
-					{
-						await msg.AddReactionAsync(Emote.Parse(SharedConstants.GwalmsID));
-					}
-					else
-					{
-						await msg.AddReactionAsync(Emote.Parse(SharedConstants.ReactableEmotes.GetRandom()));
-					}
+					await msg.AddReactionAsync(Emote.Parse(SharedConstants.ReactableEmotes.GetRandom()));
 				}
 			}
 		}
