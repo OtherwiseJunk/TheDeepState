@@ -2,6 +2,8 @@
 using DeepState.Data.Context;
 using System;
 using DeepState.Data.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DeepState.Data.Services
 {
@@ -14,15 +16,13 @@ namespace DeepState.Data.Services
 		{
 			_contextFactory = contextFactory;
 		}
-
 		public bool UserRecordExists(ulong userId, ulong guildId)
 		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
-				return context.UserRecords.FirstOrDefaultAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId).Result != null;
+				return context.UserRecords.AsQueryable().FirstOrDefaultAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId).Result != null;
 			}				
 		}
-
 		public void IssuePayout(ulong userId, ulong guildId)
 		{
 			double payoutAmount = RollPayout();
@@ -30,7 +30,7 @@ namespace DeepState.Data.Services
 			{
 				if (UserRecordExists(userId, guildId))
 				{
-					context.UserRecords.FirstAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId)
+					context.UserRecords.AsQueryable().FirstAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId)
 						.Result.LibcraftCoinBalance += payoutAmount;
 				}
 				else
@@ -51,16 +51,22 @@ namespace DeepState.Data.Services
 		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
-				return context.UserRecords.FirstAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId)
+				return context.UserRecords.AsQueryable().FirstAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId)
 					.Result.LibcraftCoinBalance;
 			}
 		}
-
 		public double RollPayout()
 		{
 			Random rand = new Random(Guid.NewGuid().GetHashCode());
 			double roll = (rand.NextDouble() + 0.01) * LARGEST_PAYOUT;
 			return roll >= SMALLEST_PAYOUT ? roll : SMALLEST_PAYOUT;
 		}
+		public List<UserRecord> GetGuildTopTenBalances(ulong guildId)
+		{
+			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
+			{
+				return context.UserRecords.AsQueryable().Where(ur => ur.DiscordGuildId == guildId).OrderByDescending(ur => ur.LibcraftCoinBalance).Take(10).ToList();
+			}
+		} 
 	}
 }

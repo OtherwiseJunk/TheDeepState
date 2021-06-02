@@ -1,8 +1,8 @@
-﻿using DeepState.Data.Services;
+﻿using DeepState.Data.Models;
+using DeepState.Data.Services;
+using Discord;
 using Discord.Commands;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DeepState.Modules
@@ -29,6 +29,23 @@ namespace DeepState.Modules
 			{
 				_ = Context.Channel.SendMessageAsync("Sorry, it looks like you don't have a balance yet! It'll happen eventually I'm sure.");
 			}
+		}
+
+		[Command("leaderboard"), Alias("top10")]
+		[Summary("Returns the top 10 LibCoin balances for this guild.")]
+		public async Task GetGuildLibcoinLeaderboard()
+		{
+			EmbedBuilder embedBuilder = new EmbedBuilder();
+			List<UserRecord> topBalances = _UserRecordsService.GetGuildTopTenBalances(Context.Guild.Id);
+			embedBuilder.Title = $"Top {topBalances.Count} LibCoin Balances";
+			int place = 1;
+			foreach (UserRecord record in topBalances)
+			{
+				IGuildUser user = Context.Guild.GetUserAsync(record.DiscordUserId).Result;
+				string username = user.Nickname ?? user.Username;
+				embedBuilder.AddField($"{place}. {username}", $"{record.LibcraftCoinBalance.ToString("F8")}");
+			}
+			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
 		}
 	}
 }
