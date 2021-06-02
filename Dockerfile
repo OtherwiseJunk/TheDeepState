@@ -2,15 +2,17 @@
 
 ARG TOKEN
 
-FROM mcr.microsoft.com/dotnet/core/runtime:3.1-buster-slim AS base
+FROM mcr.microsoft.com/dotnet/runtime:5.0 AS base
 ARG TOKEN
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1-buster AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 ARG TOKEN
 WORKDIR /src/
 COPY ["DeepState/DeepState.csproj", "./"]
 RUN dotnet restore "DeepState.csproj"
+COPY ["DeepState.Data/DeepState.Data.csproj", "./"]
+RUN dotnet restore "DeepState.Data.csproj"
 COPY . .
 WORKDIR "/src/"
 RUN dotnet build "TheDeepState.sln" -c Release -o /app/build
