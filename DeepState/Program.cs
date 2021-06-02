@@ -126,11 +126,12 @@ namespace DeepState
 				return;
 			}
 
+			new Thread(async () => { await LibcraftCoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
+
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
 			{
 				new Thread(() => { OnMessageHandlers.EgoCheck(messageParam, Utils.IsMentioningMe(messageParam, _client.CurrentUser)); }).Start();
-				new Thread(async () => { await OnMessageHandlers.RandomReactCheck(messageParam); }).Start();
-				new Thread(async () => { await LibcraftCoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
+				new Thread(async () => { await OnMessageHandlers.RandomReactCheck(messageParam); }).Start();				
 				new Thread(() => { OnMessageHandlers.Imposter(messageParam, Utils.IsSus(messageParam)); }).Start();
 			}
 		}
