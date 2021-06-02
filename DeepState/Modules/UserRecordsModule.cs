@@ -62,11 +62,11 @@ namespace DeepState.Modules
 			IGuildUser richestUser = Context.Guild.GetUserAsync(stats.RichestUser).Result;
 
 			embedBuilder.AddField("Total LibCoin Circulation", stats.TotalCirculation.ToString("F8"));
-			embedBuilder.AddField("Mean LibCoin Balance", stats.MeanBalance);
-			embedBuilder.AddField("Median LibCoin Balance", stats.MedianBalance);
-			embedBuilder.AddField("Richest User", poorestUser.Nickname ?? poorestUser.Username);
-			embedBuilder.AddField("Poorest User", richestUser.Nickname ?? richestUser.Username);
-			embedBuilder.AddField("GINI Coefficient", stats.GiniCoefficient);
+			embedBuilder.AddField("Mean LibCoin Balance", stats.MeanBalance.ToString("F8"));
+			embedBuilder.AddField("Median LibCoin Balance", stats.MedianBalance.ToString("F8"));
+			embedBuilder.AddField("Richest User", richestUser.Nickname ?? richestUser.Username);
+			embedBuilder.AddField("Poorest User", poorestUser.Nickname ?? poorestUser.Username);
+			embedBuilder.AddField("GINI Coefficient", stats.GiniCoefficient.ToString("0.###"));
 
 			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
 		}
