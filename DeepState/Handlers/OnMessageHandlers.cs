@@ -19,6 +19,13 @@ namespace DeepState.Handlers
 				_ = msg.AddReactionAsync(Emote.Parse(SharedConstants.RomneyLeftEyeID));
 			}
 		}
+		public static void Imposter(SocketMessage msg, bool isSus)
+		{
+			if(isSus)
+			{
+				_ = msg.AddReactionAsync(Emote.Parse(SharedConstants.SusID));
+			}
+		}
 		public static async Task RandomReactCheck(SocketMessage msg)
 		{
 			if (!SharedConstants.NoAutoReactsChannel.Contains(msg.Channel.Id))

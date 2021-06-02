@@ -38,5 +38,14 @@ namespace DeepState.Utilities
 		{
 			return new Random(Guid.NewGuid().GetHashCode());
 		}
+		
+		public static bool IsSus(SocketMessage message)
+		{
+			if (Regex.IsMatch(message.Content, SharedConstants.SusRegex, RegexOptions.IgnoreCase))
+			{
+				return true;
+			}
+			return false;
+		}
 	}
 }

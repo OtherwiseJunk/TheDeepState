@@ -20,6 +20,7 @@ namespace DeepState.Constants
 		public static string QIID = "<:QI:824733109240332308>";
 		public static string RomneyRightEyeID = "<:romneyrighteye:809203888858464307>";
 		public static string RomneyLeftEyeID = "<:romneylefteye:809203904071598180>";
+		public static string SusID = "<:sus:811454356914044968>";
 		#endregion
 
 		#region Channel Ids
@@ -91,6 +92,7 @@ namespace DeepState.Constants
 
 		#region Strings
 		public static string KlaxonResponse = "https://www.youtube.com/watch?v=xU5mOT57ghM";
+		public static string SusRegex = ".*[(sus)(amo.*gus)].*";
 		#endregion
 
 		#region String Formats
