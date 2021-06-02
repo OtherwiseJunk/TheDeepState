@@ -44,6 +44,7 @@ namespace DeepState.Modules
 				IGuildUser user = Context.Guild.GetUserAsync(record.DiscordUserId).Result;
 				string username = user.Nickname ?? user.Username;
 				embedBuilder.AddField($"{place}. {username}", $"{record.LibcraftCoinBalance.ToString("F8")}");
+				place++;
 			}
 			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
 		}
