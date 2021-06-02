@@ -7,6 +7,7 @@ namespace DeepState.Tests
 	{
 		[Test]
 		[TestCase("sus", true)]
+		[TestCase("sssssssuuuuuuuuuuuuuuuuuuuuussssssss", true)]
 		[TestCase("sus.", true)]
 		[TestCase("sussy", true)]
 		[TestCase("suspect", false)]
