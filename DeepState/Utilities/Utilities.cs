@@ -41,7 +41,7 @@ namespace DeepState.Utilities
 		
 		public static bool IsSus(SocketMessage message)
 		{
-			if (Regex.IsMatch(discordMessage.Content, SharedConstants.SusRegex, RegexOptions.IgnoreCase))
+			if (Regex.IsMatch(message.Content, SharedConstants.SusRegex, RegexOptions.IgnoreCase))
 			{
 				return true;
 			}
