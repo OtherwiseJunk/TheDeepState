@@ -129,6 +129,7 @@ namespace DeepState
 			new Thread(() => { OnMessageHandlers.EgoCheck(messageParam, Utils.IsMentioningMe(messageParam, _client.CurrentUser)); }).Start();
 			new Thread(async () => { await OnMessageHandlers.RandomReactCheck(messageParam); }).Start();
 			new Thread(async () => { await LibcraftCoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
+			new Thread(() => { OnMessageHandlers.Imposter(messageParam, Utils.IsSus(messageParam)); }).Start();
 		}
 		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
 		{
