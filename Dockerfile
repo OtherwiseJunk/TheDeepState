@@ -11,6 +11,8 @@ ARG TOKEN
 WORKDIR /src/
 COPY ["DeepState/DeepState.csproj", "./"]
 RUN dotnet restore "DeepState.csproj"
+COPY ["DeepState.Data/DeepState.Data.csproj", "./"]
+RUN dotnet restore "DeepState.Data.csproj"
 COPY . .
 WORKDIR "/src/"
 RUN dotnet build "TheDeepState.sln" -c Release -o /app/build

@@ -1,5 +1,3 @@
-using Discord.WebSocket;
-using Moq;
 using NUnit.Framework;
 using Utils = DeepState.Utilities.Utilities;
 
