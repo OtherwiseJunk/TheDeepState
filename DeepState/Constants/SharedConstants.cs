@@ -92,7 +92,7 @@ namespace DeepState.Constants
 
 		#region Strings
 		public static string KlaxonResponse = "https://www.youtube.com/watch?v=xU5mOT57ghM";
-		public static string SusRegex = ".*[(sus)(amo.*gus)].*";
+		public static string SusRegex = "(sus[^\w]|amogus|among us)";
 		#endregion
 
 		#region String Formats
