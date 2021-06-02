@@ -13,17 +13,23 @@ namespace DeepState.Handlers
 	{
 		public static void EgoCheck(SocketMessage msg, bool isMentioningMe)
 		{
-			if (isMentioningMe)
+			if (!SharedConstants.NoAutoReactsChannel.Contains(msg.Channel.Id))
 			{
-				_ = msg.AddReactionAsync(Emote.Parse(SharedConstants.RomneyRightEyeID));
-				_ = msg.AddReactionAsync(Emote.Parse(SharedConstants.RomneyLeftEyeID));
+				if (isMentioningMe)
+				{
+					_ = msg.AddReactionAsync(Emote.Parse(SharedConstants.RomneyRightEyeID));
+					_ = msg.AddReactionAsync(Emote.Parse(SharedConstants.RomneyLeftEyeID));
+				}
 			}
 		}
 		public static void Imposter(SocketMessage msg, bool isSus)
 		{
-			if(isSus)
+			if (!SharedConstants.NoAutoReactsChannel.Contains(msg.Channel.Id))
 			{
-				_ = msg.AddReactionAsync(Emote.Parse(SharedConstants.SusID));
+				if(isSus)
+				{
+					_ = msg.AddReactionAsync(Emote.Parse(SharedConstants.SusID));
+				}
 			}
 		}
 		public static async Task RandomReactCheck(SocketMessage msg)
