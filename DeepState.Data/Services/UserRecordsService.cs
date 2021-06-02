@@ -4,6 +4,7 @@ using System;
 using DeepState.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
+using MathNet.Numerics.Statistics;
 
 namespace DeepState.Data.Services
 {
@@ -21,7 +22,7 @@ namespace DeepState.Data.Services
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
 				return context.UserRecords.AsQueryable().FirstOrDefaultAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId).Result != null;
-			}				
+			}
 		}
 		public void IssuePayout(ulong userId, ulong guildId)
 		{
@@ -45,7 +46,7 @@ namespace DeepState.Data.Services
 				}
 
 				context.SaveChanges();
-			}				
+			}
 		}
 		public double GetUserBalance(ulong userId, ulong guildId)
 		{
@@ -65,8 +66,63 @@ namespace DeepState.Data.Services
 		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
-				return context.UserRecords.AsQueryable().Where(ur => ur.DiscordGuildId == guildId).OrderByDescending(ur => ur.LibcraftCoinBalance).Take(10).ToList();
+				return GetGuildUserRecords(guildId).OrderByDescending(ur => ur.LibcraftCoinBalance).Take(10).ToList();
 			}
-		} 
+		}
+
+		private List<UserRecord> GetGuildUserRecords(ulong guildId){
+			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
+			{
+				return context.UserRecords.AsQueryable().Where(ur => ur.DiscordGuildId == guildId).ToList();
+			}
+		}
+
+		public LibcoinEconomicStatistics CalculateEconomicStats(ulong guildId)
+		{
+			List<UserRecord> guildRecords = GetGuildUserRecords(guildId);
+			double totalCirculation = CalculateTotalCirculation(guildRecords);
+			double meanBalance = guildRecords.Average(ur => ur.LibcraftCoinBalance);
+			double medianBalance = guildRecords.Select(ur => ur.LibcraftCoinBalance).Median();
+			ulong poorestUser = guildRecords.OrderBy(ur => ur.LibcraftCoinBalance).First().DiscordUserId;
+			ulong richestUser = guildRecords.OrderByDescending(ur => ur.LibcraftCoinBalance).First().DiscordUserId;
+			double giniCoeffiecient = CalculateGiniCoefficient(guildRecords.Select(ur => ur.LibcraftCoinBalance).ToList());
+
+			return new LibcoinEconomicStatistics
+			{
+				TotalCirculation = totalCirculation,
+				MeanBalance = meanBalance,
+				MedianBalance = medianBalance,
+				PoorestUser = poorestUser,
+				RichestUser = richestUser,
+				GiniCoefficient = giniCoeffiecient
+			};
+		}
+
+		private double CalculateGiniCoefficient(List<double> balances)
+		{
+			double height = 0;
+			double area = 0;
+			double fair_area = 0;
+
+			foreach (double balance in balances)
+			{
+				height += balance;
+				area += height - (balance / 2);
+			}
+
+			fair_area = height * (balances.Count / 2);
+			return (fair_area - area) / fair_area;
+
+		}
+
+		public double CalculateTotalCirculation(List<UserRecord> economy)
+		{
+			double Circulation = 0.0;
+			foreach (UserRecord userBalance in economy)
+			{
+				Circulation += userBalance.LibcraftCoinBalance;
+			}
+			return Circulation;
+		}
 	}
 }

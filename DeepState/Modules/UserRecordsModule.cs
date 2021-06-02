@@ -48,5 +48,27 @@ namespace DeepState.Modules
 			}
 			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
 		}
+
+		[RequireOwner(Group = "AllowedUsers")]
+		[RequireUserPermission(ChannelPermission.ManageMessages, Group = "AllowedUsers")]
+		[Command("stats")]
+		[Summary("Returns economic stats for the guild")]
+		public async Task GetGuildEconomicStats()
+		{
+			EmbedBuilder embedBuilder = new EmbedBuilder();
+			embedBuilder.Title = $"{Context.Guild.Name}'s Economic Statistics";
+			LibcoinEconomicStatistics stats = _UserRecordsService.CalculateEconomicStats(Context.Guild.Id);
+			IGuildUser poorestUser = Context.Guild.GetUserAsync(stats.PoorestUser).Result;
+			IGuildUser richestUser = Context.Guild.GetUserAsync(stats.RichestUser).Result;
+
+			embedBuilder.AddField("Total LibCoin Circulation", stats.TotalCirculation.ToString("F8"));
+			embedBuilder.AddField("Mean LibCoin Balance", stats.MeanBalance);
+			embedBuilder.AddField("Median LibCoin Balance", stats.MedianBalance);
+			embedBuilder.AddField("Richest User", poorestUser.Nickname ?? poorestUser.Username);
+			embedBuilder.AddField("Poorest User", richestUser.Nickname ?? richestUser.Username);
+			embedBuilder.AddField("GINI Coefficient", stats.GiniCoefficient);
+
+			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
+		}
 	}
 }
