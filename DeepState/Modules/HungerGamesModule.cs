@@ -2,6 +2,7 @@
 using DeepState.Data.Services;
 using DeepState.Modules.Preconditions;
 using Discord.Commands;
+using System;
 using System.Threading.Tasks;
 
 namespace DeepState.Modules
@@ -28,7 +29,7 @@ namespace DeepState.Modules
 			else
 			{
 				_service.RegisterTribute(Context.Guild.Id, Context.User.Id);
-				await Context.Channel.SendMessageAsync($"Gosh you're brave. Ok! I've registered you as a Tribute in this month's Hunger Games, and deducted {HungerGameConstants.CostOfAdmission} libcoins from your account. Good luck!");
+				await Context.Channel.SendMessageAsync($"Gosh you're brave. Ok! I've registered you as a Tribute in this month's ⛈️ **T H U N D E R D O M E** ⛈️, and deducted {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoins from your account. Good luck! {Environment.NewLine} https://media1.tenor.com/images/f9da8dd0e06d31730afb9ad12abed53c/tenor.gif?itemid=17203535");
 			}
 		}
 	}
