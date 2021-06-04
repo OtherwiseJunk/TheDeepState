@@ -76,6 +76,8 @@ namespace DeepState
 			oocContext.Database.EnsureCreated();
 			var userRecordContext = _services.GetService<GuildUserRecordContext>();
 			userRecordContext.Database.EnsureCreated();
+			var hungerGamesContext = _services.GetService<HungerGamesContext>();
+			hungerGamesContext.Database.EnsureCreated();
 		}
 		private static IServiceProvider ConfigureServices()
 		{
@@ -87,11 +89,14 @@ namespace DeepState
 				.AddSingleton<IMessageReliabilityService, MessageReliabilityService>()
 				.AddSingleton<ImagingService>()
 				.AddSingleton<OutOfContextService>()
+				.AddSingleton<HungerGamesService>()
 				.AddSingleton<UserRecordsService>()
 				.AddDbContext<OOCDBContext>()
 				.AddDbContext<GuildUserRecordContext>()
+				.AddDbContext<HungerGamesContext>()
 				.AddDbContextFactory<OOCDBContext>()
-				.AddDbContextFactory<GuildUserRecordContext>();
+				.AddDbContextFactory<GuildUserRecordContext>()
+				.AddDbContextFactory<HungerGamesContext>();
 
 			return map.BuildServiceProvider();
 		}
@@ -109,6 +114,7 @@ namespace DeepState
 			await _commands.AddModuleAsync<ChatModule>(_services);
 			await _commands.AddModuleAsync<OutOfContextModule>(_services);
 			await _commands.AddModuleAsync<UserRecordsModule>(_services);
+			await _commands.AddModuleAsync<HungerGamesModule>(_services);
 
 
 			_client.MessageReceived += OnMessage;

@@ -48,12 +48,22 @@ namespace DeepState.Data.Services
 				context.SaveChanges();
 			}
 		}
+		public void DeductFromBalance(ulong userId, ulong guildId, double amountToDeduct)
+		{
+			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
+			{
+				UserRecord user = context.UserRecords.AsQueryable().FirstAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId).Result;
+				user.LibcraftCoinBalance -= amountToDeduct;
+
+				context.SaveChanges();
+			}
+		}
 		public double GetUserBalance(ulong userId, ulong guildId)
 		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
-				return context.UserRecords.AsQueryable().FirstAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId)
-					.Result.LibcraftCoinBalance;
+				UserRecord user = context.UserRecords.AsQueryable().FirstAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId).Result;
+				return user != null ? user.LibcraftCoinBalance : 0.0;
 			}
 		}
 		public double RollPayout()
@@ -114,8 +124,7 @@ namespace DeepState.Data.Services
 			return (fair_area - area) / fair_area;
 
 		}
-
-		public double CalculateTotalCirculation(List<UserRecord> economy)
+		private double CalculateTotalCirculation(List<UserRecord> economy)
 		{
 			double Circulation = 0.0;
 			foreach (UserRecord userBalance in economy)
