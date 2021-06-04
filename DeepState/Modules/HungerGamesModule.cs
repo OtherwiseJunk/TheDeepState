@@ -7,6 +7,7 @@ using Discord;
 using Discord.Commands;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DeepState.Modules
@@ -44,14 +45,26 @@ namespace DeepState.Modules
 		public void GetTributeList()
 		{
 			List<HungerGamesTributes> tributes = _service.GetTributeList(Context.Guild.Id);
+			
+			
+
 			if(tributes.Count == 0)
 			{
 				_ = Context.Channel.SendMessageAsync("This is a channel of COWARDS because no one has signed up as tribute for the games!");
 			}
 			else
 			{
-				MessageReference reference = Context.Message.Reference ?? new MessageReference(Context.Message.Id);
-				_ = _messenger.SendMessageToChannel(String.Join(',', tributes), Context.Channel, reference, new List<ulong>(Context.Message.MentionedUserIds), ",");
+				new Thread(() => {
+					List<string> tributeNames = new List<string>();
+					foreach (HungerGamesTributes tribute in tributes)
+					{
+						IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId).Result;
+						tributeNames.Add(user.Nickname ?? user.Username);
+					}
+
+					MessageReference reference = Context.Message.Reference ?? new MessageReference(Context.Message.Id);
+					_ = _messenger.SendMessageToChannel(String.Join(',', tributeNames), Context.Channel, reference, new List<ulong>(Context.Message.MentionedUserIds), ",");
+				}).Start();
 			}
 		}
 	}
