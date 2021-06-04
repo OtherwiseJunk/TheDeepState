@@ -1,8 +1,13 @@
 ﻿using DartsDiscordBots.Utilities;
 using DeepState.Constants;
+using DeepState.Data.Constants;
+using DeepState.Data.Models;
+using DeepState.Data.Services;
+using DeepState.Utilities;
 using Discord;
 using Discord.WebSocket;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -48,6 +53,61 @@ namespace DeepState.Handlers
 						await msg.RemoveReactionAsync(reaction.Key, currentUser);
 					}
 				}
+			}
+		}
+
+		public static async Task CheckForTributePages(SocketReaction reaction, ISocketMessageChannel channel, IMessage msg, SocketSelfUser currentUser, HungerGamesService service)
+		{
+			//We only allow page changes for the first five minutes of a message.
+			if((DateTime.Now - msg.Timestamp.DateTime).Minutes >= 5)
+			{
+				return;
+			}
+			//We only care about messages the bot has sent.
+			if(msg.Author != currentUser)
+			{
+				return;
+			}
+			//We only care about about messages with 1 embed.
+			if(msg.Embeds.Count != 1)
+			{
+				return;
+			}
+			//We don't care about reactions that the bot added 
+			if(reaction.User.Value == currentUser)
+			{
+				return;
+			}
+			//Finally, we only care about the embed with our specific title
+			IEmbed embed = msg.Embeds.First();
+			if(embed.Title != HungerGameConstants.HungerGameTributesEmbedTitle)
+			{
+				return;
+			}
+
+			int currentPage = Int32.Parse(embed.Footer.Value.Text);
+
+			if (reaction.Emote.Name == SharedConstants.LeftArrowEmoji)
+			{
+				//Only bother if we're not on the first page.
+				if (currentPage > 0)
+				{
+					_ = ((IUserMessage)msg).ModifyAsync(msg =>
+					  {
+						  IGuild guild = ((IGuildChannel)channel).Guild;
+						  List<HungerGamesTributes> tributes = service.GetTributeList(guild.Id, out currentPage, --currentPage);
+						  msg.Embed = HungerGameUtilities.BuildTributeEmbed(tributes, currentPage, guild);
+					  });
+				}
+			}
+			if (reaction.Emote.Name == SharedConstants.RightArrowEmoji)
+			{
+				_ = ((IUserMessage)msg).ModifyAsync(msg =>
+				{
+					IGuild guild = ((IGuildChannel)channel).Guild;
+					List<HungerGamesTributes> tributes = service.GetTributeList(guild.Id, out currentPage, ++currentPage);
+					msg.Embed = HungerGameUtilities.BuildTributeEmbed(tributes, currentPage, guild);
+				});
 			}
 		}
 	}

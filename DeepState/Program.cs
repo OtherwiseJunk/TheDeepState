@@ -157,6 +157,8 @@ namespace DeepState
 
 			//One of the voting reactions, :x:, can also be used to clear DeepState reacts, so we run this regardless.
 			new Thread(() => { _ = OnReactHandlers.ClearDeepStateReactionCheck(reactionEmote, channel, msg, _client.CurrentUser); }).Start();
+			//We only want to process Msg.Author.IsBot requests here actually, so we put this before too.
+			new Thread(() => { _ = OnReactHandlers.CheckForTributePages(reaction, channel, msg, _client.CurrentUser, (HungerGamesService) _services.GetService(typeof(HungerGamesService))); }).Start();
 
 			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name) || msg.Author.IsBot)
 			{

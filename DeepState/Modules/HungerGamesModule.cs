@@ -3,6 +3,7 @@ using DeepState.Data.Constants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
 using DeepState.Modules.Preconditions;
+using DeepState.Utilities;
 using Discord;
 using Discord.Commands;
 using System;
@@ -44,9 +45,8 @@ namespace DeepState.Modules
 		[Summary("Returns the list of registered tributes for this server.")]
 		public async Task GetTributeList()
 		{
-			List<HungerGamesTributes> tributes = _service.GetTributeList(Context.Guild.Id);
-			
-			
+			int currentPage;
+			List<HungerGamesTributes> tributes = _service.GetTributeList(Context.Guild.Id, out currentPage);
 
 			if(tributes.Count == 0)
 			{
@@ -55,16 +55,10 @@ namespace DeepState.Modules
 			else
 			{
 				new Thread(() => {
-					EmbedBuilder embed = new EmbedBuilder();
-					embed.Title = "⛈️ **T H U N D E R D O M E TRIBUTES** ⛈️";
-					foreach (HungerGamesTributes tribute in tributes)
-					{
-						IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId).Result;
-						embed.AddField(user.Nickname ?? user.Username, "Status: Alive");
-					}
-
-
-					Context.Channel.SendMessageAsync(embed: embed.Build());
+					Embed embed = HungerGameUtilities.BuildTributeEmbed(tributes, currentPage, Context.Guild); 
+					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
+					msg.AddReactionAsync(new Emoji("⬅️"));
+					msg.AddReactionAsync(new Emoji("➡️"));					
 				}).Start();
 			}
 		}
