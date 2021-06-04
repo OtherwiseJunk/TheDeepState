@@ -126,7 +126,7 @@ namespace DeepState
 				return;
 			}
 
-			new Thread(() => { _ = LibcraftCoinUtilities.LibcraftCoinMessageHandler(messageParam); });
+			new Thread(() => { _ = LibcraftCoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
 
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
 			{
