@@ -55,15 +55,16 @@ namespace DeepState.Modules
 			else
 			{
 				new Thread(() => {
-					List<string> tributeNames = new List<string>();
+					EmbedBuilder embed = new EmbedBuilder();
+					embed.Title = "⛈️ **T H U N D E R D O M E TRIBUTES** ⛈️";
 					foreach (HungerGamesTributes tribute in tributes)
 					{
 						IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId).Result;
-						tributeNames.Add(user.Nickname ?? user.Username);
+						embed.AddField(user.Nickname ?? user.Username, "");
 					}
 
-					MessageReference reference = Context.Message.Reference ?? new MessageReference(Context.Message.Id);
-					_ = _messenger.SendMessageToChannel(String.Join(',', tributeNames), Context.Channel, reference, new List<ulong>(Context.Message.MentionedUserIds), ",");
+
+					Context.Channel.SendMessageAsync(embed: embed.Build());
 				}).Start();
 			}
 		}
