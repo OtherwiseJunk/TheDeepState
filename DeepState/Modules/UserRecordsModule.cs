@@ -17,7 +17,7 @@ namespace DeepState.Modules
 
 		[Command("balance")]
 		[Summary("Lets the user check their libcoin balance.")]
-		public void Balance()
+		public async Task Balance()
 		{
 			ulong guildId = Context.Guild.Id;
 			ulong userId = Context.Message.Author.Id;
@@ -33,7 +33,7 @@ namespace DeepState.Modules
 
 		[Command("leaderboard"), Alias("top10")]
 		[Summary("Returns the top 10 LibCoin balances for this guild.")]
-		public void GetGuildLibcoinLeaderboard()
+		public async Task GetGuildLibcoinLeaderboard()
 		{
 			EmbedBuilder embedBuilder = new EmbedBuilder();
 			List<UserRecord> topBalances = _UserRecordsService.GetGuildTopTenBalances(Context.Guild.Id);
@@ -53,7 +53,7 @@ namespace DeepState.Modules
 		[RequireUserPermission(ChannelPermission.ManageMessages, Group = "AllowedUsers")]
 		[Command("stats")]
 		[Summary("Returns economic stats for the guild")]
-		public void GetGuildEconomicStats()
+		public async Task GetGuildEconomicStats()
 		{
 			EmbedBuilder embedBuilder = new EmbedBuilder();
 			embedBuilder.Title = $"{Context.Guild.Name}'s Economic Statistics";

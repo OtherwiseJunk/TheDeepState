@@ -118,20 +118,18 @@ namespace DeepState
 
 
 			_client.MessageReceived += OnMessage;
-			_client.MessageReceived += (async (SocketMessage messageParam) => { 
-				await OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix);
-			});
+			_client.MessageReceived += (async (SocketMessage messageParam) => { _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix); });
 		}
-		private Task OnMessage(SocketMessage messageParam)
+		private async Task OnMessage(SocketMessage messageParam)
 		{
 			//Don't process the command if it was a system message
 			var message = messageParam as SocketUserMessage;
-			if (message == null) Task.FromResult(false);
+			if (message == null) return;
 
 			if (message.Author.IsBot)
 			{
 				//We don't want to process messages from bots. Screw bots, all my homies hate bots.
-				return Task.FromResult(false);
+				return;
 			}
 
 			new Thread(() => { LibcraftCoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
@@ -143,9 +141,8 @@ namespace DeepState
 				new Thread(() => { OnMessageHandlers.Imposter(messageParam, Utils.IsSus(messageParam.Content)); }).Start();
 			}
 
-			return Task.FromResult(true);
 		}
-		private Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
+		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
 		{
 			IEmote reactionEmote;
 			IMessage msg = channel.GetMessageAsync(message.Id).Result;
@@ -163,14 +160,11 @@ namespace DeepState
 
 			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name) || msg.Author.IsBot)
 			{
-				return Task.FromResult(false);
+				return;
 			}
 
 			new Thread(() => { _ = OnReactHandlers.KlaxonCheck(reactionEmote, channel, msg); }).Start();
 			new Thread(() => { _ = OnReactHandlers.SelfReactCheck(reaction, channel, msg); }).Start();
-
-			return Task.FromResult(true);
-
 		}
 		
 	}

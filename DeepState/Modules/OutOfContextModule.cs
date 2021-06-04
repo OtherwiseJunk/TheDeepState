@@ -111,7 +111,7 @@ namespace DeepState.Modules
 
 		[Command("ooc"), Alias("libcraftmoment"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 }), RequireChannel(new ulong[] { 718986327642734654, 777400598789095445, 716841087137873920, 176357319687405569, 701194133074608198, 831675528431403039 })]
 		[Summary("Returns a random entry from the databse of base64 image strings.")]
-		public void RetrieveRandomOutOfContext()
+		public async Task RetrieveRandomOutOfContext()
 		{
 			new Thread(() => { SendRandomOOCItem(Context.Guild, Context.Channel); }).Start();			
 		}

@@ -14,7 +14,7 @@ namespace DeepState.Utilities
 	{
 		private static object DictionaryLock = new object();
 		private static Dictionary<ulong, List<ulong>> LCCListOfActiveUsersByGuild = new Dictionary<ulong, List<ulong>>();
-		public static void LibcraftCoinCheck(UserRecordsService service)
+		public static async Task LibcraftCoinCheck(UserRecordsService service)
 		{
 			Random rand = Utils.CreateSeededRandom();
 			int nextDuration = rand.Next(60000, 240000);
@@ -33,7 +33,7 @@ namespace DeepState.Utilities
 			Thread.Sleep(nextDuration);
 			new Thread(() => LibcraftCoinCheck(service)).Start();
 		}
-		public static void LibcraftCoinMessageHandler(SocketMessage msg)
+		public static async Task LibcraftCoinMessageHandler(SocketMessage msg)
 		{
 			ulong messageUserId = msg.Author.Id;
 			ulong messageGuildId = ((IGuildChannel)msg.Channel).GuildId;

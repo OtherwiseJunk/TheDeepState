@@ -42,7 +42,7 @@ namespace DeepState.Modules
 
 		[Command("tributes"), Alias("walkingcorpses")]
 		[Summary("Returns the list of registered tributes for this server.")]
-		public void GetTributeList()
+		public async Task GetTributeList()
 		{
 			List<HungerGamesTributes> tributes = _service.GetTributeList(Context.Guild.Id);
 			
