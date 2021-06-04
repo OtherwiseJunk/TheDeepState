@@ -60,7 +60,7 @@ namespace DeepState.Modules
 					foreach (HungerGamesTributes tribute in tributes)
 					{
 						IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId).Result;
-						embed.AddField(user.Nickname ?? user.Username, "");
+						embed.AddField(user.Nickname ?? user.Username, "Status: Alive");
 					}
 
 
