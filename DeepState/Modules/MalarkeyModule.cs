@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DeepState.Constants;
 using TraceLd.MineStatSharp;
+using DartsDiscordBots.Permissions;
 
 namespace DeepState.Modules
 {
@@ -33,7 +34,7 @@ namespace DeepState.Modules
 			await Context.Channel.SendMessageAsync(string.Join(Environment.NewLine, pollGameList));
 		}
 
-		[Command("mstatus"), Alias("minecraft", "minecraftstatus")]
+		[Command("mstatus"), Alias("minecraft", "minecraftstatus"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
 		[Summary("Returns a message with a status of Sporf's Minecraft server")]
 		public async Task MinecraftStatus()
 		{
@@ -59,6 +60,20 @@ namespace DeepState.Modules
 		public async Task TheWeekend()
 		{
 			await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/745024703365644320/840383340790939658/theweekend.mp4");
+		}
+
+		[Command("walkingdad"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
+		[Summary("Check in on the server's favorite dad!")]
+		public async Task WalkingDad()
+		{
+			IGuildUser theDad = Context.Guild.GetUserAsync(SharedConstants.TheDad).Result;
+			string name = theDad.Nickname ?? theDad.Username;
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.WithTitle($"Time to check in on {name}!");
+			embed.WithImageUrl(theDad.GetAvatarUrl());
+			embed.AddField($"{name}", "Status: Dad");
+
+			_ = Context.Channel.SendMessageAsync(embed: embed.Build());
 		}
 	}
 }

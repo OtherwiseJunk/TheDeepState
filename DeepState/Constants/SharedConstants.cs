@@ -39,6 +39,7 @@ namespace DeepState.Constants
 		#region User Ids
 		public static ulong ThePoliceUser = 151162710757867521;
 		public static ulong TheCheatingUser = 696443422130831370;
+		public static ulong TheDad = 622578719252283432;
 		#endregion
 
 		#endregion

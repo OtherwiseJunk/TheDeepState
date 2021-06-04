@@ -40,7 +40,7 @@ namespace DeepState.Modules
 			}
 		}
 
-		[Command("tributes"), Alias("walkingcorpses")]
+		[Command("tributes"), Alias("walkingcorpses", "walkingdead")]
 		[Summary("Returns the list of registered tributes for this server.")]
 		public async Task GetTributeList()
 		{
