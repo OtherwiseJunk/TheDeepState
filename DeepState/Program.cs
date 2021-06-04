@@ -66,7 +66,7 @@ namespace DeepState
 			await _client.LoginAsync(TokenType.Bot, token);
 			await _client.StartAsync();
 
-			new Thread(async () => _ = LibcraftCoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>())).Start();
+			new Thread(() => LibcraftCoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>())).Start();
 			// Block this task until the program is closed.
 			await Task.Delay(-1);
 		}
@@ -118,30 +118,34 @@ namespace DeepState
 
 
 			_client.MessageReceived += OnMessage;
-			_client.MessageReceived += (async (SocketMessage messageParam) => { _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix); });
+			_client.MessageReceived += (async (SocketMessage messageParam) => { 
+				await OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix);
+			});
 		}
-		private async Task OnMessage(SocketMessage messageParam)
+		private Task OnMessage(SocketMessage messageParam)
 		{
 			//Don't process the command if it was a system message
 			var message = messageParam as SocketUserMessage;
-			if (message == null) return;
+			if (message == null) Task.FromResult(false);
 
 			if (message.Author.IsBot)
 			{
 				//We don't want to process messages from bots. Screw bots, all my homies hate bots.
-				return;
+				return Task.FromResult(false);
 			}
 
-			new Thread(() => { _ = LibcraftCoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
+			new Thread(() => { LibcraftCoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
 
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
 			{
 				new Thread(() => { OnMessageHandlers.EgoCheck(messageParam, Utils.IsMentioningMe(messageParam, _client.CurrentUser)); }).Start();
-				new Thread(async () => { await OnMessageHandlers.RandomReactCheck(messageParam); }).Start();				
+				new Thread(() => { _ = OnMessageHandlers.RandomReactCheck(messageParam); }).Start();
 				new Thread(() => { OnMessageHandlers.Imposter(messageParam, Utils.IsSus(messageParam.Content)); }).Start();
 			}
+
+			return Task.FromResult(true);
 		}
-		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
+		private Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
 		{
 			IEmote reactionEmote;
 			IMessage msg = channel.GetMessageAsync(message.Id).Result;
@@ -155,15 +159,17 @@ namespace DeepState
 			}
 
 			//One of the voting reactions, :x:, can also be used to clear DeepState reacts, so we run this regardless.
-			new Thread(async () => { _ = OnReactHandlers.ClearDeepStateReactionCheck(reactionEmote, channel, msg, _client.CurrentUser); }).Start();
+			new Thread(() => { _ = OnReactHandlers.ClearDeepStateReactionCheck(reactionEmote, channel, msg, _client.CurrentUser); }).Start();
 
 			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name) || msg.Author.IsBot)
 			{
-				return;
+				return Task.FromResult(false);
 			}
 
-			new Thread(async () => { _ = OnReactHandlers.KlaxonCheck(reactionEmote, channel, msg); }).Start();
-			new Thread(async () => { _ = OnReactHandlers.SelfReactCheck(reaction, channel, msg); }).Start();
+			new Thread(() => { _ = OnReactHandlers.KlaxonCheck(reactionEmote, channel, msg); }).Start();
+			new Thread(() => { _ = OnReactHandlers.SelfReactCheck(reaction, channel, msg); }).Start();
+
+			return Task.FromResult(true);
 
 		}
 		
