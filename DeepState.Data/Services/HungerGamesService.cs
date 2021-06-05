@@ -18,7 +18,7 @@ namespace DeepState.Data.Services
 			_userRecordService = userRecordsService;
 		}
 
-		private bool PrizePoolExists(ulong guildId)
+		public bool PrizePoolExists(ulong guildId)
 		{
 			using(HungerGamesContext context = _contextFactory.CreateDbContext())
 			{
@@ -31,6 +31,13 @@ namespace DeepState.Data.Services
 			using (HungerGamesContext context = _contextFactory.CreateDbContext())
 			{
 				return context.Tributes.FirstOrDefault(t => t.DiscordGuildId == guildId && t.DiscordUserId == userId) != null;
+			}
+		}
+		public double GetPrizePool(ulong guildId)
+		{
+			using(HungerGamesContext context = _contextFactory.CreateDbContext())
+			{
+				return context.PrizePools.First(p => p.DiscordGuildId == guildId).PrizePool;
 			}
 		}
 		public void RegisterTribute(ulong guildId, ulong userId)

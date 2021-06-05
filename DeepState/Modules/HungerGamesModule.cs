@@ -70,8 +70,17 @@ namespace DeepState.Modules
 			}
 		}
 
+		[Command("pot")]
+		public async Task GetGuildPot()
+		{
+			if (_service.PrizePoolExists(Context.Guild.Id))
+			{
+				_ = Context.Channel.SendMessageAsync($"Looks like there's a grand total of {_service.GetPrizePool(Context.Guild.Id).ToString("F8")} on the line!");
+			}
+		}
+
 		[Command("roleup")]
-		[RequireOwner, RequireRoleName(HungerGameConstants.TributeRoleName)]
+		[RequireOwner]
 		public async Task AssignTributeRoles()
 		{
 			IRole tributeRole = Context.Guild.Roles.First(r => r.Name == HungerGameConstants.TributeRoleName);
@@ -79,7 +88,19 @@ namespace DeepState.Modules
 			foreach(HungerGamesTributes tribute in tributes)
 			{
 				IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId).Result;
-				_ = user.AddRoleAsync(tributeRole);
+				if (!user.RoleIds.Contains(tributeRole.Id))
+				{
+					var obj = user.AddRoleAsync(tributeRole);
+					while (!obj.IsCompleted) { }
+					if (obj.Exception != null)
+					{
+						Console.WriteLine($"Adding Tribute Role failed for {user.Username}. Exception: {obj.Exception.Message}");
+					}
+					else
+					{
+						Console.WriteLine($"Added Tribute Role to {user.Username}");
+					}
+				}
 			}
 		}
 	}
