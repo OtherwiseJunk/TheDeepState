@@ -11,6 +11,7 @@ namespace DeepState.Data.Services
 	{
 		IDbContextFactory<HungerGamesContext> _contextFactory { get; set; }
 		UserRecordsService _userRecordService { get; set; }
+		private int PageSize = 10;
 		public HungerGamesService(IDbContextFactory<HungerGamesContext> contextFactory, UserRecordsService userRecordsService)
 		{
 			_contextFactory = contextFactory;
@@ -63,30 +64,29 @@ namespace DeepState.Data.Services
 
 		public List<HungerGamesTributes> GetTributeList(ulong guildId, out int successfulPage, int page = 0)
 		{
-			int lastTribute = 9 + (10 * page);
-			int firstTribute = lastTribute - 9;
+			int firstTribute = 0 + (page * 10);
 
 			using (HungerGamesContext context = _contextFactory.CreateDbContext())
 			{
 				List<HungerGamesTributes> pageData;
-				int tributeCount = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).Count();
+				List<HungerGamesTributes> guildTributes = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList();
+				int tributeCount = guildTributes.Count();
 				try
 				{
-					if (tributeCount < lastTribute && tributeCount >= firstTribute)
+					if (tributeCount >= firstTribute && (tributeCount - firstTribute) < PageSize )
 					{
-						pageData = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList().GetRange(firstTribute, tributeCount);
+						pageData = guildTributes.GetRange(firstTribute, tributeCount - firstTribute);
 					}
 					else
 					{
-						pageData = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList().GetRange(firstTribute, lastTribute);
+						pageData = guildTributes.GetRange(firstTribute, PageSize);
 					}
 					
 				}
 				catch
 				{
-					lastTribute = 9 + (10 * --page);
-					firstTribute = lastTribute - 9;
-					pageData = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList().GetRange(firstTribute, lastTribute);
+					firstTribute = 0 + (--page * 10);
+					pageData = guildTributes.GetRange(firstTribute, PageSize);
 				}
 				successfulPage = page;
 				return pageData;
