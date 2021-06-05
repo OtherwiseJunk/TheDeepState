@@ -64,7 +64,7 @@ namespace DeepState.Handlers
 				return;
 			}
 			//We only care about messages the bot has sent.
-			if(msg.Author != currentUser)
+			if(msg.Author.Id != currentUser.Id)
 			{
 				return;
 			}
@@ -74,7 +74,7 @@ namespace DeepState.Handlers
 				return;
 			}
 			//We don't care about reactions that the bot added 
-			if(reaction.User.Value == currentUser)
+			if(reaction.User.Value.Id == currentUser.Id)
 			{
 				return;
 			}
