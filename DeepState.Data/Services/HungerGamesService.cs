@@ -69,9 +69,18 @@ namespace DeepState.Data.Services
 			using (HungerGamesContext context = _contextFactory.CreateDbContext())
 			{
 				List<HungerGamesTributes> pageData;
+				int tributeCount = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).Count();
 				try
 				{
-					pageData = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList().GetRange(firstTribute, lastTribute);
+					if (tributeCount < lastTribute && tributeCount >= firstTribute)
+					{
+						pageData = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList().GetRange(firstTribute, tributeCount);
+					}
+					else
+					{
+						pageData = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList().GetRange(firstTribute, lastTribute);
+					}
+					
 				}
 				catch
 				{
