@@ -95,7 +95,7 @@ namespace DeepState.Handlers
 					_ = ((IUserMessage)msg).ModifyAsync(msg =>
 					  {
 						  IGuild guild = ((IGuildChannel)channel).Guild;
-						  List<HungerGamesTributes> tributes = service.GetTributeList(guild.Id, out currentPage, --currentPage);
+						  List<HungerGamesTributes> tributes = service.GetPagedTributeList(guild.Id, out currentPage, --currentPage);
 						  msg.Embed = HungerGameUtilities.BuildTributeEmbed(tributes, currentPage, guild);
 					  });
 				}
@@ -106,7 +106,7 @@ namespace DeepState.Handlers
 				_ = ((IUserMessage)msg).ModifyAsync(msg =>
 				{
 					IGuild guild = ((IGuildChannel)channel).Guild;
-					List<HungerGamesTributes> tributes = service.GetTributeList(guild.Id, out currentPage, ++currentPage);
+					List<HungerGamesTributes> tributes = service.GetPagedTributeList(guild.Id, out currentPage, ++currentPage);
 					msg.Embed = HungerGameUtilities.BuildTributeEmbed(tributes, currentPage, guild);
 				});
 				_ = msg.RemoveReactionAsync(reaction.Emote, reaction.User.Value);

@@ -62,7 +62,7 @@ namespace DeepState.Data.Services
 			_userRecordService.DeductFromBalance(userId, guildId, HungerGameConstants.CostOfAdmission);
 		}
 
-		public List<HungerGamesTributes> GetTributeList(ulong guildId, out int successfulPage, int page = 0)
+		public List<HungerGamesTributes> GetPagedTributeList(ulong guildId, out int successfulPage, int page = 0)
 		{
 			int firstTribute = 0 + (page * 10);
 
@@ -73,7 +73,7 @@ namespace DeepState.Data.Services
 				int tributeCount = guildTributes.Count();
 				try
 				{
-					if (tributeCount >= firstTribute && (tributeCount - firstTribute) < PageSize )
+					if (tributeCount >= firstTribute && (tributeCount - firstTribute) < PageSize)
 					{
 						pageData = guildTributes.GetRange(firstTribute, tributeCount - firstTribute);
 					}
@@ -81,7 +81,7 @@ namespace DeepState.Data.Services
 					{
 						pageData = guildTributes.GetRange(firstTribute, PageSize);
 					}
-					
+
 				}
 				catch
 				{
@@ -90,6 +90,13 @@ namespace DeepState.Data.Services
 				}
 				successfulPage = page;
 				return pageData;
+			}
+		}
+		public List<HungerGamesTributes> GetTributeList(ulong guildId)
+		{
+			using (HungerGamesContext context = _contextFactory.CreateDbContext())
+			{
+				return context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList(); ;
 			}
 		}
 	}

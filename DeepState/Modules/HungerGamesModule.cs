@@ -1,4 +1,5 @@
-﻿using DartsDiscordBots.Services.Interfaces;
+﻿using DartsDiscordBots.Permissions;
+using DartsDiscordBots.Services.Interfaces;
 using DeepState.Data.Constants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
@@ -8,6 +9,7 @@ using Discord;
 using Discord.Commands;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -30,7 +32,8 @@ namespace DeepState.Modules
 		[RequireDayOfMonthRange(1,7)]
 		public async Task RegisterHungerGameTribute()
 		{
-			if(_service.TributeExists(Context.Guild.Id, Context.User.Id))
+			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name == HungerGameConstants.TributeRoleName);
+			if (_service.TributeExists(Context.Guild.Id, Context.User.Id))
 			{
 				await Context.Channel.SendMessageAsync("Sorry, you're already registered for this month's game!");
 			}
@@ -38,6 +41,10 @@ namespace DeepState.Modules
 			{
 				_service.RegisterTribute(Context.Guild.Id, Context.User.Id);
 				await Context.Channel.SendMessageAsync($"Gosh you're brave. Ok! I've registered you as a Tribute in this month's ⛈️ **T H U N D E R D O M E** ⛈️, and deducted {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoins from your account. Good luck! {Environment.NewLine} https://media1.tenor.com/images/f9da8dd0e06d31730afb9ad12abed53c/tenor.gif?itemid=17203535");
+				if(tributeRole != null)
+				{
+					_ = ((IGuildUser)Context.User).AddRoleAsync(tributeRole);
+				}
 			}
 		}
 
@@ -46,7 +53,7 @@ namespace DeepState.Modules
 		public async Task GetTributeList()
 		{
 			int currentPage;
-			List<HungerGamesTributes> tributes = _service.GetTributeList(Context.Guild.Id, out currentPage);
+			List<HungerGamesTributes> tributes = _service.GetPagedTributeList(Context.Guild.Id, out currentPage);
 
 			if(tributes.Count == 0)
 			{
@@ -60,6 +67,19 @@ namespace DeepState.Modules
 					msg.AddReactionAsync(new Emoji("⬅️"));
 					msg.AddReactionAsync(new Emoji("➡️"));					
 				}).Start();
+			}
+		}
+
+		[Command("roleup")]
+		[RequireOwner, RequireRoleName(HungerGameConstants.TributeRoleName)]
+		public async Task AssignTributeRoles()
+		{
+			IRole tributeRole = Context.Guild.Roles.First(r => r.Name == HungerGameConstants.TributeRoleName);
+			List<HungerGamesTributes> tributes = _service.GetTributeList(Context.Guild.Id);
+			foreach(HungerGamesTributes tribute in tributes)
+			{
+				IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId).Result;
+				_ = user.AddRoleAsync(tributeRole);
 			}
 		}
 	}
