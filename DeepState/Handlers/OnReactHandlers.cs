@@ -99,6 +99,7 @@ namespace DeepState.Handlers
 						  msg.Embed = HungerGameUtilities.BuildTributeEmbed(tributes, currentPage, guild);
 					  });
 				}
+				_ = msg.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
 			}
 			if (reaction.Emote.Name == SharedConstants.RightArrowEmoji)
 			{
@@ -108,6 +109,7 @@ namespace DeepState.Handlers
 					List<HungerGamesTributes> tributes = service.GetTributeList(guild.Id, out currentPage, ++currentPage);
 					msg.Embed = HungerGameUtilities.BuildTributeEmbed(tributes, currentPage, guild);
 				});
+				_ = msg.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
 			}
 		}
 	}
