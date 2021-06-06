@@ -55,7 +55,7 @@ namespace DeepState.Utilities
 
 			List<ConfiguredPronouns> pronounsToApply = new List<ConfiguredPronouns>();
 
-			List<ulong> guildPronounRoles = guild.Roles.Where(role => PronounLowercaseRoleNames.Contains(role.Name.ToLower())).Select(role => role.Id).ToList();
+			List<ulong> guildPronounRoles = guild.Roles.Where(role => role.Name.ToLower() == MasculinePronounRoleName || role.Name.ToLower() == FemininePronnounRoleName || role.Name.ToLower() == NongenderedPronounRolename).Select(role => role.Id).ToList();
 
 			List<ulong> pronounRoleIds = user.RoleIds.Where(roleId => guildPronounRoles.Contains(roleId)).ToList();
 

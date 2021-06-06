@@ -1,5 +1,6 @@
 ﻿using DartsDiscordBots.Permissions;
 using DartsDiscordBots.Services.Interfaces;
+using DeepState.Constants;
 using DeepState.Data.Constants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
@@ -140,6 +141,18 @@ namespace DeepState.Modules
 			string goreyDetails = HungerGameUtilities.GetCauseOfDeathDescription(victim, Context.Guild, tributes, pronounDict);
 			string obituary = HungerGameUtilities.GetObituary(pronounDict, victim);
 			_ = Context.Channel.SendMessageAsync(embed: HungerGameUtilities.BuildTributeDeathEmbed(victim, goreyDetails, obituary, rand.Next(1, 12)));
+		}
+
+		[Command("test")]
+		[RequireOwner()]
+		public async Task testpronouns()
+		{
+			IRole masculineRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == SharedConstants.MasculinePronounRoleName);
+			IRole feminineRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == SharedConstants.FemininePronnounRoleName);
+			IRole nongenderedRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == SharedConstants.NongenderedPronounRolename);
+			string roleNotFound = "Role Not Found";
+
+			Context.Channel.SendMessageAsync($"Masculine Role: {masculineRole.Name ?? roleNotFound}{Environment.NewLine}Feminine Role: {feminineRole.Name ?? roleNotFound}{Environment.NewLine}Nongendered Role: {nongenderedRole.Name ?? roleNotFound}");
 		}
 	}
 }
