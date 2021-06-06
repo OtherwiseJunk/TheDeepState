@@ -108,6 +108,28 @@ namespace DeepState.Data.Services
 			};
 		}
 
+		public void Grant(ulong userId, ulong guildId, double amount)
+		{
+			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
+			{
+				UserRecord user = context.UserRecords.FirstOrDefault(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId);
+				if (user != null)
+				{
+					user.LibcraftCoinBalance += amount;
+					context.SaveChanges();
+					return;
+				}
+
+				context.UserRecords.Add(new UserRecord
+				{
+					DiscordGuildId = guildId,
+					DiscordUserId = userId,
+					LibcraftCoinBalance = amount
+				});
+				context.SaveChanges();
+			}
+		}
+
 		private double CalculateGiniCoefficient(List<double> balances)
 		{
 			double height = 0;
