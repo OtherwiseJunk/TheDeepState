@@ -95,10 +95,13 @@ namespace DeepState.Modules
 			if (user != null)
 			{
 				if (_UserRecordsService.Deduct(user.Id, Context.Guild.Id, amount)) {
-					_ = Context.Channel.SendMessageAsync($"Ok, I've given {user.Nickname ?? user.Username} {amount.ToString("F8")} libcoin.");
+					_ = Context.Channel.SendMessageAsync($"Ok, I've taken  {amount.ToString("F8")} libcoin from {user.Nickname ?? user.Username}. If they didn't have that much they have nothing now.");
+				}
+				else
+				{
+					_ = Context.Channel.SendMessageAsync($"They don't have any money, I can't make them poorer than that.");
 				}
 			}
-			_ = Context.Channel.SendMessageAsync($"They don't have any money, I can't make them poorer than that.");
 		}
 	}
 }
