@@ -31,11 +31,11 @@ namespace DeepState.Modules
 
 		[Command("register"), Alias("reg")]
 		[RequireLibcoinBalance(HungerGameConstants.CostOfAdmission)]
-		[RequireRoleName("Tribute"),RequireRoleName("")]
+		[RequireRoleName(HungerGameConstants.TributeRoleName)]
 		[RequireDayOfMonthRange(1, 7)]
 		public async Task RegisterHungerGameTribute()
 		{
-			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name == HungerGameConstants.TributeRoleName);
+			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName);
 			if (_service.TributeExists(Context.Guild.Id, Context.User.Id))
 			{
 				await Context.Channel.SendMessageAsync("Sorry, you're already registered for this month's game!");
