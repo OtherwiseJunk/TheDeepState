@@ -78,11 +78,27 @@ namespace DeepState.Modules
 		public async Task GrantLibcoin(ulong discordUserID, double amount)
 		{
 			IGuildUser user = Context.Guild.GetUserAsync(discordUserID).Result;
-			if(user != null)
+			if (user != null)
 			{
 				_UserRecordsService.Grant(user.Id, Context.Guild.Id, amount);
 				_ = Context.Channel.SendMessageAsync($"Ok, I've given {user.Nickname ?? user.Username} {amount.ToString("F8")} libcoin.");
 			}
+		}
+
+		[RequireOwner(Group = "AdminsOnly")]
+		[RequireUserPermission(ChannelPermission.ManageMessages, Group = "AdminsOnly")]
+		[Command("deduct")]
+		[Summary("Incinerates the specified amount of libcoin from the specified user ID. Overages will result in a balance of 0 currently.")]
+		public async Task DeductLibcoin(ulong discordUserID, double amount)
+		{
+			IGuildUser user = Context.Guild.GetUserAsync(discordUserID).Result;
+			if (user != null)
+			{
+				if (_UserRecordsService.Deduct(user.Id, Context.Guild.Id, amount)) {
+					_ = Context.Channel.SendMessageAsync($"Ok, I've given {user.Nickname ?? user.Username} {amount.ToString("F8")} libcoin.");
+				}
+			}
+			_ = Context.Channel.SendMessageAsync($"They don't have any money, I can't make them poorer than that.");
 		}
 	}
 }

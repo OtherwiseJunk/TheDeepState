@@ -130,6 +130,29 @@ namespace DeepState.Data.Services
 			}
 		}
 
+		public bool Deduct(ulong userId, ulong guildId, double amount)
+		{
+			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
+			{
+				UserRecord user = context.UserRecords.FirstOrDefault(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId);
+				if (user != null)
+				{
+					if(user.LibcraftCoinBalance >= amount)
+					{
+						user.LibcraftCoinBalance -= amount;
+					}
+					else
+					{
+						user.LibcraftCoinBalance = 0;
+					}
+					context.SaveChanges();
+					return true;
+				}
+
+				return false;
+			}
+		}
+
 		private double CalculateGiniCoefficient(List<double> balances)
 		{
 			double height = 0;
