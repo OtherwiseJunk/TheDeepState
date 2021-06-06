@@ -55,22 +55,24 @@ namespace DeepState.Utilities
 
 			List<ConfiguredPronouns> pronounsToApply = new List<ConfiguredPronouns>();
 
-			List<ulong> pronounRoleIds = user.RoleIds.Where(roleId => SharedConstants.PronounRoleIds.Contains(roleId)).ToList();
+			List<ulong> guildPronounRoles = guild.Roles.Where(role => PronounLowercaseRoleNames.Contains(role.Name.ToLower())).Select(role => role.Id).ToList();
+
+			List<ulong> pronounRoleIds = user.RoleIds.Where(roleId => guildPronounRoles.Contains(roleId)).ToList();
 
 			if (pronounRoleIds.Count > 0)
 			{
 				foreach (ulong roleId in pronounRoleIds)
 				{
 					string roleName = guild.GetRole(roleId).Name.ToLower();
-					if (roleName.Contains("he/him"))
+					if (roleName.Contains(MasculinePronounRoleName))
 					{
 						pronounsToApply.Add(ConfiguredPronouns.Masculine);
 					}
-					else if (roleName.Contains("she/her"))
+					else if (roleName.Contains(FemininePronnounRoleName))
 					{
 						pronounsToApply.Add(ConfiguredPronouns.Feminine);
 					}
-					else if (roleName.Contains("they/them"))
+					else if (roleName.Contains(NongenderedPronounRolename))
 					{
 						pronounsToApply.Add(ConfiguredPronouns.Nongendered);
 					}

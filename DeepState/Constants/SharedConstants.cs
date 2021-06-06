@@ -43,13 +43,10 @@ namespace DeepState.Constants
 		#endregion
 
 		#region Role ID Lists
-		public static List<ulong> PronounRoleIds = new List<ulong> {
-			//he/him
-			709621178511261696,
-			//she/her
-			709621198706835456,
-			//they/them
-			709621152221364298
+		public static List<string> PronounLowercaseRoleNames = new List<string> {
+			MasculinePronounRoleName,
+			FemininePronnounRoleName,
+			NongenderedPronounRolename
 		};
 		#endregion
 
@@ -122,6 +119,9 @@ namespace DeepState.Constants
 		public static string ReflexiveNonGenderedPronoun = "they";
 		public static string ReflexiveFemininePronoun = "she";
 		public static string ReflexiveMasculinePronoun = "he";
+		public static string MasculinePronounRoleName = @"he/him";
+		public static string FemininePronnounRoleName = @"she/her";
+		public static string NongenderedPronounRolename = @"they/them";
 		#endregion
 
 		#region String Formats
