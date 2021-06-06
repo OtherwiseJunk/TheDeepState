@@ -3,14 +3,16 @@ using DeepState.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DeepState.Data.Migrations.HungerGames
 {
     [DbContext(typeof(HungerGamesContext))]
-    partial class HungerGamesContextModelSnapshot : ModelSnapshot
+    [Migration("20210605052615_AddServerConfiguration")]
+    partial class AddServerConfiguration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

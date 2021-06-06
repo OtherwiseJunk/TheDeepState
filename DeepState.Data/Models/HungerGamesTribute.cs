@@ -2,7 +2,7 @@
 
 namespace DeepState.Data.Models
 {
-	public class HungerGamesTributes
+	public class HungerGamesTribute
 	{
 		[Key]
 		public int TributeId { get; set; }

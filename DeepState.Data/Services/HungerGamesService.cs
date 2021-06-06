@@ -2,6 +2,7 @@
 using DeepState.Data.Context;
 using DeepState.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -57,7 +58,7 @@ namespace DeepState.Data.Services
 						PrizePool = HungerGameConstants.CostOfAdmission
 					});
 				}
-				context.Tributes.Add(new HungerGamesTributes
+				context.Tributes.Add(new HungerGamesTribute
 				{
 					DiscordGuildId = guildId,
 					DiscordUserId = userId
@@ -69,14 +70,14 @@ namespace DeepState.Data.Services
 			_userRecordService.DeductFromBalance(userId, guildId, HungerGameConstants.CostOfAdmission);
 		}
 
-		public List<HungerGamesTributes> GetPagedTributeList(ulong guildId, out int successfulPage, int page = 0)
+		public List<HungerGamesTribute> GetPagedTributeList(ulong guildId, out int successfulPage, int page = 0)
 		{
 			int firstTribute = 0 + (page * 10);
 
 			using (HungerGamesContext context = _contextFactory.CreateDbContext())
 			{
-				List<HungerGamesTributes> pageData;
-				List<HungerGamesTributes> guildTributes = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList();
+				List<HungerGamesTribute> pageData;
+				List<HungerGamesTribute> guildTributes = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList();
 				int tributeCount = guildTributes.Count();
 				try
 				{
@@ -99,11 +100,49 @@ namespace DeepState.Data.Services
 				return pageData;
 			}
 		}
-		public List<HungerGamesTributes> GetTributeList(ulong guildId)
+		public List<HungerGamesTribute> GetTributeList(ulong guildId)
 		{
 			using (HungerGamesContext context = _contextFactory.CreateDbContext())
 			{
 				return context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList(); ;
+			}
+		}
+
+		public bool AnnouncementConfigurationExists(ulong guildId)
+		{
+			using (HungerGamesContext context = _contextFactory.CreateDbContext())
+			{
+				return context.GuildConfigurations.FirstOrDefault(gc => gc.DiscordGuildId == guildId) != null;
+			}
+		}
+
+		public void SetAnnouncementChannel(ulong guildId, ulong channelId)
+		{
+			using (HungerGamesContext context = _contextFactory.CreateDbContext())
+			{
+				if (AnnouncementConfigurationExists(guildId))
+				{
+					HungerGamesServerConfiguration config = context.GuildConfigurations.First(gc => gc.DiscordGuildId == guildId);
+					config.AnnouncementChannelId = channelId;
+				}
+				else
+				{
+					context.GuildConfigurations.Add(new HungerGamesServerConfiguration
+					{
+						DiscordGuildId = guildId,
+						AnnouncementChannelId = channelId
+					});
+				}
+
+				context.SaveChanges();
+			}
+		}
+
+		public List<HungerGamesServerConfiguration> GetAllConfigurations()
+		{
+			using (HungerGamesContext context = _contextFactory.CreateDbContext())
+			{
+				return context.GuildConfigurations.ToList();
 			}
 		}
 	}

@@ -107,6 +107,7 @@ namespace DeepState
 		}
 		public async Task InstallCommandsAsync()
 		{
+#if !DEBUG
 			await _commands.AddModuleAsync<MalarkeyModule>(_services);
 			await _commands.AddModuleAsync<HelpModule>(_services);
 			await _commands.AddModuleAsync<IndecisionModule>(_services);
@@ -114,10 +115,12 @@ namespace DeepState
 			await _commands.AddModuleAsync<ChatModule>(_services);
 			await _commands.AddModuleAsync<OutOfContextModule>(_services);
 			await _commands.AddModuleAsync<UserRecordsModule>(_services);
+#endif
 			await _commands.AddModuleAsync<HungerGamesModule>(_services);
 
-
+#if !DEBUG
 			_client.MessageReceived += OnMessage;
+#endif
 			_client.MessageReceived += (async (SocketMessage messageParam) => { _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix); });
 		}
 		private async Task OnMessage(SocketMessage messageParam)

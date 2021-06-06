@@ -42,6 +42,17 @@ namespace DeepState.Constants
 		public static ulong TheDad = 622578719252283432;
 		#endregion
 
+		#region Role ID Lists
+		public static List<ulong> PronounRoleIds = new List<ulong> {
+			//he/him
+			709621178511261696,
+			//she/her
+			709621198706835456,
+			//they/them
+			709621152221364298
+		};
+		#endregion
+
 		#endregion
 
 		#region String Lists
@@ -96,10 +107,42 @@ namespace DeepState.Constants
 		public static string SusRegex = @"(\bs+u+s+y?\b)|(amo+\w{0,2}\s*us)";
 		public static string LeftArrowEmoji = "⬅️";
 		public static string RightArrowEmoji = "➡️";
+		public static string SubjectiveNonGenderedPronoun = "they";
+		public static string SubjectiveFemininePronoun = "she";
+		public static string SubjectiveMasculinePronoun = "he";
+		public static string ObjectiveNonGenderedPronoun = "them";
+		public static string ObjectiveFemininePronoun = "her";
+		public static string ObjectiveMasculinePronoun = "him";
+		public static string PossessiveAdjectiveNonGenderedPronoun = "their";
+		public static string PossessiveAdjectiveFemininePronoun = "her";
+		public static string PossessiveAdjectiveMasculinePronoun = "his";
+		public static string PossesiveNonGenderedPronoun = "theirs";
+		public static string PossesiveFemininePronoun = "hers";
+		public static string PossesiveMasculinePronoun = "his";
+		public static string ReflexiveNonGenderedPronoun = "they";
+		public static string ReflexiveFemininePronoun = "she";
+		public static string ReflexiveMasculinePronoun = "he";
 		#endregion
 
 		#region String Formats
 		public static string EmoteNameandId(string name, ulong? id) => $"<:{name}:{id}>";
+		#endregion
+
+		#region Enums
+		public enum PronounConjugations
+		{
+			Subjective,
+			Objective,
+			PossessiveAdjective,
+			Possessive,
+			Reflexive
+		}
+		public enum ConfiguredPronouns
+		{
+			Nongendered,
+			Feminine,
+			Masculine
+		}
 		#endregion
 	}
 }

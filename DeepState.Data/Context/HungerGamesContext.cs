@@ -1,6 +1,7 @@
 ﻿using DeepState.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 
 namespace DeepState.Data.Context
 {
@@ -10,8 +11,8 @@ namespace DeepState.Data.Context
 		{
 			optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("DATABASE"));
 		}
-
-		public DbSet<HungerGamesTributes> Tributes { get; set; }
+		public DbSet<HungerGamesTribute> Tributes { get; set; }
 		public DbSet<HungerGamesPrizePool> PrizePools { get; set; }
+		public DbSet<HungerGamesServerConfiguration> GuildConfigurations { get; set; }
 	}
 }

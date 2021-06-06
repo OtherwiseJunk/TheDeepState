@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Utils = DeepState.Utilities.Utilities;
 
 namespace DeepState.Modules
 {
@@ -53,7 +54,7 @@ namespace DeepState.Modules
 		public async Task GetTributeList()
 		{
 			int currentPage;
-			List<HungerGamesTributes> tributes = _service.GetPagedTributeList(Context.Guild.Id, out currentPage);
+			List<HungerGamesTribute> tributes = _service.GetPagedTributeList(Context.Guild.Id, out currentPage);
 
 			if(tributes.Count == 0)
 			{
@@ -84,8 +85,8 @@ namespace DeepState.Modules
 		public async Task AssignTributeRoles()
 		{
 			IRole tributeRole = Context.Guild.Roles.First(r => r.Name == HungerGameConstants.TributeRoleName);
-			List<HungerGamesTributes> tributes = _service.GetTributeList(Context.Guild.Id);
-			foreach(HungerGamesTributes tribute in tributes)
+			List<HungerGamesTribute> tributes = _service.GetTributeList(Context.Guild.Id);
+			foreach(HungerGamesTribute tribute in tributes)
 			{
 				IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId).Result;
 				if (!user.RoleIds.Contains(tributeRole.Id))
@@ -102,6 +103,42 @@ namespace DeepState.Modules
 					}
 				}
 			}
+		}
+
+		[Command("setchnl")]
+		[RequireUserPermission(GuildPermission.ManageMessages)]
+		public async Task SetAnnouncementChannel()
+		{
+			if (_service.AnnouncementConfigurationExists(Context.Guild.Id))
+			{
+				await Context.Channel.SendMessageAsync("Someone already registered a channel for this, I'll overwrite it and use this channel instead.");
+			}
+
+			_service.SetAnnouncementChannel(Context.Guild.Id, Context.Channel.Id);
+			await Context.Channel.SendMessageAsync("Ok, i'll do my daily obituaries here, starting on the 8th of every month!");
+		}
+
+		[Command("testfrag")]
+		[RequireUserPermission(GuildPermission.ManageMessages)]
+		public async Task TestFrag(ulong? mentionedUser)
+		{
+			Random rand = Utils.CreateSeededRandom();
+			IGuildUser victim;
+			if (mentionedUser != null)
+			{
+				IGuildUser user = Context.Guild.GetUserAsync((ulong) mentionedUser).Result;
+				victim = user;
+			}
+			else
+			{
+				IGuildUser user = Context.Guild.GetUserAsync(Context.Client.CurrentUser.Id).Result;;
+				victim = user;
+			}
+			var pronounDict = Utils.GetUserPronouns(victim, Context.Guild);
+			List<HungerGamesTribute> tributes = _service.GetTributeList(Context.Guild.Id);
+			string goreyDetails = HungerGameUtilities.GetCauseOfDeathDescription(victim, Context.Guild, tributes, pronounDict);
+			string obituary = HungerGameUtilities.GetObituary(pronounDict);
+			_ = Context.Channel.SendMessageAsync(embed: HungerGameUtilities.BuildTributeDeathEmbed(victim, goreyDetails, obituary, rand.Next(1, 12)));
 		}
 	}
 }
