@@ -1,10 +1,12 @@
 ﻿
+using DartsDiscordBots.Utilities;
 using System.Collections.Generic;
 
 namespace DeepState.Data.Constants
 {
 	public static class HungerGameConstants
 	{
+		public const ulong TheRepublican = 735391839280169040;
 		public const double CostOfAdmission = 0.00001;
 		public static string HungerGameTributesEmbedTitle { get; set; } = "⛈️ **T H U N D E R D O M E TRIBUTES** ⛈️";
 		public static string RandomTributeWeaponKill { get; set; } = "TributeWeaponKill";
@@ -75,10 +77,9 @@ namespace DeepState.Data.Constants
 			"a cleaver.",
 			"a MOTHERFUCKING LIGHTNING BOLT.",
 			"a Time Machine and a very small pillow.",
-			"a cashed-in favor from Dagon.",
+			$"a cashed-in favor from {OldGods.GetRandom()}.",
 			"a cashed-in favor from D9.",
-			"a cashed-in favor from Cthulhu.",
-			"a cashed-in favor from President Biden.",
+			"a cashed-in favor from 🇺🇸President Joe Biden🇺🇸.",
 			"a Million God-Damn Mosquitos.",
 			"their Bare Hands.",
 			"their Bear Hands.",
@@ -108,5 +109,54 @@ namespace DeepState.Data.Constants
 			"a Ukelele.",
 			"the sickest dance moves you've ever seen!",
 		};
+
+		public static List<string> ThingsToExplain = new List<string> {
+			"The QAnon Cinematic Universe.",
+			"One Piece.",
+			"THe Marvel Cinematic Universe.",
+			"The Apocrypha.",
+			"the full and glorious history of these very games.",
+			"the James Bond Cinematic Universe.",
+			"the original Libcraft Minecraft Server lore.",
+			"the Dark Universe Cinematic Universe.",
+			"the Halo Literary Universe.",
+			"the Lovecraft Literary Universe.",
+			"why Libcoin is a good investment.",
+			"all 250 pages of the Magic the Gathering official rules.",
+			"how to properly simp for TikTok thots.",
+			"how Bernie can still win the 2020 elections.",
+			"how simping is actually vital infrastructure",
+			"how Trump is still running everything from behind the scenes, and will be re-instated any day now...",
+			"what Neoliberalism _ACTUALLY_ means."
+		};
+		public static List<string> OldGods = new List<string> {
+			"Dagon, the Freaky Fish Guy",
+			"Abholos, the Devourer in the Mist",
+			"Alala, Hearld of S'glhuo",
+			"Ammutseba, the Devourer of Stars",
+			"Amon-Goroloth, Creator of the Nile and Universe's Equilibrium",
+			"Aphoom-Zhah, the Cold Flame",
+			"Cthulhu, the Master of R'lyeh",
+			"Arwassa, the Silent Shouter on the Hill",
+			"Atlach-Nacha, the Spinner in Darkness",
+			"Basatan, the Master of Crabs",
+			"B'gnu-Thun, the Soul-Chilling Ice-God",
+			"Byatis, the Berkeley Toad,",
+			"Byagoona, the Faceless Ones",
+			"The Color Out of Space",
+			"Coatlicue, the Serpant Skirted One",
+			"Dhumin, the Burrower from the Bluff",
+			"Dythalla, the Lord of Lizards",
+			"Gleeth, the Blind God of the Moon",
+			"Hastur Hastur Hastur, The King in Yellow, The Peacock King, He Who is Not to be Named, Carcosa is lovely this time of year won't you visit? I cannot forget Carcosa where black stars hang in the heavens; where the shadows of men's thoughts lengthen in the afternoon, when the twin suns sink into the lake of Hali; and my mind will bear for ever the memory of the Pallid Mask. I pray God will curse the writer, as the writer has cursed the world with this beautiful, stupendous creation, terrible in its simplicity, irresistible in its truth—a world which now trembles before the King in Yellow - Sorry, where was I? right, ",
+			"Yog-Sothoth, the All-in-One and One-in-All of limitless being and self",
+			"Nyarlathotep, the Herald of Azathoth",
+			"Azathoth, the Blind Idiot God"
+		};
+		//$"Fatally injured by {Pronoun} malfunctioning {Equipment.GetRandom()}",
+		public static List<string> Equipment = new List<string> {
+			"gun, which misfired"
+		};
+
 	}
 }

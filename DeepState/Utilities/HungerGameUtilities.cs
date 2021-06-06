@@ -76,22 +76,23 @@ namespace DeepState.Utilities
 				case CauseOfDeathCategories.Tribute:
 					HungerGamesTribute murderer = usualSuspects.GetRandom();
 					IGuildUser murdererUser = guild.GetUserAsync(murderer.DiscordUserId).Result;
-					goreyDetails = GetTributeKillDetails(murdererUser,victimPronounsByConjugation);
+					goreyDetails = GetTributeKillDetails(murdererUser,victimPronounsByConjugation, victim);
 					break;
 				case CauseOfDeathCategories.TributeTeamup:
 					//TODO. Don't want to bother with Tribute Teamups for the first round.
 					break;
 				case CauseOfDeathCategories.Environmental:
-					goreyDetails = GetEnvironmentalKillDetails(victimPronounsByConjugation);
+					goreyDetails = GetEnvironmentalKillDetails(victimPronounsByConjugation, victim);
 					break;
 			}
 			return goreyDetails;
 		}
 
-		public static string GetTributeKillDetails(IGuildUser murderer, Dictionary<PronounConjugations, List<string>> victiomPronounsByConjugation)
+		public static string GetTributeKillDetails(IGuildUser murderer, Dictionary<PronounConjugations, List<string>> victiomPronounsByConjugation, IGuildUser victim)
 		{
 			Random rand = Utils.CreateSeededRandom();
 			string murdererName = murderer.Nickname ?? murderer.Username;
+			string victimName = victim.Nickname ?? victim.Username;
 			List<string> tributeKillDetails = new List<string>
 			{
 				$"{murdererName} took {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} by clonking {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} with the Sunday Edition of the New York Times.",
@@ -108,10 +109,15 @@ namespace DeepState.Utilities
 				$"After a particularly sick burn by {murdererName}, {victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} continued to insist 'im not owned! im not owned!!', as they slowly shrunk and transform into a cob of corn.",
 				$"Telefragged by {murdererName}. Such a mess...",
 				$"{murdererName} R1'd {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} real quick, into non-existance. BainCapitalist shed a single, pride-filled tear.",
-				$"Impaled through the chest from behind by {murdererName} just as {victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} got to the climax of {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} monologue. Hate it when that happens."
+				$"Impaled through the chest from behind by {murdererName} just as {victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} got to the climax of {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} monologue. Hate it when that happens.",
+				$"{victimName} killed {murdererName}. *Checks Notes* Wait, shit. Sorry. {murdererName} killed {victimName}. Sorry folx, they're so similar I mix them up.",
+				$"{victimName} died after {murdererName} tried to explain {HungerGameConstants.ThingsToExplain.GetRandom()}",
+				$"{victimName} killed by a stray cannonball during {murdererName}'s live orchestral performance of Tchaivkovsky's 1812 Overture",
+				$"{victimName} died listening to {murdererName}'s Karaoke performance of 'Baby Got Back' by Sir-Mix-A-Lot",
+
 			};
 			//add 5 "chances" for generic random tribute weapon kills.
-			tributeKillDetails.AddRange(Enumerable.Repeat(HungerGameConstants.RandomTributeWeaponKill, 5));
+			tributeKillDetails.AddRange(Enumerable.Repeat(HungerGameConstants.RandomTributeWeaponKill, 25));
 
 			string goreyDetails = tributeKillDetails.GetRandom();
 
@@ -123,9 +129,10 @@ namespace DeepState.Utilities
 			return String.Format(HungerGameConstants.RandomTributeWeaponKillFormat, murdererName, victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom(), HungerGameConstants.Weapons.GetRandom());
 		}
 
-		public static string GetEnvironmentalKillDetails(Dictionary<PronounConjugations, List<string>> victimPronounsByConjugation)
+		public static string GetEnvironmentalKillDetails(Dictionary<PronounConjugations, List<string>> victimPronounsByConjugation, IGuildUser victim)
 		{
 			Random rand = Utils.CreateSeededRandom();
+			string victimName = victim.Nickname ?? victim.Username;
 
 			List<string> environmentalKillDetails = new List<string>
 			{
@@ -181,20 +188,64 @@ namespace DeepState.Utilities
 				"Was redistricted out of the ⛈️T H U N D E R D O M E⛈️.",
 				$"Julienned by 🇺🇸President Joe Biden's🇺🇸 DEVASTATING LAZER EYES after Joe mistook {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()} for God.",
 				$"{victimPronounsByConjugation[PronounConjugations.Objective].GetRandom().ToPascalCase()} gained insight into the illusory nature of the self and popped out of existence.",
+				"Was taken behind the gym by 🇺🇸President Joe Biden🇺🇸.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} had a run in with Cornpop (who as we all know, is a bad dude!)",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got nabbed for tax fraud and summarily executed for their crimes.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} deleted system32. F in the chat.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} pressed Alt+F4. What a sucker.",
+				$"{victimName}.exe has halted unexpectedly. Please contact your SysAdmin for assistance.",
+				$"{victimName} left the game (VAC banned).",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} died from insufficient process safety on behalf of the game designers. Thanks, Assholes.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} stood next to a gas leak for 30 minutes. Helluva drug.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} plugged a Chlorine line into the Sulphuric Acid line. Shoulda called the CSB.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} died under suspicious circumstances. No I won't elaborate.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} choked on a styrofoam packing peanut.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} slept on a bed in The Nether.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} died of Ligma.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} went to Brazil. I hear it's lovely this time of year.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} spawned out of bounds, and evenntually died of thirst. {victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} tried drinking {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} own urine, but it didn't work.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got vaporized by the Jewish Space Laser.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} tried to draw a card from their library, but found it was empty!.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} was garbage collected by the C# CLR.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} did not respect a phantom's airspace",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got bommbed by SaryuSaryu.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got {SharedConstants.BooHooCrackerID}'d by DeepState.",
+				$"{victimName} claimed publically to have information that would lead to the arrest of Hillary Cliton. {victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} were never heard from again.",
+				$"Killed by Addision Michael 'Mitch' McConnell III. Never seen a turtle move that quick!",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} removed the 'DO NOT REMOVE' tag from a matress. Spontaneously combusted shortly after.",
+				$"{victimName} (D-IL) was arrested for corruption.",
+				$"{victimName} was killed when firing the ceremonial surrender cannon during the battle of fort sumpter when the surrender cannon unintentionally exploded.",
+				$"{victimName} died after Joe Manchin refused to abolish the filibuster to save {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()}.",
+				$"{victimName} as compleated by the Phyrexians.",
 			};
 
 			return environmentalKillDetails.GetRandom();
 		}
 
-		public static string GetObituary(Dictionary<PronounConjugations, List<string>> victimPronounsByConjugation)
+		public static string GetObituary(Dictionary<PronounConjugations, List<string>> victimPronounsByConjugation, IGuildUser victim)
 		{
 
 			Random rand = Utils.CreateSeededRandom();
 			List<string> obituaries = new List<string> {
 				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} {rand.Next(69, 420)} cats.",
 				$"Survived by a jar of Mayo {victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} left in {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} fridge.",
-				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} {rand.Next(1,20)} siblings, both parents, both sets of grand parents, and all 16 of {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} great grand parents."
+				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} {rand.Next(1,20)} siblings, both parents, both sets of grand parents, and all 16 of {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} great grand parents.",
+				$"Survived, despite {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} best intentions, by their {rand.Next(1,12)} siblings.",
+				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} {(rand.NextDouble() * (50000.00000000 - 0.00000001) + 0.00000001).ToString("F8")} Bitcoin",
+				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} collection of {rand.Next(420,1337)} Funko Pops",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} came, {victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} saw, {victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} died.",
+				$"Survived by the words of Robert Downey Jr in Tropic Thunder.",
+				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} {(rand.NextDouble() * (50000.00000000 - 0.00000001) + 0.00000001).ToString("F8")} Bitcoin on a harddrive in a trashheap somewhere.",
+				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} single-player Minecraft Server.",
+				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} {rand.Next(69,420)} EU4 saves files.",
+				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} disappointed fans and patrons.",
+				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} belief that Trump will be reinstated <:soontm:322880475066793986>"
 			};
+			if(victim.Id == HungerGameConstants.TheRepublican)
+			{
+				string username = victim.Nickname ?? victim.Username;
+				return $"F in the chat for Famous Republican {username}.{Environment.NewLine}{obituaries.GetRandom()}";
+			}
 
 			return obituaries.GetRandom();
 		}

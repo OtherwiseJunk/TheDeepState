@@ -30,7 +30,7 @@ namespace DeepState.Modules
 
 		[Command("register"), Alias("reg")]
 		[RequireLibcoinBalance(HungerGameConstants.CostOfAdmission)]
-		[RequireDayOfMonthRange(1,7)]
+		[RequireDayOfMonthRange(1, 7)]
 		public async Task RegisterHungerGameTribute()
 		{
 			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name == HungerGameConstants.TributeRoleName);
@@ -42,7 +42,7 @@ namespace DeepState.Modules
 			{
 				_service.RegisterTribute(Context.Guild.Id, Context.User.Id);
 				await Context.Channel.SendMessageAsync($"Gosh you're brave. Ok! I've registered you as a Tribute in this month's ⛈️ **T H U N D E R D O M E** ⛈️, and deducted {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoins from your account. Good luck! {Environment.NewLine} https://media1.tenor.com/images/f9da8dd0e06d31730afb9ad12abed53c/tenor.gif?itemid=17203535");
-				if(tributeRole != null)
+				if (tributeRole != null)
 				{
 					_ = ((IGuildUser)Context.User).AddRoleAsync(tributeRole);
 				}
@@ -56,17 +56,17 @@ namespace DeepState.Modules
 			int currentPage;
 			List<HungerGamesTribute> tributes = _service.GetPagedTributeList(Context.Guild.Id, out currentPage);
 
-			if(tributes.Count == 0)
+			if (tributes.Count == 0)
 			{
 				_ = Context.Channel.SendMessageAsync("This is a channel of COWARDS because no one has signed up as tribute for the games!");
 			}
 			else
 			{
 				new Thread(() => {
-					Embed embed = HungerGameUtilities.BuildTributeEmbed(tributes, currentPage, Context.Guild); 
+					Embed embed = HungerGameUtilities.BuildTributeEmbed(tributes, currentPage, Context.Guild);
 					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
 					msg.AddReactionAsync(new Emoji("⬅️"));
-					msg.AddReactionAsync(new Emoji("➡️"));					
+					msg.AddReactionAsync(new Emoji("➡️"));
 				}).Start();
 			}
 		}
@@ -86,7 +86,7 @@ namespace DeepState.Modules
 		{
 			IRole tributeRole = Context.Guild.Roles.First(r => r.Name == HungerGameConstants.TributeRoleName);
 			List<HungerGamesTribute> tributes = _service.GetTributeList(Context.Guild.Id);
-			foreach(HungerGamesTribute tribute in tributes)
+			foreach (HungerGamesTribute tribute in tributes)
 			{
 				IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId).Result;
 				if (!user.RoleIds.Contains(tributeRole.Id))
@@ -137,7 +137,7 @@ namespace DeepState.Modules
 			var pronounDict = Utils.GetUserPronouns(victim, Context.Guild);
 			List<HungerGamesTribute> tributes = _service.GetTributeList(Context.Guild.Id);
 			string goreyDetails = HungerGameUtilities.GetCauseOfDeathDescription(victim, Context.Guild, tributes, pronounDict);
-			string obituary = HungerGameUtilities.GetObituary(pronounDict);
+			string obituary = HungerGameUtilities.GetObituary(pronounDict, victim);
 			_ = Context.Channel.SendMessageAsync(embed: HungerGameUtilities.BuildTributeDeathEmbed(victim, goreyDetails, obituary, rand.Next(1, 12)));
 		}
 	}
