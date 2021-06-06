@@ -99,7 +99,7 @@ namespace DeepState.Utilities
 				$"{murdererName} punched {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} clean in half! Shit was crazy.",
 				$"Strangled in {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} sleep by {murdererName}.",
 				$"Sacrified on an altar to Dagon, by {murdererName} seeking favor from The Old Gods.",
-				$"{murdererName} accidentally crushed {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} head underfoot while {victiomPronounsByConjugation[PronounConjugations.Subjective]} hid in a pile of leaves.",
+				$"{murdererName} accidentally crushed {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} head underfoot while {victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} hid in a pile of leaves.",
 				$"Ripped in half by {murdererName}. {murdererName} just kind of grabbed {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} by either buttcheek and tore. Fucking Brutal, yanno?",
 				$"{murdererName} jammed a beehive on {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} head and watched them run off a cliff.",
 				$"{murdererName} conjured a massive Fireball and chucked it at {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()}.",
@@ -114,7 +114,7 @@ namespace DeepState.Utilities
 				$"{victimName} died after {murdererName} tried to explain {HungerGameConstants.ThingsToExplain.GetRandom()}",
 				$"{victimName} killed by a stray cannonball during {murdererName}'s live orchestral performance of Tchaivkovsky's 1812 Overture",
 				$"{victimName} died listening to {murdererName}'s Karaoke performance of 'Baby Got Back' by Sir-Mix-A-Lot",
-
+				$"{victimName} died when {murdererName} botched their Murder-Suicide attempt."
 			};
 			//add 5 "chances" for generic random tribute weapon kills.
 			tributeKillDetails.AddRange(Enumerable.Repeat(HungerGameConstants.RandomTributeWeaponKill, 25));
@@ -185,7 +185,7 @@ namespace DeepState.Utilities
 				"McNuked.",
 				"Died of cringe.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got ratioed.",
-				"Was redistricted out of the ⛈️T H U N D E R D O M E⛈️.",
+				$"{victimName} Was redistricted out of the ⛈️T H U N D E R D O M E⛈️.",
 				$"Julienned by 🇺🇸President Joe Biden's🇺🇸 DEVASTATING LAZER EYES after Joe mistook {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()} for God.",
 				$"{victimPronounsByConjugation[PronounConjugations.Objective].GetRandom().ToPascalCase()} gained insight into the illusory nature of the self and popped out of existence.",
 				"Was taken behind the gym by 🇺🇸President Joe Biden🇺🇸.",

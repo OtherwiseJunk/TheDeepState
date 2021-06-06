@@ -120,13 +120,13 @@ namespace DeepState.Modules
 
 		[Command("testfrag")]
 		[RequireUserPermission(GuildPermission.ManageMessages)]
-		public async Task TestFrag(ulong? mentionedUser)
+		public async Task TestFrag(ulong mentionedUser = 0)
 		{
 			Random rand = Utils.CreateSeededRandom();
 			IGuildUser victim;
-			if (mentionedUser != null)
+			if (mentionedUser != 0)
 			{
-				IGuildUser user = Context.Guild.GetUserAsync((ulong) mentionedUser).Result;
+				IGuildUser user = Context.Guild.GetUserAsync(mentionedUser).Result;
 				victim = user;
 			}
 			else

@@ -77,7 +77,7 @@ namespace DeepState.Data.Constants
 			"a cleaver.",
 			"a MOTHERFUCKING LIGHTNING BOLT.",
 			"a Time Machine and a very small pillow.",
-			$"a cashed-in favor from {OldGods.GetRandom()}.",
+			//$"a cashed-in favor from {OldGods.GetRandom()}.",
 			"a cashed-in favor from D9.",
 			"a cashed-in favor from 🇺🇸President Joe Biden🇺🇸.",
 			"a Million God-Damn Mosquitos.",
