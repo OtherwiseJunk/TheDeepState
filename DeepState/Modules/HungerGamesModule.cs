@@ -35,7 +35,7 @@ namespace DeepState.Modules
 		[RequireDayOfMonthRange(1, 7)]
 		public async Task RegisterHungerGameTribute()
 		{
-			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName);
+			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
 			if (_service.TributeExists(Context.Guild.Id, Context.User.Id))
 			{
 				await Context.Channel.SendMessageAsync("Sorry, you're already registered for this month's game!");
