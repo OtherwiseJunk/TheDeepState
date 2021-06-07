@@ -48,10 +48,6 @@ namespace DeepState.Modules.Preconditions
 				{
 					return Task.FromResult(PreconditionResult.FromSuccess());
 				}
-				else
-				{
-					context.Channel.SendMessageAsync($"Sorry, this command costs {MinimumLibcoinBalance.ToString("F8")} libcoins, but you have {currentBalance.ToString("F8")}");
-				}
 				return Task.FromResult(PreconditionResult.FromError($"Sorry, this command costs {MinimumLibcoinBalance.ToString("F8")} libcoins, but you have {currentBalance.ToString("F8")}"));
 			}
 			catch
