@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using static DeepState.Constants.SharedConstants;
 using Utils = DeepState.Utilities.Utilities;
@@ -105,7 +106,12 @@ namespace DeepState.Utilities
 
 						announcementChannel.SendMessageAsync(embed: BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district));
 						service.KillTribute(victim.DiscordUserId, guild.Id, goreyDetails, obituary, district);
-						victimUser.RemoveRoleAsync(tributeRole);
+						new Thread(() =>
+						{
+							//wait 10 minutes, then remove Tribute role from the corpse. Allows for RP.
+							Thread.Sleep(60 * 10 * 1000);
+							victimUser.RemoveRoleAsync(tributeRole);
+						});
 
 						tributes = service.GetTributeList(config.DiscordGuildId);
 					}
