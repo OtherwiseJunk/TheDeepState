@@ -54,7 +54,7 @@ namespace DeepState.Utilities
 				}
 				else
 				{
-					embed.AddField($"~*{user.Nickname ?? user.Username}*~", $"**Status:** {HungerGameConstants.HowDeadAreYou.GetRandom()} | *Died defending the honor of District {tribute.District}* | {tribute.DeathMessage} | *{tribute.ObituaryMessage}*");
+					embed.AddField($"~~*{user.Nickname ?? user.Username}*~~", $"**Status:** {HungerGameConstants.HowDeadAreYou.GetRandom()} | *Died defending the honor of District {tribute.District}* | {tribute.DeathMessage} | *{tribute.ObituaryMessage}*");
 				}
 				embed.WithFooter($"{currentPage}");
 			}
