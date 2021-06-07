@@ -86,7 +86,7 @@ namespace DeepState.Modules
 		[RequireOwner]
 		public async Task AssignTributeRoles()
 		{
-			IRole tributeRole = Context.Guild.Roles.First(r => r.Name == HungerGameConstants.TributeRoleName);
+			IRole tributeRole = Context.Guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
 			List<HungerGamesTribute> tributes = _service.GetTributeList(Context.Guild.Id);
 			foreach (HungerGamesTribute tribute in tributes)
 			{
