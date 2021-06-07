@@ -40,17 +40,24 @@ namespace DeepState.Modules.Preconditions
 
 		public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
 		{
-			UserRecordsService service = (UserRecordsService) services.GetService(typeof(UserRecordsService));
-			double currentBalance = service.GetUserBalance(context.User.Id, context.Guild.Id);
-			if (MinimumLibcoinBalance <= currentBalance)
+			try
 			{
-				return Task.FromResult(PreconditionResult.FromSuccess());
+				UserRecordsService service = (UserRecordsService)services.GetService(typeof(UserRecordsService));
+				double currentBalance = service.GetUserBalance(context.User.Id, context.Guild.Id);
+				if (MinimumLibcoinBalance <= currentBalance)
+				{
+					return Task.FromResult(PreconditionResult.FromSuccess());
+				}
+				else
+				{
+					context.Channel.SendMessageAsync($"Sorry, this command costs {MinimumLibcoinBalance.ToString("F8")} libcoins, but you have {currentBalance.ToString("F8")}");
+				}
+				return Task.FromResult(PreconditionResult.FromError($"Sorry, this command costs {MinimumLibcoinBalance.ToString("F8")} libcoins, but you have {currentBalance.ToString("F8")}"));
 			}
-			else
+			catch
 			{
-				context.Channel.SendMessageAsync($"Sorry, this command costs {MinimumLibcoinBalance.ToString("F8")} libcoins, but you have {currentBalance.ToString("F8")}");
+				return Task.FromResult(PreconditionResult.FromError("ServiceProvider was empty :-("));
 			}
-			return Task.FromResult(PreconditionResult.FromError($"Sorry, this command costs {MinimumLibcoinBalance.ToString("F8")} libcoins, but you have {currentBalance.ToString("F8")}"));
 		}
 	}
 }
