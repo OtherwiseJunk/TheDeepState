@@ -39,12 +39,22 @@ namespace DeepState.Utilities
 		#endregion
 		public static Embed BuildTributeEmbed(List<HungerGamesTribute> tributes, int currentPage, IGuild guild)
 		{
+			tributes = tributes.OrderByDescending(t => t.IsAlive).ToList();
+
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.Title = HungerGameConstants.HungerGameTributesEmbedTitle;
+			
 			foreach (HungerGamesTribute tribute in tributes)
 			{
 				IGuildUser user = guild.GetUserAsync(tribute.DiscordUserId).Result;
-				embed.AddField(user.Nickname ?? user.Username, "Status: Alive");
+				if (tribute.IsAlive)
+				{
+					embed.AddField(user.Nickname ?? user.Username, "**Status:** Alive");
+				}
+				else
+				{
+					embed.AddField($"~*{user.Nickname ?? user.Username}*~", $"**Status:** {HungerGameConstants.HowDeadAreYou.GetRandom()} | *Died defending the honor of District {tribute.District}* | {tribute.DeathMessage} | *{tribute.ObituaryMessage}*");
+				}
 				embed.WithFooter($"{currentPage}");
 			}
 
@@ -53,20 +63,92 @@ namespace DeepState.Utilities
 
 		public static void DailyEvent(HungerGamesService service, IDiscordClient client)
 		{
-			foreach (HungerGamesServerConfiguration config in service.GetAllConfigurations())
+
+
+			if (DateTime.Now.Day == 8)
 			{
-				List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
+				foreach (HungerGamesServerConfiguration config in service.GetAllConfigurations())
+				{
+					IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
+					IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
+					announcementChannel.SendMessageAsync(string.Join(' ',Enumerable.Repeat(Environment.NewLine, 250))+"**LET THE GAMES BEGIN**");
+				}
+			}
+			if (DateTime.Now.Day >= 8)
+			{
+				foreach (HungerGamesServerConfiguration config in service.GetAllConfigurations())
+				{
+					List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
+					Random rand = Utils.CreateSeededRandom();
+					DateTime now = DateTime.Now;
+					//Add +1, as we haven't done en elimination for the day yet.
+					int daysRemaining = (DateTime.DaysInMonth(now.Year, now.Month) - now.Day) + 1;
+					int numberOfVictims = (int)Math.Ceiling(((double)tributes.Where(t => t.IsAlive).ToList().Count / daysRemaining));
 
-				HungerGamesTribute victim = tributes.GetRandom();
+					HungerGamesTribute victim;
 
-				IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
-				IGuildUser victimUser = guild.GetUserAsync(victim.DiscordUserId).Result;
+					IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
+					IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
+					IRole tributeRole = guild.Roles.First(r => r.Name == HungerGameConstants.TributeRoleName);
 
-				Dictionary<PronounConjugations, List<string>> pronouns = Utils.GetUserPronouns(victimUser, guild);
-				string causeOfDeath = GetCauseOfDeathDescription(victimUser, guild, tributes, pronouns);
+					for (int i = 0; i < numberOfVictims; i++)
+					{
+						int district = rand.Next(1, 12);
+						victim = tributes.Where(t => t.IsAlive).ToList().GetRandom();
+
+
+						IGuildUser victimUser = guild.GetUserAsync(victim.DiscordUserId).Result;
+
+						Dictionary<PronounConjugations, List<string>> pronouns = Utils.GetUserPronouns(victimUser, guild);
+						string goreyDetails = GetCauseOfDeathDescription(victimUser, guild, tributes, pronouns);
+						string obituary = GetObituary(pronouns, victimUser);
+
+						announcementChannel.SendMessageAsync(embed: BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district));
+						service.KillTribute(victim.DiscordUserId, guild.Id, goreyDetails, obituary, district);
+						victimUser.RemoveRoleAsync(tributeRole);
+
+						tributes = service.GetTributeList(config.DiscordGuildId);
+					}
+
+
+					if (tributes.Where(t => t.IsAlive).Count() == 1)
+					{
+						RunHungerGamesCleanup();
+					}
+				}
+			}
+			else
+			{
+				foreach (HungerGamesServerConfiguration config in service.GetAllConfigurations())
+				{
+					List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
+					DateTime now = DateTime.Now;
+					IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
+					IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
+
+					int daysRemaining = (8 - now.Day);
+					int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
+					double potSize = service.GetPrizePool(guild.Id);
+
+					announcementChannel.SendMessageAsync($"```Good Morning! There are {daysRemaining} days remaining until our glorious games begin!{Environment.NewLine}" +
+						$"{Environment.NewLine}We have {numberOfTributes} Tributes ready to fight for the honor of their districts, all vying for the chance to take homme the grand prize, {potSize.ToString("F8")} libcoin!{Environment.NewLine}" +
+						$"{Environment.NewLine}If you're brave enough, `>hc reg` today to join the battle royale! For the low low price of {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoin! Winner takes home 100% of all entry fees!```");
+				}
 			}
 		}
 
+		private static void RunHungerGamesCleanup()
+		{
+			/*TODO
+			Spew out all deaths (15 seconds between death)
+			Declare Victory
+			Deposit Munnies
+			Remove all Tribute roles
+
+
+			*/
+			return;
+		}
 		public static string GetCauseOfDeathDescription(IGuildUser victim, IGuild guild, List<HungerGamesTribute> tributes, Dictionary<PronounConjugations, List<string>> victimPronounsByConjugation)
 		{
 			List<HungerGamesTribute> usualSuspects = tributes.Where(t => t.DiscordUserId != victim.Id).ToList();
@@ -74,9 +156,9 @@ namespace DeepState.Utilities
 			switch (ProbableCauses.GetRandom())
 			{
 				case CauseOfDeathCategories.Tribute:
-					HungerGamesTribute murderer = usualSuspects.GetRandom();
+					HungerGamesTribute murderer = usualSuspects.Where(t => t.IsAlive).ToList().GetRandom();
 					IGuildUser murdererUser = guild.GetUserAsync(murderer.DiscordUserId).Result;
-					goreyDetails = GetTributeKillDetails(murdererUser,victimPronounsByConjugation, victim);
+					goreyDetails = GetTributeKillDetails(murdererUser, victimPronounsByConjugation, victim);
 					break;
 				case CauseOfDeathCategories.TributeTeamup:
 					//TODO. Don't want to bother with Tribute Teamups for the first round.
@@ -121,7 +203,7 @@ namespace DeepState.Utilities
 
 			string goreyDetails = tributeKillDetails.GetRandom();
 
-			if(goreyDetails != HungerGameConstants.RandomTributeWeaponKill)
+			if (goreyDetails != HungerGameConstants.RandomTributeWeaponKill)
 			{
 				return goreyDetails;
 			}
@@ -208,7 +290,7 @@ namespace DeepState.Utilities
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} tried to draw a card from their library, but found it was empty!.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} was garbage collected by the C# CLR.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} did not respect a phantom's airspace",
-				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got bommbed by SaryuSaryu.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got bombarded by SaryuSaryu.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got {SharedConstants.BooHooCrackerID}'d by DeepState.",
 				$"{victimName} claimed publically to have information that would lead to the arrest of Hillary Cliton. {victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} were never heard from again.",
 				$"Killed by Addision Michael 'Mitch' McConnell III. Never seen a turtle move that quick!",
@@ -242,7 +324,7 @@ namespace DeepState.Utilities
 				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} belief that Trump will be reinstated <:soontm:322880475066793986>",
 				$"Survived by {HungerGameConstants.OldGods.GetRandom()}, who will live eternally."
 			};
-			if(victim.Id == HungerGameConstants.TheRepublican)
+			if (victim.Id == HungerGameConstants.TheRepublican)
 			{
 				string username = victim.Nickname ?? victim.Username;
 				return $"F in the chat for Famous Republican {username}.{Environment.NewLine}{obituaries.GetRandom()}";
@@ -253,7 +335,7 @@ namespace DeepState.Utilities
 
 		public static Embed BuildTributeDeathEmbed(IGuildUser victim, string goreyDetails, string obituary, int district)
 		{
-			
+
 			EmbedBuilder embed = new EmbedBuilder();
 			string victimName = victim.Nickname ?? victim.Username;
 			embed.WithTitle($"Tribute {victimName} has fallen!");

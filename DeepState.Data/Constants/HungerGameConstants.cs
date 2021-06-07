@@ -158,5 +158,31 @@ namespace DeepState.Data.Constants
 			"gun, which misfired"
 		};
 
+		//Words For Dead.
+		public static List<string> HowDeadAreYou = new List<string>
+		{
+			"Dead",
+			"Dead AF",
+			"CANCELLED (permanently)",
+			"Rotting",
+			"Hasn't Moved In A While",
+			"If it looks like a corpse, and smells like a corpse, it's probably a corpse.",
+			"💀",
+			"👻",
+			"F's in the chat",
+			"👆",
+			"👇",
+			"🧟",
+			"🔩",
+			"🪦",
+			"⚰",
+			"♻",
+			"Cadaverific",
+			"So Insanely Dead",
+			"In a better place",
+			"In a worse palce",
+			"in an ok place, but still super dead.",
+			"With their ancestors",
+		};
 	}
 }

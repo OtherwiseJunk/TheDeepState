@@ -91,7 +91,7 @@ namespace DeepState.Modules
 			foreach (HungerGamesTribute tribute in tributes)
 			{
 				IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId).Result;
-				if (!user.RoleIds.Contains(tributeRole.Id))
+				if (!user.RoleIds.Contains(tributeRole.Id) && tribute.IsAlive)
 				{
 					var obj = user.AddRoleAsync(tributeRole);
 					while (!obj.IsCompleted) { }
@@ -108,6 +108,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("setchnl")]
+		[RequireRoleName(HungerGameConstants.TributeRoleName)]
 		[RequireUserPermission(GuildPermission.ManageMessages)]
 		public async Task SetAnnouncementChannel()
 		{
@@ -121,7 +122,9 @@ namespace DeepState.Modules
 		}
 
 		[Command("testfrag")]
-		[RequireUserPermission(GuildPermission.ManageMessages)]
+		[RequireRoleName(HungerGameConstants.TributeRoleName)]
+		[RequireUserPermission(GuildPermission.ManageMessages, Group = "AdminsOnly")]
+		[RequireOwner(Group = "AdminsOnly")]
 		public async Task TestFrag(ulong mentionedUser = 0)
 		{
 			Random rand = Utils.CreateSeededRandom();
@@ -133,7 +136,7 @@ namespace DeepState.Modules
 			}
 			else
 			{
-				IGuildUser user = Context.Guild.GetUserAsync(Context.Client.CurrentUser.Id).Result;;
+				IGuildUser user = Context.Guild.GetUserAsync(Context.Client.CurrentUser.Id).Result; ;
 				victim = user;
 			}
 			var pronounDict = Utils.GetUserPronouns(victim, Context.Guild);
@@ -143,7 +146,7 @@ namespace DeepState.Modules
 			_ = Context.Channel.SendMessageAsync(embed: HungerGameUtilities.BuildTributeDeathEmbed(victim, goreyDetails, obituary, rand.Next(1, 12)));
 		}
 
-		[Command("test")]
+		[Command("pronounRoles")]
 		[RequireOwner()]
 		public async Task testpronouns()
 		{

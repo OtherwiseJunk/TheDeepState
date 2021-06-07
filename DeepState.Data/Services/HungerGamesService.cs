@@ -1,6 +1,7 @@
 ﻿using DeepState.Data.Constants;
 using DeepState.Data.Context;
 using DeepState.Data.Models;
+using Discord;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -77,7 +78,7 @@ namespace DeepState.Data.Services
 			using (HungerGamesContext context = _contextFactory.CreateDbContext())
 			{
 				List<HungerGamesTribute> pageData;
-				List<HungerGamesTribute> guildTributes = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).ToList();
+				List<HungerGamesTribute> guildTributes = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).OrderByDescending(t => t.IsAlive).ToList();
 				int tributeCount = guildTributes.Count();
 				try
 				{
@@ -144,6 +145,25 @@ namespace DeepState.Data.Services
 			{
 				return context.GuildConfigurations.ToList();
 			}
+		}
+
+		public void KillTribute(ulong userId, ulong guildId, string deathMessage, string obituary, int district)
+		{
+			using (HungerGamesContext context = _contextFactory.CreateDbContext())
+			{
+				HungerGamesTribute deceasedTribute = context.Tributes.First(t => t.DiscordGuildId == guildId && t.DiscordUserId == userId);
+				deceasedTribute.IsAlive = false;
+				deceasedTribute.DeathMessage = deathMessage;
+				deceasedTribute.ObituaryMessage = obituary;
+				deceasedTribute.District = district;
+
+				context.SaveChanges();
+			}
+		}
+
+		public static void DailyEvent(HungerGamesService service, IDiscordClient client)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

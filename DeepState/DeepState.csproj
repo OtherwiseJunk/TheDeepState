@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="DDB" Version="0.8.3" />
     <PackageReference Include="Discord.Net" Version="2.4.0" />
+    <PackageReference Include="FluentScheduler" Version="5.5.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
     <PackageReference Include="TraceLd.MineStatSharp" Version="1.0.0" />

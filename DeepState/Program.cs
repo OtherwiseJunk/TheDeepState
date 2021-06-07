@@ -23,6 +23,7 @@ using DeepState.Handlers;
 using Utils = DeepState.Utilities.Utilities;
 using DeepState.Utilities;
 using OMH = DartsDiscordBots.Handlers.OnMessageHandlers;
+using FluentScheduler;
 
 namespace DeepState
 {
@@ -32,7 +33,7 @@ namespace DeepState
 		private readonly CommandService _commands;
 		private readonly IServiceProvider _services;
 		private Program()
-		{
+		{			
 			_client = new DiscordSocketClient();
 			_services = ConfigureServices();
 			ConfigureDatabases();
@@ -40,6 +41,8 @@ namespace DeepState
 			_client.Log += Log;
 			_commands.Log += Log;
 			_client.ReactionAdded += OnReact;
+			JobManager.Initialize();
+			JobManager.AddJob(() => HungerGameUtilities.DailyEvent((HungerGamesService)_services.GetService(typeof(HungerGamesService)), _client), s => s.ToRunEvery(1).Days().At(8, 0));
 		}
 		public static void Main(string[] args)
 	=> new Program().MainAsync().GetAwaiter().GetResult();
@@ -108,6 +111,8 @@ namespace DeepState
 		public async Task InstallCommandsAsync()
 		{
 #if !DEBUG
+			
+#endif
 			await _commands.AddModuleAsync<MalarkeyModule>(_services);
 			await _commands.AddModuleAsync<HelpModule>(_services);
 			await _commands.AddModuleAsync<IndecisionModule>(_services);
@@ -115,12 +120,12 @@ namespace DeepState
 			await _commands.AddModuleAsync<ChatModule>(_services);
 			await _commands.AddModuleAsync<OutOfContextModule>(_services);
 			await _commands.AddModuleAsync<UserRecordsModule>(_services);
-#endif
 			await _commands.AddModuleAsync<HungerGamesModule>(_services);
 
 #if !DEBUG
-			_client.MessageReceived += OnMessage;
+			
 #endif
+			_client.MessageReceived += OnMessage;
 			_client.MessageReceived += (async (SocketMessage messageParam) => { _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix); });
 		}
 		private async Task OnMessage(SocketMessage messageParam)
