@@ -44,7 +44,7 @@ namespace DeepState.Utilities
 
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.Title = HungerGameConstants.HungerGameTributesEmbedTitle;
-			
+
 			foreach (HungerGamesTribute tribute in tributes)
 			{
 				IGuildUser user = guild.GetUserAsync(tribute.DiscordUserId).Result;
@@ -64,32 +64,31 @@ namespace DeepState.Utilities
 
 		public static void DailyEvent(HungerGamesService service, IDiscordClient client)
 		{
-
-
-			if (DateTime.Now.Day == 8)
+			DateTime now = DateTime.Now;
+			foreach (HungerGamesServerConfiguration config in service.GetAllConfigurations())
 			{
-				foreach (HungerGamesServerConfiguration config in service.GetAllConfigurations())
+				IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
+				IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
+
+				List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
+				if (now.Day == 8 && tributes.Where(t => t.IsAlive).Count() > 1)
 				{
-					IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
-					IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
-					announcementChannel.SendMessageAsync(string.Join(' ',Enumerable.Repeat(Environment.NewLine, 250))+"**LET THE GAMES BEGIN**");
+					announcementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
 				}
-			}
-			if (DateTime.Now.Day >= 8)
-			{
-				foreach (HungerGamesServerConfiguration config in service.GetAllConfigurations())
+				if (now.Day >= 8 && tributes.Where(t => t.IsAlive).Count() > 1)
 				{
-					List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
 					Random rand = Utils.CreateSeededRandom();
-					DateTime now = DateTime.Now;
 					//Add +1, as we haven't done en elimination for the day yet.
 					int daysRemaining = (DateTime.DaysInMonth(now.Year, now.Month) - now.Day) + 1;
 					int numberOfVictims = (int)Math.Ceiling(((double)tributes.Where(t => t.IsAlive).ToList().Count / daysRemaining));
 
+					if (numberOfVictims < 1)
+					{
+						numberOfVictims = 1;
+					}
+
 					HungerGamesTribute victim;
 
-					IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
-					IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
 					IRole tributeRole = guild.Roles.First(r => r.Name == HungerGameConstants.TributeRoleName);
 
 					for (int i = 0; i < numberOfVictims; i++)
@@ -111,7 +110,7 @@ namespace DeepState.Utilities
 							//wait 10 minutes, then remove Tribute role from the corpse. Allows for RP.
 							Thread.Sleep(60 * 10 * 1000);
 							victimUser.RemoveRoleAsync(tributeRole);
-						});
+						}).Start();
 
 						tributes = service.GetTributeList(config.DiscordGuildId);
 					}
@@ -121,24 +120,25 @@ namespace DeepState.Utilities
 					{
 						RunHungerGamesCleanup();
 					}
-				}
-			}
-			else
-			{
-				foreach (HungerGamesServerConfiguration config in service.GetAllConfigurations())
-				{
-					List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
-					DateTime now = DateTime.Now;
-					IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
-					IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
 
+				}
+				else
+				{
 					int daysRemaining = (8 - now.Day);
 					int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
 					double potSize = service.GetPrizePool(guild.Id);
 
-					announcementChannel.SendMessageAsync($"```Good Morning! There are {daysRemaining} days remaining until our glorious games begin!{Environment.NewLine}" +
-						$"{Environment.NewLine}We have {numberOfTributes} Tributes ready to fight for the honor of their districts, all vying for the chance to take homme the grand prize, {potSize.ToString("F8")} libcoin!{Environment.NewLine}" +
-						$"{Environment.NewLine}If you're brave enough, `>hc reg` today to join the battle royale! For the low low price of {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoin! Winner takes home 100% of all entry fees!```");
+					StringBuilder sb = new StringBuilder($"```Good Morning! There are {daysRemaining} days remaining until our glorious games begin!{Environment.NewLine}");
+					if(numberOfTributes > 0)
+					{
+						sb.Append($"{Environment.NewLine}We have {numberOfTributes} Tributes ready to fight for the honor of their districts, all vying for the chance to take homme the grand prize, {potSize.ToString("F8")} libcoin!{Environment.NewLine}");
+					}
+					else
+					{
+						sb.Append($"{Environment.NewLine}However it looks like so far this server is filled with COWARDS and no on has volunteered as tribute.{Environment.NewLine}");
+					}
+					sb.Append($"{Environment.NewLine}If you're brave enough, `>hc reg` today to join the battle royale! For the low low price of {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoin! Winner takes home 100% of all entry fees!```");
+					announcementChannel.SendMessageAsync(sb.ToString());
 				}
 			}
 		}

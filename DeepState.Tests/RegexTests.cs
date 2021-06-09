@@ -17,6 +17,8 @@ namespace DeepState.Tests
 		[TestCase("consensus", false)]
 		[TestCase("When the is sus", true)]
 		[TestCase("There's a lobster among us, yanno?", true)]
+		[TestCase("famous", false)]
+		[TestCase("polyamorous", false)]
 		public void IsSusCheck(string stringToCheck, bool expectSus)
 		{
 			Assert.AreEqual(Utils.IsSus(stringToCheck), expectSus);

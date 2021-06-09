@@ -101,7 +101,7 @@ namespace DeepState.Constants
 
 		#region Strings
 		public static string KlaxonResponse = "https://www.youtube.com/watch?v=xU5mOT57ghM";
-		public static string SusRegex = @"(\bs+u+s+y?\b)|(amo+\w{0,2}\s*us)";
+		public static string SusRegex = @"(\bs+u+s+y?\b)|(\bamo+\w{0,2}\s*us)";
 		public static string LeftArrowEmoji = "⬅️";
 		public static string RightArrowEmoji = "➡️";
 		public static string SubjectiveNonGenderedPronoun = "they";
