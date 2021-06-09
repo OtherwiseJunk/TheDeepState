@@ -89,7 +89,7 @@ namespace DeepState.Utilities
 
 					HungerGamesTribute victim;
 
-					IRole tributeRole = guild.Roles.First(r => r.Name == HungerGameConstants.TributeRoleName);
+					IRole tributeRole = guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
 
 					for (int i = 0; i < numberOfVictims; i++)
 					{
