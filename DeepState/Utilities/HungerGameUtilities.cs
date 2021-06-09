@@ -71,7 +71,7 @@ namespace DeepState.Utilities
 				IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
 
 				List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
-				if (now.Day == 8)
+				if (now.Day == 8 && tributes.Where(t => t.IsAlive).Count() > 1)
 				{		
 						announcementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
 				}
