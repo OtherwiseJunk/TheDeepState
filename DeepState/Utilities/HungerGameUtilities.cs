@@ -44,7 +44,7 @@ namespace DeepState.Utilities
 
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.Title = HungerGameConstants.HungerGameTributesEmbedTitle;
-			
+
 			foreach (HungerGamesTribute tribute in tributes)
 			{
 				IGuildUser user = guild.GetUserAsync(tribute.DiscordUserId).Result;
@@ -72,8 +72,8 @@ namespace DeepState.Utilities
 
 				List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
 				if (now.Day == 8 && tributes.Where(t => t.IsAlive).Count() > 1)
-				{		
-						announcementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
+				{
+					announcementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
 				}
 				if (now.Day >= 8 && tributes.Where(t => t.IsAlive).Count() > 1)
 				{
@@ -124,13 +124,21 @@ namespace DeepState.Utilities
 				}
 				else
 				{
-						int daysRemaining = (8 - now.Day);
-						int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
-						double potSize = service.GetPrizePool(guild.Id);
+					int daysRemaining = (8 - now.Day);
+					int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
+					double potSize = service.GetPrizePool(guild.Id);
 
-						announcementChannel.SendMessageAsync($"```Good Morning! There are {daysRemaining} days remaining until our glorious games begin!{Environment.NewLine}" +
-							$"{Environment.NewLine}We have {numberOfTributes} Tributes ready to fight for the honor of their districts, all vying for the chance to take homme the grand prize, {potSize.ToString("F8")} libcoin!{Environment.NewLine}" +
-							$"{Environment.NewLine}If you're brave enough, `>hc reg` today to join the battle royale! For the low low price of {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoin! Winner takes home 100% of all entry fees!```");
+					StringBuilder sb = new StringBuilder($"```Good Morning! There are {daysRemaining} days remaining until our glorious games begin!{Environment.NewLine}");
+					if(numberOfTributes > 0)
+					{
+						sb.Append($"{Environment.NewLine}We have {numberOfTributes} Tributes ready to fight for the honor of their districts, all vying for the chance to take homme the grand prize, {potSize.ToString("F8")} libcoin!{Environment.NewLine}");
+					}
+					else
+					{
+						sb.Append($"{Environment.NewLine}However it looks like so far this server is filled with COWARDS and no on has volunteered as tribute.{Environment.NewLine}");
+					}
+					sb.Append($"{Environment.NewLine}If you're brave enough, `>hc reg` today to join the battle royale! For the low low price of {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoin! Winner takes home 100% of all entry fees!```");
+					announcementChannel.SendMessageAsync(sb.ToString());
 				}
 			}
 		}
