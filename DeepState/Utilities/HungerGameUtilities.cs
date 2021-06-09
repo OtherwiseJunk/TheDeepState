@@ -64,20 +64,21 @@ namespace DeepState.Utilities
 
 		public static void DailyEvent(HungerGamesService service, IDiscordClient client)
 		{
-
+			DateTime now = DateTime.Now;
 			foreach (HungerGamesServerConfiguration config in service.GetAllConfigurations())
 			{
+				IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
+				IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
+
 				List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
-				if (DateTime.Now.Day == 8)
+				if (now.Day == 8)
 				{
-						IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
-						IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
+						
 						announcementChannel.SendMessageAsync(string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250)) + "**LET THE GAMES BEGIN**");
 				}
-				if (DateTime.Now.Day >= 8 && tributes.Where(t => t.IsAlive).Count() > 1)
+				if (now.Day >= 8 && tributes.Where(t => t.IsAlive).Count() > 1)
 				{
 					Random rand = Utils.CreateSeededRandom();
-					DateTime now = DateTime.Now;
 					//Add +1, as we haven't done en elimination for the day yet.
 					int daysRemaining = (DateTime.DaysInMonth(now.Year, now.Month) - now.Day) + 1;
 					int numberOfVictims = (int)Math.Ceiling(((double)tributes.Where(t => t.IsAlive).ToList().Count / daysRemaining));
@@ -89,8 +90,6 @@ namespace DeepState.Utilities
 
 					HungerGamesTribute victim;
 
-					IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
-					IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
 					IRole tributeRole = guild.Roles.First(r => r.Name == HungerGameConstants.TributeRoleName);
 
 					for (int i = 0; i < numberOfVictims; i++)
@@ -126,12 +125,6 @@ namespace DeepState.Utilities
 				}
 				else
 				{
-					
-						List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
-						DateTime now = DateTime.Now;
-						IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
-						IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
-
 						int daysRemaining = (8 - now.Day);
 						int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
 						double potSize = service.GetPrizePool(guild.Id);
