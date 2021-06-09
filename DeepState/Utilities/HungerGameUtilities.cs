@@ -72,9 +72,8 @@ namespace DeepState.Utilities
 
 				List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
 				if (now.Day == 8)
-				{
-						
-						announcementChannel.SendMessageAsync(string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250)) + "**LET THE GAMES BEGIN**");
+				{		
+						announcementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
 				}
 				if (now.Day >= 8 && tributes.Where(t => t.IsAlive).Count() > 1)
 				{
