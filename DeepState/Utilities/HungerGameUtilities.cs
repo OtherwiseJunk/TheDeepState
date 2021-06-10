@@ -90,6 +90,7 @@ namespace DeepState.Utilities
 					HungerGamesTribute victim;
 
 					IRole tributeRole = guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
+					IRole corpseRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
 
 					for (int i = 0; i < numberOfVictims; i++)
 					{
@@ -110,6 +111,10 @@ namespace DeepState.Utilities
 							//wait 10 minutes, then remove Tribute role from the corpse. Allows for RP.
 							Thread.Sleep(60 * 10 * 1000);
 							victimUser.RemoveRoleAsync(tributeRole);
+							if(corpseRole != null)
+							{
+								victimUser.AddRoleAsync(corpseRole);
+							}
 						}).Start();
 
 						tributes = service.GetTributeList(config.DiscordGuildId);
