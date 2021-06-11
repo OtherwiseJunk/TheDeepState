@@ -106,7 +106,7 @@ namespace DeepState.Utilities
 						string obituary = GetObituary(pronouns, victimUser);
 
 						Embed announcementEmbed = BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district);
-						tributeAnnouncementChannel.SendMessageAsync(embed: announcementEmbed);
+						_ = tributeAnnouncementChannel.SendMessageAsync(embed: announcementEmbed).Result.PinAsync();
 						service.KillTribute(victim.DiscordUserId, guild.Id, goreyDetails, obituary, district);
 						new Thread(() =>
 						{
