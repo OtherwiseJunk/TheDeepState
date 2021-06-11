@@ -12,7 +12,8 @@ namespace DeepState.Data.Models
 		[Key]
 		public int ConfigurationId { get; set; }
 		public ulong DiscordGuildId { get; set; }
-		public ulong AnnouncementChannelId { get; set; }
+		public ulong TributeAnnouncementChannelId { get; set; }
+		public ulong CorpseAnnouncementChannelId { get; set; }
 
 	}
 }

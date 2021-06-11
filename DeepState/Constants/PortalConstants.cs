@@ -25,7 +25,9 @@ namespace DeepState.Constants
 
 		public static string PortalIamge = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREcWHgH3VH_18aPmUyMaKX0leVnwscivYRXg&usqp=CAU";
 		public static string PortalTitle(string portalUser, string channelName) => $"{portalUser} Opened A Portal To {channelName}";
-		public static string PortalFieldTitle = "You feel the portal pulling you in...";
-		public static string PortalFieldContent = "Perhaps it would be best to continue your conversation on the other side.";
+		public static string SourcePortalFieldTitle = "You feel the portal pulling you in...";
+		public static string SourcePortalFieldContent = "Perhaps it would be best to continue your conversation on the other side.";
+		public static string TargetPortalFieldTitle = "A portal from another place appears...";
+		public static string TargetPortalFieldContent = "Additional context from an upcoming discussion may be on the other side, but no cross-containimation, PLEASE!";
 	}
 }

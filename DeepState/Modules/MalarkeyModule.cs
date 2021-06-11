@@ -79,8 +79,8 @@ namespace DeepState.Modules
 		}
 
 		[Command("portal")]
-		[RequireOwner()]
-		public async Task OpenAPortal(ITextChannel portalTargetChannel)
+		[Summary("Opens a portal to another channel. Generally used for off-topic discussion in a channel.")]
+		public async Task OpenAPortal([Summary("A # link to the channel to open the portal to.")]ITextChannel portalTargetChannel)
 		{
 
 			string username = (Context.User as IGuildUser).Nickname ?? Context.User.Username;
@@ -89,13 +89,13 @@ namespace DeepState.Modules
 			_ = targetChannelMessage.ModifyAsync(msg =>
 			 {
 				 msg.Content = "";
-				 msg.Embed = PortalUtilities.BuildPortalEmbed(username, Context.Channel.Name, sourceChannelMessage.GetJumpUrl());
+				 msg.Embed = PortalUtilities.BuildPortalEmbed(username, Context.Channel.Name, sourceChannelMessage.GetJumpUrl(), true);
 			 });
 
 			_ = sourceChannelMessage.ModifyAsync(msg =>
 			{
 				msg.Content = "";
-				msg.Embed = PortalUtilities.BuildPortalEmbed(username, portalTargetChannel.Name, targetChannelMessage.GetJumpUrl());
+				msg.Embed = PortalUtilities.BuildPortalEmbed(username, portalTargetChannel.Name, targetChannelMessage.GetJumpUrl(), false);
 			});
 		}
 	}

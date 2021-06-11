@@ -107,17 +107,31 @@ namespace DeepState.Modules
 			}
 		}
 
-		[Command("setchnl")]
+		[Command("tributechannel")]
 		[RequireRoleName(HungerGameConstants.TributeRoleName)]
 		[RequireUserPermission(GuildPermission.ManageMessages)]
-		public async Task SetAnnouncementChannel()
+		public async Task SetTributeAnnouncementChannel()
 		{
-			if (_service.AnnouncementConfigurationExists(Context.Guild.Id))
+			if (_service.TributeAnnouncementConfigurationExists(Context.Guild.Id))
 			{
 				await Context.Channel.SendMessageAsync("Someone already registered a channel for this, I'll overwrite it and use this channel instead.");
 			}
 
-			_service.SetAnnouncementChannel(Context.Guild.Id, Context.Channel.Id);
+			_service.SetTributeAnnouncementChannel(Context.Guild.Id, Context.Channel.Id);
+			await Context.Channel.SendMessageAsync("Ok, i'll do my daily obituaries here, starting on the 8th of every month!");
+		}
+
+		[Command("corpsechannel")]
+		[RequireRoleName(HungerGameConstants.CorpseRoleName)]
+		[RequireUserPermission(GuildPermission.ManageMessages)]
+		public async Task SetCorpseAnnouncementChannel()
+		{
+			if (_service.CorpseAnnouncementConfigurationExists(Context.Guild.Id))
+			{
+				await Context.Channel.SendMessageAsync("Someone already registered a channel for this, I'll overwrite it and use this channel instead.");
+			}
+
+			_service.SetCorpseAnnouncementChannel(Context.Guild.Id, Context.Channel.Id);
 			await Context.Channel.SendMessageAsync("Ok, i'll do my daily obituaries here, starting on the 8th of every month!");
 		}
 

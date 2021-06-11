@@ -109,29 +109,29 @@ namespace DeepState.Data.Services
 			}
 		}
 
-		public bool AnnouncementConfigurationExists(ulong guildId)
+		public bool TributeAnnouncementConfigurationExists(ulong guildId)
 		{
 			using (HungerGamesContext context = _contextFactory.CreateDbContext())
 			{
-				return context.GuildConfigurations.FirstOrDefault(gc => gc.DiscordGuildId == guildId) != null;
+				return context.GuildConfigurations.FirstOrDefault(gc => gc.DiscordGuildId == guildId)?.TributeAnnouncementChannelId != null;
 			}
 		}
 
-		public void SetAnnouncementChannel(ulong guildId, ulong channelId)
+		public void SetTributeAnnouncementChannel(ulong guildId, ulong channelId)
 		{
 			using (HungerGamesContext context = _contextFactory.CreateDbContext())
 			{
-				if (AnnouncementConfigurationExists(guildId))
+				if (TributeAnnouncementConfigurationExists(guildId))
 				{
 					HungerGamesServerConfiguration config = context.GuildConfigurations.First(gc => gc.DiscordGuildId == guildId);
-					config.AnnouncementChannelId = channelId;
+					config.TributeAnnouncementChannelId = channelId;
 				}
 				else
 				{
 					context.GuildConfigurations.Add(new HungerGamesServerConfiguration
 					{
 						DiscordGuildId = guildId,
-						AnnouncementChannelId = channelId
+						TributeAnnouncementChannelId = channelId
 					});
 				}
 
@@ -161,9 +161,34 @@ namespace DeepState.Data.Services
 			}
 		}
 
-		public static void DailyEvent(HungerGamesService service, IDiscordClient client)
+		public void SetCorpseAnnouncementChannel(ulong guildId, ulong channelId)
 		{
-			throw new NotImplementedException();
+			using (HungerGamesContext context = _contextFactory.CreateDbContext())
+			{
+				if (CorpseAnnouncementConfigurationExists(guildId))
+				{
+					HungerGamesServerConfiguration config = context.GuildConfigurations.First(gc => gc.DiscordGuildId == guildId);
+					config.CorpseAnnouncementChannelId = channelId;
+				}
+				else
+				{
+					context.GuildConfigurations.Add(new HungerGamesServerConfiguration
+					{
+						DiscordGuildId = guildId,
+						CorpseAnnouncementChannelId = channelId
+					});
+				}
+
+				context.SaveChanges();
+			}
+		}
+
+		public bool CorpseAnnouncementConfigurationExists(ulong guildId)
+		{
+			using (HungerGamesContext context = _contextFactory.CreateDbContext())
+			{
+				return context.GuildConfigurations.FirstOrDefault(gc => gc.DiscordGuildId == guildId)?.CorpseAnnouncementChannelId != null;
+			}
 		}
 	}
 }

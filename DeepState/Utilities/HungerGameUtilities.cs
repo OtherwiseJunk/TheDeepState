@@ -68,12 +68,13 @@ namespace DeepState.Utilities
 			foreach (HungerGamesServerConfiguration config in service.GetAllConfigurations())
 			{
 				IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
-				IMessageChannel announcementChannel = (IMessageChannel)guild.GetChannelAsync(config.AnnouncementChannelId).Result;
+				IMessageChannel tributeAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.TributeAnnouncementChannelId).Result;
+				IMessageChannel corpseAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.CorpseAnnouncementChannelId).Result;
 
 				List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
 				if (now.Day == 8 && tributes.Where(t => t.IsAlive).Count() > 1)
 				{
-					announcementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
+					tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
 				}
 				if (now.Day >= 8 && tributes.Where(t => t.IsAlive).Count() > 1)
 				{
@@ -104,7 +105,8 @@ namespace DeepState.Utilities
 						string goreyDetails = GetCauseOfDeathDescription(victimUser, guild, tributes, pronouns);
 						string obituary = GetObituary(pronouns, victimUser);
 
-						announcementChannel.SendMessageAsync(embed: BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district));
+						Embed announcementEmbed = BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district);
+						tributeAnnouncementChannel.SendMessageAsync(embed: announcementEmbed);
 						service.KillTribute(victim.DiscordUserId, guild.Id, goreyDetails, obituary, district);
 						new Thread(() =>
 						{
@@ -114,6 +116,10 @@ namespace DeepState.Utilities
 							if(corpseRole != null)
 							{
 								victimUser.AddRoleAsync(corpseRole);
+							}
+							if(corpseAnnouncementChannel != null)
+							{
+								corpseAnnouncementChannel.SendMessageAsync("Hey ghosts, welcome your new dead friend!", embed: announcementEmbed);
 							}
 						}).Start();
 
@@ -143,7 +149,7 @@ namespace DeepState.Utilities
 						sb.Append($"{Environment.NewLine}However it looks like so far this server is filled with COWARDS and no on has volunteered as tribute.{Environment.NewLine}");
 					}
 					sb.Append($"{Environment.NewLine}If you're brave enough, `>hc reg` today to join the battle royale! For the low low price of {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoin! Winner takes home 100% of all entry fees!```");
-					announcementChannel.SendMessageAsync(sb.ToString());
+					tributeAnnouncementChannel.SendMessageAsync(sb.ToString());
 				}
 			}
 		}
