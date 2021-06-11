@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using DeepState.Constants;
 using TraceLd.MineStatSharp;
 using DartsDiscordBots.Permissions;
+using DeepState.Utilities;
+using DartsDiscordBots.Utilities;
 
 namespace DeepState.Modules
 {
@@ -74,6 +76,27 @@ namespace DeepState.Modules
 			embed.AddField($"{name}", "Status: Dad");
 
 			_ = Context.Channel.SendMessageAsync(embed: embed.Build());
+		}
+
+		[Command("portal")]
+		[RequireOwner()]
+		public async Task OpenAPortal(ITextChannel portalTargetChannel)
+		{
+
+			string username = (Context.User as IGuildUser).Nickname ?? Context.User.Username;
+			IUserMessage targetChannelMessage = await portalTargetChannel.SendMessageAsync(PortalConstants.PortalSummoningText.GetRandom());
+			IUserMessage sourceChannelMessage = await Context.Channel.SendMessageAsync(PortalConstants.PortalSummoningText.GetRandom());
+			_ = targetChannelMessage.ModifyAsync(msg =>
+			 {
+				 msg.Content = "";
+				 msg.Embed = PortalUtilities.BuildPortalEmbed(username, Context.Channel.Name, sourceChannelMessage.GetJumpUrl());
+			 });
+
+			_ = sourceChannelMessage.ModifyAsync(msg =>
+			{
+				msg.Content = "";
+				msg.Embed = PortalUtilities.BuildPortalEmbed(username, portalTargetChannel.Name, targetChannelMessage.GetJumpUrl());
+			});
 		}
 	}
 }
