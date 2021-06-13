@@ -62,16 +62,16 @@ namespace DeepState.Utilities
 			return embed.Build();
 		}
 
-		public static void DailyEvent(HungerGamesService service, IDiscordClient client)
+		public static void DailyEvent(HungerGamesService hgService, UserRecordsService urService, IDiscordClient client)
 		{
 			DateTime now = DateTime.Now;
-			foreach (HungerGamesServerConfiguration config in service.GetAllConfigurations())
+			foreach (HungerGamesServerConfiguration config in hgService.GetAllConfigurations())
 			{
 				IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
 				IMessageChannel tributeAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.TributeAnnouncementChannelId).Result;
 				IMessageChannel corpseAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.CorpseAnnouncementChannelId).Result;
 
-				List<HungerGamesTribute> tributes = service.GetTributeList(config.DiscordGuildId);
+				List<HungerGamesTribute> tributes = hgService.GetTributeList(config.DiscordGuildId);
 				if (now.Day == 8 && tributes.Where(t => t.IsAlive).Count() > 1)
 				{
 					tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
@@ -107,7 +107,7 @@ namespace DeepState.Utilities
 
 						Embed announcementEmbed = BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district);
 						_ = tributeAnnouncementChannel.SendMessageAsync(embed: announcementEmbed).Result.PinAsync();
-						service.KillTribute(victim.DiscordUserId, guild.Id, goreyDetails, obituary, district);
+						hgService.KillTribute(victim.DiscordUserId, guild.Id, goreyDetails, obituary, district);
 						new Thread(() =>
 						{
 							//wait 10 minutes, then remove Tribute role from the corpse. Allows for RP.
@@ -123,13 +123,13 @@ namespace DeepState.Utilities
 							}
 						}).Start();
 
-						tributes = service.GetTributeList(config.DiscordGuildId);
+						tributes = hgService.GetTributeList(config.DiscordGuildId);
 					}
 
 
 					if (tributes.Where(t => t.IsAlive).Count() == 1)
 					{
-						RunHungerGamesCleanup();
+						RunHungerGamesCleanup(guild, tributeAnnouncementChannel, tributeRole, corpseRole, guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.ChampionRoleName.ToLower()), tributes, hgService, urService);
 					}
 
 				}
@@ -137,7 +137,7 @@ namespace DeepState.Utilities
 				{
 					int daysRemaining = (8 - now.Day);
 					int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
-					double potSize = service.GetPrizePool(guild.Id);
+					double potSize = hgService.GetPrizePool(guild.Id);
 
 					StringBuilder sb = new StringBuilder($"```Good Morning! There are {daysRemaining} days remaining until our glorious games begin!{Environment.NewLine}");
 					if(numberOfTributes > 0)
