@@ -154,17 +154,44 @@ namespace DeepState.Utilities
 			}
 		}
 
-		private static void RunHungerGamesCleanup()
+		private static void RunHungerGamesCleanup(IGuild guild, IMessageChannel announcementChannel, IRole tributeRole, IRole? corpseRole, IRole? championRole, List<HungerGamesTribute> tributes, HungerGamesService hgService, UserRecordsService urService)
 		{
-			/*TODO
-			Spew out all deaths (15 seconds between death)
-			Declare Victory
-			Deposit Munnies
-			Remove all Tribute roles
+			Random rand = Utils.CreateSeededRandom();
+			announcementChannel.SendMessageAsync("We have a winner! But first, we remember the fallen.");
 
+			List<HungerGamesTribute> corpses = tributes.Where(t => !t.IsAlive).OrderBy(t => t.District).ToList();
+			HungerGamesTribute winner = tributes.Where(t => t.IsAlive).First();
+			IGuildUser winnerUser = guild.GetUserAsync(winner.DiscordUserId).Result;
 
-			*/
-			return;
+			foreach (HungerGamesTribute corpse in corpses)
+			{
+				IGuildUser victimUser = guild.GetUserAsync(corpse.DiscordUserId).Result;
+				if (corpseRole != null)
+				{
+					victimUser.RemoveRoleAsync(corpseRole);
+				}
+				_ = announcementChannel.SendMessageAsync(embed: BuildTributeDeathEmbed(victimUser, corpse.DeathMessage, corpse.ObituaryMessage, corpse.District));
+				Thread.Sleep(15 * 1000);
+			}
+
+			EmbedBuilder builder = new EmbedBuilder();
+			builder.WithTitle($"This Game's Champion: {winnerUser.Nickname ?? winnerUser.Username}");
+			builder.WithImageUrl(winnerUser.GetAvatarUrl());
+			builder.AddField("District", rand.Next(1, 12));
+
+			_ = announcementChannel.SendMessageAsync("And now, your champion!", embed: builder.Build());
+
+			if(championRole != null)
+			{
+				winnerUser.AddRoleAsync(championRole);
+			}
+			winnerUser.RemoveRoleAsync(tributeRole);
+			double prize = hgService.GetPrizePool(guild.Id);
+			urService.Grant(winner.DiscordUserId, guild.Id, prize);
+
+			_ = announcementChannel.SendMessageAsync($"{prize} libcoin has been added to your account, {winnerUser.Nickname ?? winnerUser.Username}");
+
+			hgService.EndGame(guild.Id, tributes);
 		}
 		public static string GetCauseOfDeathDescription(IGuildUser victim, IGuild guild, List<HungerGamesTribute> tributes, Dictionary<PronounConjugations, List<string>> victimPronounsByConjugation)
 		{
