@@ -190,5 +190,17 @@ namespace DeepState.Data.Services
 				return context.GuildConfigurations.FirstOrDefault(gc => gc.DiscordGuildId == guildId)?.CorpseAnnouncementChannelId != null;
 			}
 		}
+
+		public void EndGame(ulong id, List<HungerGamesTribute> tributes)
+		{
+			using(HungerGamesContext context = _contextFactory.CreateDbContext())
+			{
+				context.Tributes.RemoveRange(tributes);
+				HungerGamesPrizePool pool = context.PrizePools.First(pp => pp.DiscordGuildId == id);
+				context.PrizePools.Remove(pool);
+
+				context.SaveChanges();
+			}
+		}
 	}
 }
