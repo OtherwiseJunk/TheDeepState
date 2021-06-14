@@ -391,6 +391,14 @@ namespace DeepState.Utilities
 			return embed.Build();
 		}
 
+		public static Embed TributeEmbedPagingCallback(IMessage msg, IServiceProvider serviceProvider, int currentPage)
+		{
+			HungerGamesService service = ((HungerGamesService)serviceProvider.GetService(typeof(HungerGamesService)));
+			IChannel channel = msg.Channel;
+			IGuild guild = ((IGuildChannel)channel).Guild;
+			List<HungerGamesTribute> tributes = service.GetPagedTributeList(guild.Id, out currentPage, --currentPage);
 
+			return BuildTributeEmbed(tributes, currentPage, guild);
+		}
 	}
 }
