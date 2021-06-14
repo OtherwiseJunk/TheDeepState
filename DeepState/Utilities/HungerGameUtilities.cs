@@ -189,7 +189,7 @@ namespace DeepState.Utilities
 			double prize = hgService.GetPrizePool(guild.Id);
 			urService.Grant(winner.DiscordUserId, guild.Id, prize);
 
-			_ = announcementChannel.SendMessageAsync($"{prize} libcoin has been added to your account, {winnerUser.Nickname ?? winnerUser.Username}");
+			_ = announcementChannel.SendMessageAsync($"{prize.ToString("F8")} libcoin has been added to your account, {winnerUser.Nickname ?? winnerUser.Username}");
 
 			hgService.EndGame(guild.Id, tributes);
 		}
