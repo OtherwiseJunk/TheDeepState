@@ -52,8 +52,18 @@ namespace DeepState.Utilities
 		public static Dictionary<PronounConjugations, List<string>> GetUserPronouns(IGuildUser user, IGuild guild)
 		{
 			Dictionary<PronounConjugations, List<string>> pronouns = new Dictionary<PronounConjugations, List<string>>();
-
 			List<ConfiguredPronouns> pronounsToApply = new List<ConfiguredPronouns>();
+
+			if (null == user)
+			{
+				pronounsToApply.Add(ConfiguredPronouns.Nongendered);
+				pronouns[PronounConjugations.Subjective] = GetSubjectivePronouns(pronounsToApply);
+				pronouns[PronounConjugations.Objective] = GetObjectivePronouns(pronounsToApply);
+				pronouns[PronounConjugations.Possessive] = GetPossesivePronouns(pronounsToApply);
+				pronouns[PronounConjugations.PossessiveAdjective] = GetPossesiveAdjective(pronounsToApply);
+				pronouns[PronounConjugations.Reflexive] = GetReflexivePronouns(pronounsToApply);
+				return pronouns;
+			}
 
 			List<ulong> guildPronounRoles = guild.Roles.Where(role => role.Name.ToLower() == MasculinePronounRoleName || role.Name.ToLower() == FemininePronnounRoleName || role.Name.ToLower() == NongenderedPronounRolename).Select(role => role.Id).ToList();
 
