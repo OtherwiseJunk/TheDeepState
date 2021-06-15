@@ -14,6 +14,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Utils = DeepState.Utilities.Utilities;
+using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 
 namespace DeepState.Modules
 {
@@ -143,19 +144,20 @@ namespace DeepState.Modules
 		{
 			Random rand = Utils.CreateSeededRandom();
 			IGuildUser victim;
+			ulong victimDiscordId;
 			if (mentionedUser != 0)
 			{
-				IGuildUser user = Context.Guild.GetUserAsync(mentionedUser).Result;
-				victim = user;
+				victimDiscordId = mentionedUser;
 			}
 			else
 			{
-				IGuildUser user = Context.Guild.GetUserAsync(Context.Client.CurrentUser.Id).Result; ;
-				victim = user;
+				victimDiscordId = Context.Client.CurrentUser.Id;
 			}
+			victim = Context.Guild.GetUserAsync(victimDiscordId).Result;
+			string victimName = DDBUtils.GetDisplayNameForUser(victim);
 			var pronounDict = Utils.GetUserPronouns(victim, Context.Guild);
 			List<HungerGamesTribute> tributes = _service.GetTributeList(Context.Guild.Id);
-			string goreyDetails = HungerGameUtilities.GetCauseOfDeathDescription(victim, Context.Guild, tributes, pronounDict);
+			string goreyDetails = HungerGameUtilities.GetCauseOfDeathDescription(victimDiscordId, victimName, Context.Guild, tributes, pronounDict);
 			string obituary = HungerGameUtilities.GetObituary(pronounDict, victim);
 			_ = Context.Channel.SendMessageAsync(embed: HungerGameUtilities.BuildTributeDeathEmbed(victim, goreyDetails, obituary, rand.Next(1, 12)));
 		}
@@ -170,6 +172,13 @@ namespace DeepState.Modules
 			string roleNotFound = "Role Not Found";
 
 			Context.Channel.SendMessageAsync($"Masculine Role: {masculineRole.Name ?? roleNotFound}{Environment.NewLine}Feminine Role: {feminineRole.Name ?? roleNotFound}{Environment.NewLine}Nongendered Role: {nongenderedRole.Name ?? roleNotFound}");
+		}
+
+		[Command("testRun")]
+		[RequireOwner()]
+		public async Task testRun()
+		{
+			HungerGameUtilities.DailyEvent(_service, null, Context.Client);
 		}
 	}
 }

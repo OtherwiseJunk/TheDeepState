@@ -185,5 +185,22 @@ namespace DeepState.Data.Constants
 			"in an ok place, but still super dead.",
 			"With their ancestors",
 		};
+
+		public static List<string> AvatarURLs = new List<string>
+		{
+			"https://play-lh.googleusercontent.com/VHB9bVB8cTcnqwnu0nJqKYbiutRclnbGxTpwnayKB4vMxZj8pk1220Rg-6oQ68DwAkqO=s128",
+			"https://lh3.googleusercontent.com/8yk3gmXNmA98yDgnpGNHgaC1zzMj6w2wRRxomVCPI7fRFDrqMxkvqm1VTEag__Ec3f6OvkUoA4CM2cI3asVKpS3kdTI=w128-h128-e365-rj-sc0x00ffffff",
+			"https://cdn.icon-icons.com/icons2/2620/PNG/128/among_us_player_light_blue_icon_156934.png",
+			"https://static.wikia.nocookie.net/among-us-wiki/images/2/2c/Tan_emoji.png/revision/latest/scale-to-width-down/250?cb=20201123201156",
+			"https://disforge.com/assets/icons/759421199951462420.png?t=95995a601a88945edecaa77bad465952",
+			"https://lh3.googleusercontent.com/Os_iXh8eYDBbyc8sK9QzwP877Pk-KJRYTbibO3O9fkvGJKen6W5eptgv_t9txsAuaX3Fk2FTBZ7Kj9qFd4CPgi8k9g=w128-h128-e365-rj-sc0x00ffffff",
+			"https://img.wattpad.com/useravatar/amonguslogic-life.128.36875.jpg",
+			"https://user-content.flat-cdn.com/5fb2a5d8aee2625783a3aded/847fccbc-a7e1-463b-a47b-94ec395222ea.jpeg",
+			"https://64.media.tumblr.com/5046d5574ea098b9e0708a33f9fe5781/3bb176e3c00d22ff-54/s128x128u_c1/c5f07490620fc89e913f1a930ad1c474eba8328b.jpg",
+			"https://emojis.slackmojis.com/emojis/images/1570729670/6654/cthulhu.jpg?1570729670",
+			"https://cdn.kqed.org/wp-content/uploads/sites/39/2013/04/Obama-128x128.jpg",
+			"https://media.newyorker.com/photos/5c3e10b2f92c694343cc71b9/2:2/w_128,h_128,c_limit/Rosner-Fast-Food-Trump.jpg",
+			"https://64.media.tumblr.com/avatar_4a3efe2f2d5b_128.pnj",
+		};
 	}
 }

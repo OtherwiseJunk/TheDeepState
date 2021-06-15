@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static DeepState.Constants.SharedConstants;
 using Utils = DeepState.Utilities.Utilities;
+using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 
 namespace DeepState.Utilities
 {
@@ -48,13 +49,15 @@ namespace DeepState.Utilities
 			foreach (HungerGamesTribute tribute in tributes)
 			{
 				IGuildUser user = guild.GetUserAsync(tribute.DiscordUserId).Result;
+				string tributeName = DDBUtils.GetDisplayNameForUser(user);
+
 				if (tribute.IsAlive)
 				{
-					embed.AddField(user.Nickname ?? user.Username, "**Status:** Alive");
+					embed.AddField(tributeName, "**Status:** Alive");
 				}
 				else
 				{
-					embed.AddField($"~~*{user.Nickname ?? user.Username}*~~", $"**Status:** {HungerGameConstants.HowDeadAreYou.GetRandom()} | *Died defending the honor of District {tribute.District}* | {tribute.DeathMessage} | *{tribute.ObituaryMessage}*");
+					embed.AddField($"~~*{tributeName}*~~", $"**Status:** {HungerGameConstants.HowDeadAreYou.GetRandom()} | *Died defending the honor of District {tribute.District}* | {tribute.DeathMessage} | *{tribute.ObituaryMessage}*");
 				}
 				embed.WithFooter($"{currentPage}");
 			}
@@ -78,6 +81,7 @@ namespace DeepState.Utilities
 				}
 				if (now.Day >= 8 && tributes.Where(t => t.IsAlive).Count() > 1)
 				{
+					
 					Random rand = Utils.CreateSeededRandom();
 					//Add +1, as we haven't done en elimination for the day yet.
 					int daysRemaining = (DateTime.DaysInMonth(now.Year, now.Month) - now.Day) + 1;
@@ -95,14 +99,22 @@ namespace DeepState.Utilities
 
 					for (int i = 0; i < numberOfVictims; i++)
 					{
+						List<HungerGamesTribute> nullUsers = tributes.Where(t => t.IsAlive).Where(t => !guild.GetUsersAsync().Result.Select(u => u.Id).Contains(t.DiscordUserId)).ToList();
 						int district = rand.Next(1, 12);
-						victim = tributes.Where(t => t.IsAlive).ToList().GetRandom();
-
+						if (nullUsers.Count > 0)
+						{
+							victim = nullUsers.GetRandom();
+						}
+						else
+						{
+							victim = tributes.Where(t => t.IsAlive).ToList().GetRandom();
+						}						
 
 						IGuildUser victimUser = guild.GetUserAsync(victim.DiscordUserId).Result;
+						string victimName = DDBUtils.GetDisplayNameForUser(victimUser);
 
 						Dictionary<PronounConjugations, List<string>> pronouns = Utils.GetUserPronouns(victimUser, guild);
-						string goreyDetails = GetCauseOfDeathDescription(victimUser, guild, tributes, pronouns);
+						string goreyDetails = GetCauseOfDeathDescription(victim.DiscordUserId, victimName, guild, tributes, pronouns);
 						string obituary = GetObituary(pronouns, victimUser);
 
 						Embed announcementEmbed = BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district);
@@ -193,9 +205,10 @@ namespace DeepState.Utilities
 
 			hgService.EndGame(guild.Id, tributes);
 		}
-		public static string GetCauseOfDeathDescription(IGuildUser victim, IGuild guild, List<HungerGamesTribute> tributes, Dictionary<PronounConjugations, List<string>> victimPronounsByConjugation)
+		public static string GetCauseOfDeathDescription(ulong victimUserId, string victimName, IGuild guild, List<HungerGamesTribute> tributes, Dictionary<PronounConjugations, List<string>> victimPronounsByConjugation)
 		{
-			List<HungerGamesTribute> usualSuspects = tributes.Where(t => t.DiscordUserId != victim.Id).ToList();
+			IGuildUser victim = guild.GetUserAsync(victimUserId).Result;
+			List<HungerGamesTribute> usualSuspects = tributes.Where(t => t.DiscordUserId != victimUserId).ToList();
 			string goreyDetails = "";
 			switch (ProbableCauses.GetRandom())
 			{
@@ -218,7 +231,7 @@ namespace DeepState.Utilities
 		{
 			Random rand = Utils.CreateSeededRandom();
 			string murdererName = murderer.Nickname ?? murderer.Username;
-			string victimName = victim.Nickname ?? victim.Username;
+			string victimName = DDBUtils.GetDisplayNameForUser(victim);
 			List<string> tributeKillDetails = new List<string>
 			{
 				$"{murdererName} took {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} by clonking {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} with the Sunday Edition of the New York Times.",
@@ -258,7 +271,7 @@ namespace DeepState.Utilities
 		public static string GetEnvironmentalKillDetails(Dictionary<PronounConjugations, List<string>> victimPronounsByConjugation, IGuildUser victim)
 		{
 			Random rand = Utils.CreateSeededRandom();
-			string victimName = victim.Nickname ?? victim.Username;
+			string victimName = DDBUtils.GetDisplayNameForUser(victim);
 
 			List<string> environmentalKillDetails = new List<string>
 			{
@@ -368,9 +381,9 @@ namespace DeepState.Utilities
 				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} belief that Trump will be reinstated <:soontm:322880475066793986>",
 				$"Survived by {HungerGameConstants.OldGods.GetRandom()}, who will live eternally."
 			};
-			if (victim.Id == HungerGameConstants.TheRepublican)
+			if (victim != null && victim.Id == HungerGameConstants.TheRepublican)
 			{
-				string username = victim.Nickname ?? victim.Username;
+				string username = DDBUtils.GetDisplayNameForUser(victim);
 				return $"F in the chat for Famous Republican {username}.{Environment.NewLine}{obituaries.GetRandom()}";
 			}
 
@@ -379,11 +392,15 @@ namespace DeepState.Utilities
 
 		public static Embed BuildTributeDeathEmbed(IGuildUser victim, string goreyDetails, string obituary, int district)
 		{
-
+			string avatarUrl = null;
+			if(victim == null || victim.GetAvatarUrl() == null)
+			{
+				avatarUrl = HungerGameConstants.AvatarURLs.GetRandom();
+			}
 			EmbedBuilder embed = new EmbedBuilder();
-			string victimName = victim.Nickname ?? victim.Username;
+			string victimName = DDBUtils.GetDisplayNameForUser(victim);
 			embed.WithTitle($"Tribute {victimName} has fallen!");
-			embed.WithImageUrl(victim.GetAvatarUrl());
+			embed.WithImageUrl(avatarUrl ?? victim.GetAvatarUrl());
 			embed.WithColor(Color.DarkPurple);
 			embed.WithDescription(obituary);
 			embed.AddField("Cause of Death", goreyDetails);
@@ -391,6 +408,23 @@ namespace DeepState.Utilities
 			return embed.Build();
 		}
 
+		public static Embed TributeEmbedPagingCallback(IMessage msg, IServiceProvider serviceProvider, int currentPage, bool incrementPage)
+		{
+			HungerGamesService service = ((HungerGamesService)serviceProvider.GetService(typeof(HungerGamesService)));
+			IChannel channel = msg.Channel;
+			IGuild guild = ((IGuildChannel)channel).Guild;
+			List<HungerGamesTribute> tributes;
+			if (incrementPage)
+			{
+				tributes = service.GetPagedTributeList(guild.Id, out currentPage, ++currentPage);
+			}
+			else
+			{
+				tributes = service.GetPagedTributeList(guild.Id, out currentPage, --currentPage);
+			}
+			 
 
+			return BuildTributeEmbed(tributes, currentPage, guild);
+		}
 	}
 }
