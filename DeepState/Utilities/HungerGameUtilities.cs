@@ -85,7 +85,9 @@ namespace DeepState.Utilities
 					Random rand = Utils.CreateSeededRandom();
 					//Add +1, as we haven't done en elimination for the day yet.
 					int daysRemaining = (DateTime.DaysInMonth(now.Year, now.Month) - now.Day) + 1;
-					int numberOfVictims = (int)Math.Ceiling(((double)tributes.Where(t => t.IsAlive).ToList().Count / daysRemaining));
+					int numberOfMinimumVictims = (int)Math.Ceiling(((double)tributes.Where(t => t.IsAlive).ToList().Count / daysRemaining));
+
+                                        Int numberOfVictims = rand.Next(numberOfMinimumVictims, numberOfMinimumVictims +3);
 
 					if (numberOfVictims < 1)
 					{
@@ -136,6 +138,7 @@ namespace DeepState.Utilities
 						}).Start();
 
 						tributes = hgService.GetTributeList(config.DiscordGuildId);
+                                                Thread.Sleep(rand.Next.((60 * 1000 * 30), (60 * 1000 * 120)));
 					}
 
 
