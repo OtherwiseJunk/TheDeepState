@@ -87,7 +87,7 @@ namespace DeepState.Utilities
 					int daysRemaining = (DateTime.DaysInMonth(now.Year, now.Month) - now.Day) + 1;
 					int numberOfMinimumVictims = (int)Math.Ceiling(((double)tributes.Where(t => t.IsAlive).ToList().Count / daysRemaining));
 
-                                        Int numberOfVictims = rand.Next(numberOfMinimumVictims, numberOfMinimumVictims +3);
+                                        int numberOfVictims = rand.Next(numberOfMinimumVictims, numberOfMinimumVictims +3);
 
 					if (numberOfVictims < 1)
 					{
