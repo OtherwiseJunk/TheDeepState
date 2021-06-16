@@ -138,7 +138,7 @@ namespace DeepState.Utilities
 						}).Start();
 
 						tributes = hgService.GetTributeList(config.DiscordGuildId);
-                                                Thread.Sleep(rand.Next.((60 * 1000 * 30), (60 * 1000 * 120)));
+                                              Thread.Sleep(rand.Next((60 * 1000 * 30), (60 * 1000 * 120)));
 					}
 
 
