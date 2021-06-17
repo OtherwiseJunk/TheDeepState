@@ -1,6 +1,5 @@
 ﻿using Discord;
 using System.Collections.Generic;
-using EmojiOne;
 
 namespace DeepState.Constants
 {
