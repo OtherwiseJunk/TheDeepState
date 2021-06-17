@@ -150,6 +150,7 @@ namespace DeepState
 				new Thread(() => { OnMessageHandlers.EgoCheck(messageParam, Utils.IsMentioningMe(messageParam, _client.CurrentUser)); }).Start();
 				new Thread(() => { _ = OnMessageHandlers.RandomReactCheck(messageParam); }).Start();
 				new Thread(() => { OnMessageHandlers.Imposter(messageParam, Utils.IsSus(messageParam.Content)); }).Start();
+				new Thread(() => { _ = OnMessageHandlers.MalarkeyLevelOfHandler(message); }).Start();
 			}
 
 		}

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DeepState.Constants;
 using DartsDiscordBots.Utilities;
 using Discord;
+using System.Linq;
 
 namespace DeepState.Handlers
 {
@@ -44,6 +45,14 @@ namespace DeepState.Handlers
 				{
 					await msg.AddReactionAsync(Emote.Parse(SharedConstants.ReactableEmotes.GetRandom()));
 				}
+			}
+		}
+
+		public static async Task MalarkeyLevelOfHandler(SocketMessage msg)
+		{
+			if(msg.Content.ToLower().Contains("malarkey level of"))
+			{
+				var response = msg.AddReactionAsync(SharedConstants.MalarkeyLevels.GetRandom());
 			}
 		}
 	}

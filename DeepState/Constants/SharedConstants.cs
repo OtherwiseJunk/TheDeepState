@@ -1,5 +1,6 @@
 ﻿using Discord;
 using System.Collections.Generic;
+using EmojiOne;
 
 namespace DeepState.Constants
 {
@@ -97,13 +98,58 @@ namespace DeepState.Constants
 			"📵",
 			"❌"
 		};
+		public static List<IEmote> MalarkeyLevels = new List<IEmote>
+		{
+			new Emoji("\u0031\ufe0f\u20e3"),
+			new Emoji("\u0031\ufe0f\u20e3"),
+			new Emoji("\u0031\ufe0f\u20e3"),
+			new Emoji("\u0031\ufe0f\u20e3"),
+			new Emoji("\u0031\ufe0f\u20e3"),
+
+			new Emoji("\u0032\ufe0f\u20e3"),
+			new Emoji("\u0032\ufe0f\u20e3"),
+			new Emoji("\u0032\ufe0f\u20e3"),
+			new Emoji("\u0032\ufe0f\u20e3"),
+			new Emoji("\u0032\ufe0f\u20e3"),
+
+			new Emoji("\u0033\ufe0f\u20e3"),
+			new Emoji("\u0033\ufe0f\u20e3"),
+			new Emoji("\u0033\ufe0f\u20e3"),
+			new Emoji("\u0033\ufe0f\u20e3"),
+			new Emoji("\u0033\ufe0f\u20e3"),
+
+			new Emoji("\u0034\ufe0f\u20e3"),
+			new Emoji("\u0034\ufe0f\u20e3"),
+			new Emoji("\u0034\ufe0f\u20e3"),
+			new Emoji("\u0034\ufe0f\u20e3"),
+			new Emoji("\u0034\ufe0f\u20e3"),
+
+			new Emoji("\u0035\ufe0f\u20e3"),
+			new Emoji("\u0035\ufe0f\u20e3"),
+			new Emoji("\u0035\ufe0f\u20e3"),
+			new Emoji("\u0035\ufe0f\u20e3"),
+			new Emoji("\u0035\ufe0f\u20e3"),
+
+			new Emoji("\u0036\ufe0f\u20e3"),
+			new Emoji("\u0036\ufe0f\u20e3"),
+			new Emoji("\u0036\ufe0f\u20e3"),
+			new Emoji("\u0036\ufe0f\u20e3"),
+			new Emoji("\u0036\ufe0f\u20e3"),
+
+			new Emoji("\u0037\ufe0f\u20e3"),
+			new Emoji("\u0037\ufe0f\u20e3"),
+			new Emoji("\u0037\ufe0f\u20e3"),
+			new Emoji("\u0037\ufe0f\u20e3"),
+			new Emoji("\u0037\ufe0f\u20e3"),
+
+			Emote.Parse(BooHooCrackerID),
+			Emote.Parse(BogId)
+		};
 		#endregion
 
 		#region Strings
 		public static string KlaxonResponse = "https://www.youtube.com/watch?v=xU5mOT57ghM";
 		public static string SusRegex = @"(\bs+u+s+y?\b)|(\bamo+\w{0,2}\s*us)";
-		public static string LeftArrowEmoji = "⬅️";
-		public static string RightArrowEmoji = "➡️";
 		public static string SubjectiveNonGenderedPronoun = "they";
 		public static string SubjectiveFemininePronoun = "she";
 		public static string SubjectiveMasculinePronoun = "he";
@@ -122,6 +168,7 @@ namespace DeepState.Constants
 		public static string MasculinePronounRoleName = @"he/him";
 		public static string FemininePronnounRoleName = @"she/her";
 		public static string NongenderedPronounRolename = @"they/them";
+
 		#endregion
 
 		#region String Formats
