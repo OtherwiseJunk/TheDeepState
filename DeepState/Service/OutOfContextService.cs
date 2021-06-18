@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DeepState.Data.Context;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using DeepState.Data.Models;
 using DartsDiscordBots.Utilities;
+using System.IO;
 
-namespace DeepState.Data.Services
+namespace DeepState.Service
 {
 	public class OutOfContextService
 	{
@@ -24,11 +23,11 @@ namespace DeepState.Data.Services
 
 		}
 
-		public void DeleteImage(string base64Image)
+		public void DeleteImage(string imageUrl)
 		{
 			using (OOCDBContext context = _contextFactory.CreateDbContext())
 			{
-				OOCItem itemToDelete = context.OutOfContextRecords.FirstOrDefaultAsync(oocr => oocr.Base64Image == base64Image).Result;
+				OOCItem itemToDelete = context.OutOfContextRecords.FirstOrDefaultAsync(oocr => oocr.Base64Image == imageUrl).Result;
 				context.OutOfContextRecords.Remove(itemToDelete);
 
 				context.SaveChanges();
@@ -42,6 +41,7 @@ namespace DeepState.Data.Services
 				context.OutOfContextRecords.Add(new OOCItem
 				{
 					ReportingUserId = reportingUserId,
+
 					Base64Image = base64Image,
 					DateStored = DateTime.Now
 				});

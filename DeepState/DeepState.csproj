@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="3.7.1.4" />
     <PackageReference Include="DDB" Version="0.9.0.1" />
     <PackageReference Include="Discord.Net" Version="2.4.0" />
     <PackageReference Include="FluentScheduler" Version="5.5.1" />

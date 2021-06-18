@@ -1,7 +1,6 @@
 ﻿using DartsDiscordBots.Permissions;
 using DartsDiscordBots.Utilities;
 using DeepState.Data.Models;
-using DeepState.Data.Context;
 using DeepState.Service;
 using Discord;
 using Discord.Commands;
@@ -10,7 +9,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DeepState.Data.Services;
+using System.IO;
+using System.Net;
+using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
+using System.Text;
+using System.Security.Cryptography;
 
 namespace DeepState.Modules
 {
@@ -19,6 +22,7 @@ namespace DeepState.Modules
 		private OutOfContextService _OOCService { get; set; }
 		private ImagingService _imageService { get; set; }
 		private string OOCCaptionFormat = "{0} Originally reported by {1}";
+		private string OutOfCOntextFolder = "OutOfContext";
 
 		public OutOfContextModule(OutOfContextService oocService, ImagingService imageService)
 		{
@@ -45,19 +49,17 @@ namespace DeepState.Modules
 		{
 			OOCItem pulledItem = _OOCService.GetRandomRecord();
 			IGuildUser reportingUser = triggeringGuild.GetUserAsync(pulledItem.ReportingUserId, CacheMode.AllowDownload).Result;
-			string reportingUsername;
-			if (reportingUser != null)
-			{
-				reportingUsername = reportingUser.Nickname != null ? reportingUser.Nickname : reportingUser.Username;
-			}
-			else
-			{
-				reportingUsername = "A mysterious stranger, who is probably hot";
-			}
-			//Supports messages originally logged when I was first writing this. We shouldn't attach the image/jpeg;base64, text anymore.
-			string base64 = pulledItem.Base64Image.Replace("image/jpeg;base64,", "");
+			string reportingUsername = DDBUtils.GetDisplayNameForUser(reportingUser);
 
-			_ = triggeringChannel.SendFileAsync(Converters.GetImageStreamFromBase64(base64), "OOCLibCraft.png", String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername));
+			byte[] nameHash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(reportingUsername));
+
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.WithTitle(String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername));
+			embed.WithImageUrl(pulledItem.Base64Image);
+			embed.WithColor(new Color(nameHash[0], nameHash[1], nameHash[2]));
+			embed.AddField("Date Stored", $"{pulledItem.DateStored.ToString("yyyy-MM-dd")} (yyyy-MM-dd)");
+
+			_ = triggeringChannel.SendMessageAsync(embed: embed.Build());
 		}
 
 		public void DeleteTriggeringMessage(IMessage message)
@@ -75,14 +77,17 @@ namespace DeepState.Modules
 			{
 				IMessage messageRepliedTo = await Context.Channel.GetMessageAsync(Context.Message.ReferencedMessage.Id);
 				//We only want to log messages with a single identifiable image
-				if (messageRepliedTo.Attachments.Count == 1)
+				if (messageRepliedTo.Embeds.Count == 1)
 				{
+					EmbedImage embedImage = (EmbedImage) messageRepliedTo.Embeds.First().Image;
+					string urlPath = embedImage.Url.Replace("https://", "");
+					string[] urlSegements = urlPath.Split('/');
 					try
 					{
-						string base64Image = await _imageService.GetBase64ImageFromURL(messageRepliedTo.Attachments.First().Url);
-						if (_OOCService.ImageExists(base64Image))
+						if (_OOCService.ImageExists((embedImage.Url)))
 						{
-							_OOCService.DeleteImage(base64Image);
+							_OOCService.DeleteImage(embedImage.Url);
+							_imageService.DeleteImage(OutOfCOntextFolder, urlSegements[2]);
 							await Context.Message.AddReactionAsync(new Emoji("✅"));
 							_ = messageRepliedTo.AddReactionAsync(new Emoji("🗑️"));
 							new Thread(() => { DeleteTriggeringMessage(Context.Message); }).Start();
@@ -128,10 +133,13 @@ namespace DeepState.Modules
 				{
 					try
 					{
-						string base64Image = await _imageService.GetBase64ImageFromURL(messageRepliedTo.Attachments.First().Url);
-						if (!_OOCService.ImageExists(base64Image))
+						Stream image = Converters.GetImageStreamFromBase64(_imageService.GetBase64ImageFromURL(messageRepliedTo.Attachments.First().Url).Result);
+						var myCameraReacts = messageRepliedTo.Reactions.Where(r => r.Key.Name == "📷" && r.Value.IsMe);
+						if (messageRepliedTo.Reactions.Where(r => r.Key.Name == "📷" && r.Value.IsMe).Count() == 0)
 						{
-							_OOCService.AddRecord(Context.Message.Author.Id, base64Image);
+							string url = _imageService.UploadImage(OutOfCOntextFolder, image);
+							_OOCService.AddRecord(Context.Message.Author.Id, url);
+							
 							await Context.Message.AddReactionAsync(new Emoji("✅"));
 							_ = messageRepliedTo.AddReactionAsync(new Emoji("📷"));
 							new Thread(() => { DeleteTriggeringMessage(Context.Message); }).Start();
