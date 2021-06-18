@@ -58,5 +58,23 @@ namespace DeepState.Service
 				return context.OutOfContextRecords.ToListAsync().Result.GetRandom();
 			}
 		}
+
+		public void MoveToTheCloud(ImagingService _image)
+		{
+			using(OOCDBContext context = _contextFactory.CreateDbContext())
+			{
+				int totalRecords = context.OutOfContextRecords.CountAsync().Result;
+				int processedRecords = 1;
+				foreach(OOCItem item in context.OutOfContextRecords)
+				{
+					string base64 = item.Base64Image.Replace("image/jpeg;base64,", "");
+					Stream imageStream = Converters.GetImageStreamFromBase64(base64);
+					item.Base64Image = _image.UploadImage("OutOfContext", imageStream);
+					Console.WriteLine($"[OOC SERVICE] Successfully processed {processedRecords} of {totalRecords}");
+					processedRecords++;
+				}
+				context.SaveChanges();
+			}
+		}
 	}
 }

@@ -121,6 +121,15 @@ namespace DeepState.Modules
 			new Thread(() => { SendRandomOOCItem(Context.Guild, Context.Channel); }).Start();			
 		}
 
+		[Command("tothecloud"), RequireOwner()]
+		public async Task ToTheCloud()
+		{
+			new Thread(() =>
+			{
+				_OOCService.MoveToTheCloud(_imageService);
+			}).Start();
+		}
+
 		[Command("ooclog"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 }), RequireChannel(new ulong[] { 718986327642734654, 777400598789095445, 716841087137873920, 176357319687405569, 701194133074608198, 831675528431403039 })]
 		[Summary("Stores the attached image in the message this command is replying to.")]
 		public async Task LogOutOfContext()
@@ -133,8 +142,8 @@ namespace DeepState.Modules
 				{
 					try
 					{
-						Stream image = Converters.GetImageStreamFromBase64(_imageService.GetBase64ImageFromURL(messageRepliedTo.Attachments.First().Url).Result);
-						var myCameraReacts = messageRepliedTo.Reactions.Where(r => r.Key.Name == "📷" && r.Value.IsMe);
+						WebClient client = new WebClient();
+						Stream image = new MemoryStream(client.DownloadData(messageRepliedTo.Attachments.First().Url));
 						if (messageRepliedTo.Reactions.Where(r => r.Key.Name == "📷" && r.Value.IsMe).Count() == 0)
 						{
 							string url = _imageService.UploadImage(OutOfCOntextFolder, image);
