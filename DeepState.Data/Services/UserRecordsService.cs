@@ -166,7 +166,7 @@ namespace DeepState.Data.Services
 			}
 
 			fair_area = height * (balances.Count / 2);
-			return (fair_area - area) / fair_area;
+			return (-1 * (fair_area - area) / fair_area);
 
 		}
 		private double CalculateTotalCirculation(List<UserRecord> economy)
