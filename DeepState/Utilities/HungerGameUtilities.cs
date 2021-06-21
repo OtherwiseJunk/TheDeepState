@@ -99,6 +99,12 @@ namespace DeepState.Utilities
 
 					for (int i = 0; i < numberOfVictims; i++)
 					{
+						if(i != 0)
+						{
+							int sleepTime = rand.Next((60 * 1000 * 30), (60 * 1000 * 120));
+							Console.WriteLine($"[HUNGERGAMES] Waiting {sleepTime} miliseconds before attempting to KILL AGAIN.");
+							Thread.Sleep(sleepTime);
+						}
 						List<HungerGamesTribute> nullUsers = tributes.Where(t => t.IsAlive).Where(t => !guild.GetUsersAsync().Result.Select(u => u.Id).Contains(t.DiscordUserId)).ToList();
 						int district = rand.Next(1, 12);
 						if (nullUsers.Count > 0)
@@ -138,10 +144,7 @@ namespace DeepState.Utilities
 							}).Start();
 						}
 
-						tributes = hgService.GetTributeList(config.DiscordGuildId);
-						int sleepTime = rand.Next((60 * 1000 * 30), (60 * 1000 * 120));
-						Console.WriteLine($"[HUNGERGAMES] Waiting {sleepTime} miliseconds before attempting to KILL AGAIN.");
-						Thread.Sleep(sleepTime);
+						tributes = hgService.GetTributeList(config.DiscordGuildId);						
 					}
 
 
