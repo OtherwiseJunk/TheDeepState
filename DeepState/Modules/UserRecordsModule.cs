@@ -2,6 +2,7 @@
 using DeepState.Data.Services;
 using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -28,6 +29,22 @@ namespace DeepState.Modules
 			else
 			{
 				_ = Context.Channel.SendMessageAsync("Sorry, it looks like you don't have a balance yet! It'll happen eventually I'm sure.");
+			}
+		}
+
+		[Command("balance")]
+		[RequireOwner(Group = "AdminOnly"),RequireUserPermission(ChannelPermission.ManageMessages,Group = "AdminOnly")]
+		public async Task Balance(SocketGuildUser user)
+		{
+			ulong guildId = Context.Guild.Id;
+			ulong userId = user.Id;
+			if (_UserRecordsService.UserRecordExists(userId, guildId))
+			{
+				_ = Context.Channel.SendMessageAsync($"Looks like they have {_UserRecordsService.GetUserBalance(userId, guildId).ToString("F8")} libcoins.");
+			}
+			else
+			{
+				_ = Context.Channel.SendMessageAsync("Sorry, it looks like they don't have a balance yet! It'll happen eventually I'm sure.");
 			}
 		}
 
