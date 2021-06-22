@@ -144,7 +144,7 @@ namespace DeepState.Utilities
 							}).Start();
 						}
 
-						tributes = hgService.GetTributeList(config.DiscordGuildId);						
+						hgService.GetTributeList(config.DiscordGuildId);						
 					}
 
 
@@ -177,12 +177,16 @@ namespace DeepState.Utilities
 
 		private static void RunHungerGamesCleanup(IGuild guild, IMessageChannel announcementChannel, IRole tributeRole, IRole? corpseRole, IRole? championRole, List<HungerGamesTribute> tributes, HungerGamesService hgService, UserRecordsService urService)
 		{
+			Console.WriteLine("We have a winner! Starting closing ceremonies.");
 			Random rand = Utils.CreateSeededRandom();
 			announcementChannel.SendMessageAsync("We have a winner! But first, we remember the fallen.");
 
 			List<HungerGamesTribute> corpses = tributes.Where(t => !t.IsAlive).OrderBy(t => t.District).ToList();
+			Console.WriteLine($"Found {corpses.Count} corpses.");
 			HungerGamesTribute winner = tributes.Where(t => t.IsAlive).First();
+			Console.WriteLine("Identified Winner.");
 			IGuildUser winnerUser = guild.GetUserAsync(winner.DiscordUserId).Result;
+			Console.WriteLine($"Found winning discord user {DDBUtils.GetDisplayNameForUser(winnerUser)}.");
 
 			foreach (HungerGamesTribute corpse in corpses)
 			{
@@ -194,6 +198,7 @@ namespace DeepState.Utilities
 				_ = announcementChannel.SendMessageAsync(embed: BuildTributeDeathEmbed(victimUser, corpse.DeathMessage, corpse.ObituaryMessage, corpse.District));
 				Thread.Sleep(15 * 1000);
 			}
+			Console.WriteLine("Finished the 'Remembering the Fallen' announcements. Now to the winner!");
 
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.WithTitle($"This Game's Champion: {winnerUser.Nickname ?? winnerUser.Username}");
@@ -202,15 +207,20 @@ namespace DeepState.Utilities
 
 			_ = announcementChannel.SendMessageAsync("And now, your champion!", embed: builder.Build());
 
+			Console.WriteLine($"Ok, now that that's done, time to assign the champion role! we have that right? {championRole != null}");
+
 			if (championRole != null)
 			{
 				winnerUser.AddRoleAsync(championRole);
+				Console.WriteLine("Ok, role assigned!");
 			}
 			winnerUser.RemoveRoleAsync(tributeRole);
 			double prize = hgService.GetPrizePool(guild.Id);
 			urService.Grant(winner.DiscordUserId, guild.Id, prize);
 
 			_ = announcementChannel.SendMessageAsync($"{prize.ToString("F8")} libcoin has been added to your account, {winnerUser.Nickname ?? winnerUser.Username}");
+
+			Console.WriteLine($"Sweet, payout of {prize.ToString("F8")} the user succeeded! Good Hunger Games everyone, I'll see you next time.");
 
 			hgService.EndGame(guild.Id, tributes);
 		}

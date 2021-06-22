@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DDB" Version="0.7.12" />
+    <PackageReference Include="DDB" Version="0.9.0.1" />
     <PackageReference Include="Discord.Net.Core" Version="2.3.1" />
     <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.6" />

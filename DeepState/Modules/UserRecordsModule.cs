@@ -1,4 +1,5 @@
-﻿using DeepState.Data.Models;
+﻿using DeepState.Constants;
+using DeepState.Data.Models;
 using DeepState.Data.Services;
 using Discord;
 using Discord.Commands;
@@ -33,8 +34,8 @@ namespace DeepState.Modules
 		}
 
 		[Command("balance")]
-		[RequireOwner(Group = "AdminOnly"),RequireUserPermission(ChannelPermission.ManageMessages,Group = "AdminOnly")]
-		public async Task Balance(SocketGuildUser user)
+		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup),RequireUserPermission(ChannelPermission.ManageMessages,Group = SharedConstants.AdminsOnlyGroup)]
+		public async Task Balance([Summary("An @ ping of the user you're granting cash")] SocketGuildUser user)
 		{
 			ulong guildId = Context.Guild.Id;
 			ulong userId = user.Id;
@@ -66,8 +67,8 @@ namespace DeepState.Modules
 			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
 		}
 
-		[RequireOwner(Group = "AllowedUsers")]
-		[RequireUserPermission(ChannelPermission.ManageMessages, Group = "AllowedUsers")]
+		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
+		[RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup)]
 		[Command("stats")]
 		[Summary("Returns economic stats for the guild")]
 		public async Task GetGuildEconomicStats()
@@ -88,27 +89,46 @@ namespace DeepState.Modules
 			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
 		}
 
-		[RequireOwner(Group = "AdminsOnly")]
-		[RequireUserPermission(ChannelPermission.ManageMessages, Group = "AdminsOnly")]
 		[Command("grant")]
 		[Summary("Conjures up the specified amount of libcoin and gives it to the specified user ID")]
-		public async Task GrantLibcoin(ulong discordUserID, double amount)
+		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup), RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup)]
+		public async Task GrantLibcoin([Summary("An @ ping of the user you're granting cash")] SocketGuildUser user, [Summary("The amount to grant to the user.")] double amount)
 		{
-			IGuildUser user = Context.Guild.GetUserAsync(discordUserID).Result;
 			if (user != null)
 			{
 				_UserRecordsService.Grant(user.Id, Context.Guild.Id, amount);
 				_ = Context.Channel.SendMessageAsync($"Ok, I've given {user.Nickname ?? user.Username} {amount.ToString("F8")} libcoin.");
 			}
 		}
+		[Command("grantall")]
+		[Summary("Add the given sum to all users' balances in the guild.")]
+		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup), RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup)]
+		public async Task GrantToAllGuildUsers([Summary("The amount to grant to all users of the guild.")] double amount)
+		{
+			foreach (UserRecord user in _UserRecordsService.GetGuildUserRecords(Context.Guild.Id))
+			{
+				_UserRecordsService.Grant(user.DiscordUserId, user.DiscordGuildId, amount);
+			}
+		}
 
-		[RequireOwner(Group = "AdminsOnly")]
-		[RequireUserPermission(ChannelPermission.ManageMessages, Group = "AdminsOnly")]
+		[Command("deductall")]
+		[Summary("Remove the given sum from all users' balances in the guild.")]
+		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup), RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup)]
+		public async Task DeductFromAllGuildUsers([Summary("The amount to grant to all users of the guild.")] double amount)
+		{
+			foreach (UserRecord user in _UserRecordsService.GetGuildUserRecords(Context.Guild.Id))
+			{
+				_UserRecordsService.Deduct(user.DiscordUserId, user.DiscordGuildId, amount);
+			}
+		}
+
+
+		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
+		[RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup)]
 		[Command("deduct")]
 		[Summary("Incinerates the specified amount of libcoin from the specified user ID. Overages will result in a balance of 0 currently.")]
-		public async Task DeductLibcoin(ulong discordUserID, double amount)
+		public async Task DeductLibcoin([Summary("An @ ping of the user you're granting cash")] SocketGuildUser user, [Summary("The amount to take from the user.")] double amount)
 		{
-			IGuildUser user = Context.Guild.GetUserAsync(discordUserID).Result;
 			if (user != null)
 			{
 				if (_UserRecordsService.Deduct(user.Id, Context.Guild.Id, amount)) {

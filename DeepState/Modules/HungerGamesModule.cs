@@ -138,8 +138,8 @@ namespace DeepState.Modules
 
 		[Command("testfrag")]
 		[RequireRoleName(HungerGameConstants.TributeRoleName)]
-		[RequireUserPermission(GuildPermission.ManageMessages, Group = "AdminsOnly")]
-		[RequireOwner(Group = "AdminsOnly")]
+		[RequireUserPermission(GuildPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup)]
+		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
 		public async Task TestFrag(ulong mentionedUser = 0)
 		{
 			Random rand = Utils.CreateSeededRandom();

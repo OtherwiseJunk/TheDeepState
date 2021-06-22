@@ -5,6 +5,7 @@ using DeepState.Data.Models;
 using System.Collections.Generic;
 using System.Linq;
 using MathNet.Numerics.Statistics;
+using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 
 namespace DeepState.Data.Services
 {
@@ -80,7 +81,7 @@ namespace DeepState.Data.Services
 			}
 		}
 
-		private List<UserRecord> GetGuildUserRecords(ulong guildId){
+		public List<UserRecord> GetGuildUserRecords(ulong guildId){
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
 				return context.UserRecords.AsQueryable().Where(ur => ur.DiscordGuildId == guildId).ToList();
@@ -110,13 +111,17 @@ namespace DeepState.Data.Services
 
 		public void Grant(ulong userId, ulong guildId, double amount)
 		{
+			Console.WriteLine($"Attempting to grant {amount.ToString("F8")} libcoin to user {userId} from guild {guildId}");
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
+				Console.WriteLine($"Attempting to lookup user {userId} in guild {guildId}...");
 				UserRecord user = context.UserRecords.FirstOrDefault(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId);
 				if (user != null)
 				{
+					Console.WriteLine($"Found user record! Adding {amount.ToString("F8")} libcoin to their balance of {user.LibcraftCoinBalance}...");
 					user.LibcraftCoinBalance += amount;
 					context.SaveChanges();
+					Console.WriteLine($"Success! User now has a balance of {user.LibcraftCoinBalance}");
 					return;
 				}
 

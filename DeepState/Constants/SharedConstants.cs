@@ -167,6 +167,7 @@ namespace DeepState.Constants
 		public static string MasculinePronounRoleName = @"he/him";
 		public static string FemininePronnounRoleName = @"she/her";
 		public static string NongenderedPronounRolename = @"they/them";
+		public const string AdminsOnlyGroup = "AdminsOnly";
 
 		#endregion
 
