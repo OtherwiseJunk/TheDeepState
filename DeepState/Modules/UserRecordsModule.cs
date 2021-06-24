@@ -4,6 +4,7 @@ using DeepState.Data.Services;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -96,8 +97,8 @@ namespace DeepState.Modules
 		{
 			if (user != null)
 			{
-				_UserRecordsService.Grant(user.Id, Context.Guild.Id, amount);
-				_ = Context.Channel.SendMessageAsync($"Ok, I've given {user.Nickname ?? user.Username} {amount.ToString("F8")} libcoin.");
+				_UserRecordsService.Grant(user.Id, Context.Guild.Id, Math.Abs(amount));
+				_ = Context.Channel.SendMessageAsync($"Ok, I've given {user.Nickname ?? user.Username} {Math.Abs(amount).ToString("F8")} libcoin.");
 			}
 		}
 		[Command("grantall")]
@@ -107,7 +108,7 @@ namespace DeepState.Modules
 		{
 			foreach (UserRecord user in _UserRecordsService.GetGuildUserRecords(Context.Guild.Id))
 			{
-				_UserRecordsService.Grant(user.DiscordUserId, user.DiscordGuildId, amount);
+				_UserRecordsService.Grant(user.DiscordUserId, user.DiscordGuildId, Math.Abs(amount));
 			}
 		}
 
@@ -118,7 +119,7 @@ namespace DeepState.Modules
 		{
 			foreach (UserRecord user in _UserRecordsService.GetGuildUserRecords(Context.Guild.Id))
 			{
-				_UserRecordsService.Deduct(user.DiscordUserId, user.DiscordGuildId, amount);
+				_UserRecordsService.Deduct(user.DiscordUserId, user.DiscordGuildId, Math.Abs(amount));
 			}
 		}
 
@@ -131,8 +132,8 @@ namespace DeepState.Modules
 		{
 			if (user != null)
 			{
-				if (_UserRecordsService.Deduct(user.Id, Context.Guild.Id, amount)) {
-					_ = Context.Channel.SendMessageAsync($"Ok, I've taken  {amount.ToString("F8")} libcoin from {user.Nickname ?? user.Username}. If they didn't have that much they have nothing now.");
+				if (_UserRecordsService.Deduct(user.Id, Context.Guild.Id, Math.Abs(amount))) {
+					_ = Context.Channel.SendMessageAsync($"Ok, I've taken  {Math.Abs(amount).ToString("F8")} libcoin from {user.Nickname ?? user.Username}. If they didn't have that much they have nothing now.");
 				}
 				else
 				{
