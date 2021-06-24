@@ -71,8 +71,6 @@ namespace DeepState.Modules
 			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
 		}
 
-		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
-		[RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup)]
 		[Command("stats")]
 		[Summary("Returns economic stats for the guild")]
 		public async Task GetGuildEconomicStats()
@@ -81,9 +79,8 @@ namespace DeepState.Modules
 			nfi.PercentDecimalDigits = 2;
 			EmbedBuilder embedBuilder = new EmbedBuilder();
 			embedBuilder.Title = $"{Context.Guild.Name}'s Economic Statistics";
-			LibcoinEconomicStatistics stats = _UserRecordsService.CalculateEconomicStats(Context.Guild.Id);
+			LibcoinEconomicStatistics stats = _UserRecordsService.CalculateEconomicStats(Context.Guild);
 			IGuildUser poorestUser = Context.Guild.GetUserAsync(stats.PoorestUser).Result;
-			double poorestUserBalance = _UserRecordsService.GetUserBalance(poorestUser.Id, Context.Guild.Id);
 			IGuildUser richestUser = Context.Guild.GetUserAsync(stats.RichestUser).Result;
 			double richestUserBalance = _UserRecordsService.GetUserBalance(richestUser.Id, Context.Guild.Id);
 
@@ -92,8 +89,8 @@ namespace DeepState.Modules
 			embedBuilder.AddField("Median LibCoin Balance", stats.MedianBalance.ToString("F8"));
 			embedBuilder.AddField("Richest User", $"{DDBUtils.GetDisplayNameForUser(richestUser)} - {(richestUserBalance / stats.TotalCirculation).ToString("P", nfi)} of libcoin.");
 			//Poor user might represent a significant smaller slice of the economy, so we're going DEEPER
-			nfi.PercentDecimalDigits = 4;
-			embedBuilder.AddField("Poorest User", $"{DDBUtils.GetDisplayNameForUser(poorestUser)} - {(poorestUserBalance / stats.TotalCirculation).ToString("P", nfi)} of libcoin.");
+			nfi.PercentDecimalDigits = 20;
+			embedBuilder.AddField("Poorest User", DDBUtils.GetDisplayNameForUser(poorestUser));
 			embedBuilder.AddField("GINI Coefficient", stats.GiniCoefficient.ToString("0.###"));
 
 			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());

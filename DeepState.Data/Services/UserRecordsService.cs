@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MathNet.Numerics.Statistics;
 using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
+using Discord;
 
 namespace DeepState.Data.Services
 {
@@ -88,14 +89,15 @@ namespace DeepState.Data.Services
 			}
 		}
 
-		public LibcoinEconomicStatistics CalculateEconomicStats(ulong guildId)
+		public LibcoinEconomicStatistics CalculateEconomicStats(IGuild guild)
 		{
+			ulong guildId = guild.Id;
 			List<UserRecord> guildRecords = GetGuildUserRecords(guildId);
 			double totalCirculation = CalculateTotalCirculation(guildRecords);
 			double meanBalance = guildRecords.Average(ur => ur.LibcraftCoinBalance);
 			double medianBalance = guildRecords.Select(ur => ur.LibcraftCoinBalance).Median();
-			ulong poorestUser = guildRecords.OrderBy(ur => ur.LibcraftCoinBalance).First().DiscordUserId;
-			ulong richestUser = guildRecords.OrderByDescending(ur => ur.LibcraftCoinBalance).First().DiscordUserId;
+			ulong poorestUser = FindPoorestActiveUserId(guild, guildRecords);
+			ulong richestUser = FindRichestActiveUserId(guild, guildRecords);
 			double giniCoeffiecient = CalculateGiniCoefficient(guildRecords.Select(ur => ur.LibcraftCoinBalance).ToList());
 
 			return new LibcoinEconomicStatistics
@@ -107,6 +109,34 @@ namespace DeepState.Data.Services
 				RichestUser = richestUser,
 				GiniCoefficient = giniCoeffiecient
 			};
+		}
+
+		public ulong FindPoorestActiveUserId(IGuild guild, List<UserRecord> guildRecords)
+		{
+			IGuildUser user = null;
+			int skipCount = 0;
+			guildRecords = guildRecords.OrderBy(ur => ur.LibcraftCoinBalance).ToList();
+			while (user == null)
+			{
+				user = guild.GetUserAsync(guildRecords.Skip(skipCount).First().DiscordUserId).Result;
+				skipCount++;
+			}
+
+			return user.Id;
+		}
+
+		public ulong FindRichestActiveUserId(IGuild guild, List<UserRecord> guildRecords)
+		{
+			IGuildUser user = null;
+			int skipCount = 0;
+			guildRecords = guildRecords.OrderByDescending(ur => ur.LibcraftCoinBalance).ToList();
+			while (user == null)
+			{
+				user = guild.GetUserAsync(guildRecords.Skip(skipCount).First().DiscordUserId).Result;
+				skipCount++;
+			}
+
+			return user.Id;
 		}
 
 		public void Grant(ulong userId, ulong guildId, double amount)
