@@ -87,10 +87,10 @@ namespace DeepState.Modules
 			embedBuilder.AddField("Total LibCoin Circulation", stats.TotalCirculation.ToString("F8"));
 			embedBuilder.AddField("Mean LibCoin Balance", stats.MeanBalance.ToString("F8"));
 			embedBuilder.AddField("Median LibCoin Balance", stats.MedianBalance.ToString("F8"));
-			embedBuilder.AddField("Richest User", $"{DDBUtils.GetDisplayNameForUser(richestUser)} - {(richestUserBalance / stats.TotalCirculation).ToString("P", nfi)} of libcoin.");
+			embedBuilder.AddField("Richest Active User", $"{DDBUtils.GetDisplayNameForUser(richestUser)} - {(richestUserBalance / stats.TotalCirculation).ToString("P", nfi)} of libcoin.");
 			//Poor user might represent a significant smaller slice of the economy, so we're going DEEPER
 			nfi.PercentDecimalDigits = 20;
-			embedBuilder.AddField("Poorest User", DDBUtils.GetDisplayNameForUser(poorestUser));
+			embedBuilder.AddField("Poorest Active User", DDBUtils.GetDisplayNameForUser(poorestUser));
 			embedBuilder.AddField("GINI Coefficient", stats.GiniCoefficient.ToString("0.###"));
 
 			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
