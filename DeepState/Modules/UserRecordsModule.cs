@@ -163,11 +163,11 @@ namespace DeepState.Modules
 			{
 				_UserRecordsService.Deduct(senderId, guildId, amount);
 				_UserRecordsService.Grant(receivingUser.Id, guildId, amount);
-				_ = Context.Channel.SendMessageAsync($"Ok, {Context.Message.Author.Mention}. I've given {DDBUtils.GetDisplayNameForUser(receivingUser)} {amount} of your libcoins.");
+				_ = Context.Channel.SendMessageAsync($"Ok, {Context.Message.Author.Mention}. I've given {DDBUtils.GetDisplayNameForUser(receivingUser)} {amount.ToString("F8")} of your libcoins.");
 			}
 			else
 			{
-				_ = Context.Channel.SendMessageAsync($"Listen friend, I hate to embarass you like this in front of all your friends... but you don't actually _have_ {amount} libcoins.");
+				_ = Context.Channel.SendMessageAsync($"Listen friend, I hate to embarass you like this in front of all your friends... but you don't actually _have_ {amount.ToString("F8")} libcoins.");
 			}
 		}
 	}
