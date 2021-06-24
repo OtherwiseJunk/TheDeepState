@@ -1,12 +1,15 @@
 ﻿using DeepState.Constants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
+using DeepState.Modules.Preconditions;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
+using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 
 namespace DeepState.Modules
 {
@@ -61,7 +64,7 @@ namespace DeepState.Modules
 			foreach (UserRecord record in topBalances)
 			{
 				IGuildUser user = Context.Guild.GetUserAsync(record.DiscordUserId).Result;
-				string username = user.Nickname ?? user.Username;
+				string username = DDBUtils.GetDisplayNameForUser(user);
 				embedBuilder.AddField($"{place}. {username}", $"{record.LibcraftCoinBalance.ToString("F8")}");
 				place++;
 			}
@@ -74,17 +77,23 @@ namespace DeepState.Modules
 		[Summary("Returns economic stats for the guild")]
 		public async Task GetGuildEconomicStats()
 		{
+			NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
+			nfi.PercentDecimalDigits = 2;
 			EmbedBuilder embedBuilder = new EmbedBuilder();
 			embedBuilder.Title = $"{Context.Guild.Name}'s Economic Statistics";
 			LibcoinEconomicStatistics stats = _UserRecordsService.CalculateEconomicStats(Context.Guild.Id);
 			IGuildUser poorestUser = Context.Guild.GetUserAsync(stats.PoorestUser).Result;
+			double poorestUserBalance = _UserRecordsService.GetUserBalance(poorestUser.Id, Context.Guild.Id);
 			IGuildUser richestUser = Context.Guild.GetUserAsync(stats.RichestUser).Result;
+			double richestUserBalance = _UserRecordsService.GetUserBalance(richestUser.Id, Context.Guild.Id);
 
 			embedBuilder.AddField("Total LibCoin Circulation", stats.TotalCirculation.ToString("F8"));
 			embedBuilder.AddField("Mean LibCoin Balance", stats.MeanBalance.ToString("F8"));
 			embedBuilder.AddField("Median LibCoin Balance", stats.MedianBalance.ToString("F8"));
-			embedBuilder.AddField("Richest User", richestUser.Nickname ?? richestUser.Username);
-			embedBuilder.AddField("Poorest User", poorestUser.Nickname ?? poorestUser.Username);
+			embedBuilder.AddField("Richest User", $"{DDBUtils.GetDisplayNameForUser(richestUser)} - {(richestUserBalance / stats.TotalCirculation).ToString("P", nfi)} of libcoin.");
+			//Poor user might represent a significant smaller slice of the economy, so we're going DEEPER
+			nfi.PercentDecimalDigits = 4;
+			embedBuilder.AddField("Poorest User", $"{DDBUtils.GetDisplayNameForUser(poorestUser)} - {(poorestUserBalance / stats.TotalCirculation).ToString("P", nfi)} of libcoin.");
 			embedBuilder.AddField("GINI Coefficient", stats.GiniCoefficient.ToString("0.###"));
 
 			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
@@ -95,10 +104,11 @@ namespace DeepState.Modules
 		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup), RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup)]
 		public async Task GrantLibcoin([Summary("An @ ping of the user you're granting cash")] SocketGuildUser user, [Summary("The amount to grant to the user.")] double amount)
 		{
+			amount = Math.Abs(amount);
 			if (user != null)
 			{
-				_UserRecordsService.Grant(user.Id, Context.Guild.Id, Math.Abs(amount));
-				_ = Context.Channel.SendMessageAsync($"Ok, I've given {user.Nickname ?? user.Username} {Math.Abs(amount).ToString("F8")} libcoin.");
+				_UserRecordsService.Grant(user.Id, Context.Guild.Id, amount);
+				_ = Context.Channel.SendMessageAsync($"Ok, I've given {DDBUtils.GetDisplayNameForUser(user)} {amount.ToString("F8")} libcoin.");
 			}
 		}
 		[Command("grantall")]
@@ -130,15 +140,37 @@ namespace DeepState.Modules
 		[Summary("Incinerates the specified amount of libcoin from the specified user ID. Overages will result in a balance of 0 currently.")]
 		public async Task DeductLibcoin([Summary("An @ ping of the user you're granting cash")] SocketGuildUser user, [Summary("The amount to take from the user.")] double amount)
 		{
+			amount = Math.Abs(amount);
 			if (user != null)
 			{
-				if (_UserRecordsService.Deduct(user.Id, Context.Guild.Id, Math.Abs(amount))) {
-					_ = Context.Channel.SendMessageAsync($"Ok, I've taken  {Math.Abs(amount).ToString("F8")} libcoin from {user.Nickname ?? user.Username}. If they didn't have that much they have nothing now.");
+				if (_UserRecordsService.Deduct(user.Id, Context.Guild.Id, amount)) {
+					_ = Context.Channel.SendMessageAsync($"Ok, I've taken  {amount.ToString("F8")} libcoin from {DDBUtils.GetDisplayNameForUser(user)}. If they didn't have that much they have nothing now.");
 				}
 				else
 				{
 					_ = Context.Channel.SendMessageAsync($"They don't have any money, I can't make them poorer than that.");
 				}
+			}
+		}
+
+		[RequireLibcoinBalance(0.00000001)]
+		[Command("give")]
+		[Summary("Gives the pinged user the specified amount of libcoin from your balance. Negative values will be absolute-valued")]
+		public async Task UserGive([Summary("An @ ping of the user you're granting cash")] SocketGuildUser receivingUser, [Summary("The amount to take from the user.")] double amount)
+		{
+			amount = Math.Abs(amount);
+			ulong senderId = Context.Message.Author.Id;
+			ulong guildId = Context.Guild.Id;
+			double senderBalance = _UserRecordsService.GetUserBalance(senderId, guildId);
+			if(amount <= senderBalance)
+			{
+				_UserRecordsService.Deduct(senderId, guildId, amount);
+				_UserRecordsService.Grant(receivingUser.Id, guildId, amount);
+				_ = Context.Channel.SendMessageAsync($"Ok, {Context.Message.Author.Mention}. I've given {DDBUtils.GetDisplayNameForUser(receivingUser)} {amount} of your libcoins.");
+			}
+			else
+			{
+				_ = Context.Channel.SendMessageAsync($"Listen friend, I hate to embarass you like this in front of all your friends... but you don't actually _have_ {amount} libcoins.");
 			}
 		}
 	}
