@@ -56,7 +56,7 @@ namespace DeepState.Handlers
 			}
 		}
 
-		public static async Task CommandInDiscordSuggestions(SocketMessage msg)
+		public static async Task CommandInDiscordSuggestionsHandler(SocketMessage msg)
 		{
 			if(msg.Content.First() == BotProperties.CommandPrefix && msg.Channel.Id == SharedConstants.DiscordSuggestionsChannelId)
 			{
