@@ -60,7 +60,7 @@ namespace DeepState.Handlers
 		{
 			if(msg.Content.First() == BotProperties.CommandPrefix && msg.Channel.Id == SharedConstants.DiscordSuggestionsChannelId)
 			{
-				_ = msg.Author.GetOrCreateDMChannelAsync().Result.SendMessageAsync("Hey, I see you. Cut the shit. YOU KNOW WHERE MY COMMANDS SHOULD GO !");
+				_ = msg.Author.GetOrCreateDMChannelAsync().Result.SendMessageAsync("Hey, I saw that. YOU KNOW WHERE MY COMMANDS SHOULD GO !");
 				_ = msg.DeleteAsync();
 			}
 		}
