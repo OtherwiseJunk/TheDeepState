@@ -26,6 +26,7 @@ using OMH = DartsDiscordBots.Handlers.OnMessageHandlers;
 using ORH = DartsDiscordBots.Handlers.OnReactHandlers;
 using FluentScheduler;
 using HungerGameConstants = DeepState.Data.Constants.HungerGameConstants;
+using Serilog;
 
 namespace DeepState
 {
@@ -87,6 +88,9 @@ namespace DeepState
 		}
 		private static IServiceProvider ConfigureServices()
 		{
+			var log = new LoggerConfiguration()
+				.WriteTo.Console()
+				.CreateLogger();
 			//We don't have any services currently for DI
 			//but once we do this is where we would add them.
 			var map = new ServiceCollection()
@@ -97,12 +101,15 @@ namespace DeepState
 				.AddSingleton<OutOfContextService>()
 				.AddSingleton<HungerGamesService>()
 				.AddSingleton<UserRecordsService>()
+				.AddSingleton<ModTeamRequestService>()
+				.AddSingleton<ILogger>(log)
 				.AddDbContext<OOCDBContext>()
 				.AddDbContext<GuildUserRecordContext>()
 				.AddDbContext<HungerGamesContext>()
 				.AddDbContextFactory<OOCDBContext>()
 				.AddDbContextFactory<GuildUserRecordContext>()
-				.AddDbContextFactory<HungerGamesContext>();
+				.AddDbContextFactory<HungerGamesContext>()
+				.AddDbContextFactory<ModTeamRequestContext>();
 
 			return map.BuildServiceProvider();
 		}
@@ -124,6 +131,7 @@ namespace DeepState
 			await _commands.AddModuleAsync<OutOfContextModule>(_services);
 			await _commands.AddModuleAsync<UserRecordsModule>(_services);
 			await _commands.AddModuleAsync<HungerGamesModule>(_services);
+			await _commands.AddModuleAsync<ModTeamRequestModule>(_services);
 
 #if !DEBUG
 			

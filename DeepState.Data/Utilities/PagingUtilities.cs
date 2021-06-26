@@ -11,25 +11,25 @@ namespace DeepState.Data.Utilities
 	{
 		public static List<T> GetPagedList<T>(List<T> dataToPage, out int successfulPage, int page = 0) where T : class
 		{
-			int startingItem = 0 + (page * SharedConstants.PageSize);
+			int startingItem = 0 + (page * SharedDataConstants.PageSize);
 			List<T> pageData;
 			int itemCount = dataToPage.Count();
 			try
 			{
-				if (itemCount >= startingItem && (itemCount - startingItem) < SharedConstants.PageSize)
+				if (itemCount >= startingItem && (itemCount - startingItem) < SharedDataConstants.PageSize)
 				{
 					pageData = dataToPage.GetRange(startingItem, itemCount - startingItem);
 				}
 				else
 				{
-					pageData = dataToPage.GetRange(startingItem, SharedConstants.PageSize);
+					pageData = dataToPage.GetRange(startingItem, SharedDataConstants.PageSize);
 				}
 
 			}
 			catch
 			{
-				startingItem = 0 + (--page * SharedConstants.PageSize);
-				pageData = dataToPage.GetRange(startingItem, SharedConstants.PageSize);
+				startingItem = 0 + (--page * SharedDataConstants.PageSize);
+				pageData = dataToPage.GetRange(startingItem, SharedDataConstants.PageSize);
 			}
 			successfulPage = page;
 			return pageData;

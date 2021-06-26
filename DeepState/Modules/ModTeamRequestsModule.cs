@@ -1,4 +1,5 @@
-﻿using DeepState.Data.Models;
+﻿using DeepState.Constants;
+using DeepState.Data.Models;
 using DeepState.Data.Services;
 using Discord;
 using Discord.Commands;
@@ -39,6 +40,7 @@ namespace DeepState.Modules
 
 		[Command("requests")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
+		[RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup), RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
 		public async Task GetOpenRequestLIst()
 		{
 			new Thread(() => {
@@ -52,6 +54,7 @@ namespace DeepState.Modules
 
 		[Command("closed")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
+		[RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup), RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
 		public async Task GetClosedRequestList()
 		{
 			new Thread(() => {
@@ -65,6 +68,7 @@ namespace DeepState.Modules
 
 		[Command("price")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
+		[RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup), RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
 		public async Task PriceRequest([Summary("The request ID to set the price for. Can be found from >requests.")]int requestId, [Summary("The price to set for the request")] double price)
 		{
 			price = Math.Abs(price);
@@ -84,6 +88,7 @@ namespace DeepState.Modules
 
 		[Command("reject")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
+		[RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup), RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
 		public async Task RejectRequest([Summary("The request ID to reject. Can be found from >requests.")] int requestId, [Summary("The request to be sent to the mod team. Minimum 20 characters.")] string rejectionMessage="")
 		{
 			if (_requestService.OpenRequestExists(requestId))
@@ -107,6 +112,7 @@ namespace DeepState.Modules
 
 		[Command("complete"), Alias("jobdone")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
+		[RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup), RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
 		public async Task CompleteRequest([Summary("The request ID to reject. Can be found from >requests.")] int requestId, [Summary("The request to be sent to the mod team. Minimum 20 characters.")] string completionMessage="")
 		{
 			if (_requestService.OpenRequestExists(requestId))
