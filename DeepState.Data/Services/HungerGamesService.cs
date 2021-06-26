@@ -3,7 +3,7 @@ using DeepState.Data.Context;
 using DeepState.Data.Models;
 using Discord;
 using Microsoft.EntityFrameworkCore;
-using System;
+using DeepState.Data.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,7 +13,6 @@ namespace DeepState.Data.Services
 	{
 		IDbContextFactory<HungerGamesContext> _contextFactory { get; set; }
 		UserRecordsService _userRecordService { get; set; }
-		private int PageSize = 10;
 		public HungerGamesService(IDbContextFactory<HungerGamesContext> contextFactory, UserRecordsService userRecordsService)
 		{
 			_contextFactory = contextFactory;
@@ -73,32 +72,10 @@ namespace DeepState.Data.Services
 
 		public List<HungerGamesTribute> GetPagedTributeList(ulong guildId, out int successfulPage, int page = 0)
 		{
-			int firstTribute = 0 + (page * 10);
-
 			using (HungerGamesContext context = _contextFactory.CreateDbContext())
-			{
-				List<HungerGamesTribute> pageData;
+			{				
 				List<HungerGamesTribute> guildTributes = context.Tributes.AsQueryable().Where(t => t.DiscordGuildId == guildId).OrderByDescending(t => t.IsAlive).ToList();
-				int tributeCount = guildTributes.Count();
-				try
-				{
-					if (tributeCount >= firstTribute && (tributeCount - firstTribute) < PageSize)
-					{
-						pageData = guildTributes.GetRange(firstTribute, tributeCount - firstTribute);
-					}
-					else
-					{
-						pageData = guildTributes.GetRange(firstTribute, PageSize);
-					}
-
-				}
-				catch
-				{
-					firstTribute = 0 + (--page * 10);
-					pageData = guildTributes.GetRange(firstTribute, PageSize);
-				}
-				successfulPage = page;
-				return pageData;
+				return PagingUtilities.GetPagedList<HungerGamesTribute>(guildTributes, out successfulPage, page);
 			}
 		}
 		public List<HungerGamesTribute> GetTributeList(ulong guildId)
