@@ -1,7 +1,7 @@
 ﻿using DartsDiscordBots.Permissions;
 using DartsDiscordBots.Services.Interfaces;
 using DeepState.Constants;
-using DeepState.Data.Constants;
+using HGC = DeepState.Data.Constants.HungerGameConstants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
 using DeepState.Modules.Preconditions;
@@ -31,12 +31,12 @@ namespace DeepState.Modules
 		}
 
 		[Command("register"), Alias("reg")]
-		[RequireLibcoinBalance(HungerGameConstants.CostOfAdmission)]
-		[RequireRoleName(HungerGameConstants.TributeRoleName)]
+		[RequireLibcoinBalance(HGC.CostOfAdmission)]
+		[RequireRoleName(HGC.TributeRoleName)]
 		[RequireDayOfMonthRange(1, 7, Group = SharedConstants.HungerGamesRegistrationDateGroup), RequireDayOfMonthRange(15,21, Group = SharedConstants.HungerGamesRegistrationDateGroup)]
 		public async Task RegisterHungerGameTribute()
 		{
-			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
+			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HGC.TributeRoleName.ToLower());
 			if (_service.TributeExists(Context.Guild.Id, Context.User.Id))
 			{
 				await Context.Channel.SendMessageAsync("Sorry, you're already registered for this month's game!");
@@ -44,7 +44,7 @@ namespace DeepState.Modules
 			else
 			{
 				_service.RegisterTribute(Context.Guild.Id, Context.User.Id);
-				await Context.Channel.SendMessageAsync($"Gosh you're brave. Ok! I've registered you as a Tribute in this month's ⛈️ **T H U N D E R D O M E** ⛈️, and deducted {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoins from your account. Good luck! {Environment.NewLine} https://media1.tenor.com/images/f9da8dd0e06d31730afb9ad12abed53c/tenor.gif?itemid=17203535");
+				await Context.Channel.SendMessageAsync($"Gosh you're brave. Ok! I've registered you as a Tribute in this month's ⛈️ **T H U N D E R D O M E** ⛈️, and deducted {HGC.CostOfAdmission.ToString("F8")} libcoins from your account. Good luck! {Environment.NewLine} https://media1.tenor.com/images/f9da8dd0e06d31730afb9ad12abed53c/tenor.gif?itemid=17203535");
 				if (tributeRole != null)
 				{
 					_ = ((IGuildUser)Context.User).AddRoleAsync(tributeRole);
@@ -79,7 +79,7 @@ namespace DeepState.Modules
 		{
 			if (_service.PrizePoolExists(Context.Guild.Id))
 			{
-				_ = Context.Channel.SendMessageAsync($"Looks like there's a grand total of {_service.GetPrizePool(Context.Guild.Id).ToString("F8")} on the line!");
+				await Context.Channel.SendMessageAsync($"Looks like there's a grand total of {_service.GetPrizePool(Context.Guild.Id).ToString("F8")} on the line!");
 			}
 		}
 
@@ -87,7 +87,7 @@ namespace DeepState.Modules
 		[RequireOwner]
 		public async Task AssignTributeRoles()
 		{
-			IRole tributeRole = Context.Guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
+			IRole tributeRole = Context.Guild.Roles.First(r => r.Name.ToLower() == HGC.TributeRoleName.ToLower());
 			List<HungerGamesTribute> tributes = _service.GetTributeList(Context.Guild.Id);
 			foreach (HungerGamesTribute tribute in tributes)
 			{
@@ -109,7 +109,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("tributechannel")]
-		[RequireRoleName(HungerGameConstants.TributeRoleName)]
+		[RequireRoleName(HGC.TributeRoleName)]
 		[RequireUserPermission(GuildPermission.ManageMessages)]
 		public async Task SetTributeAnnouncementChannel()
 		{
@@ -123,7 +123,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("corpsechannel")]
-		[RequireRoleName(HungerGameConstants.CorpseRoleName)]
+		[RequireRoleName(HGC.CorpseRoleName)]
 		[RequireUserPermission(GuildPermission.ManageMessages)]
 		public async Task SetCorpseAnnouncementChannel()
 		{
@@ -137,7 +137,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("testfrag")]
-		[RequireRoleName(HungerGameConstants.TributeRoleName)]
+		[RequireRoleName(HGC.TributeRoleName)]
 		[RequireUserPermission(GuildPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup)]
 		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
 		public async Task TestFrag(ulong mentionedUser = 0)
@@ -162,17 +162,6 @@ namespace DeepState.Modules
 			_ = Context.Channel.SendMessageAsync(embed: HungerGameUtilities.BuildTributeDeathEmbed(victim, goreyDetails, obituary, rand.Next(1, 12)));
 		}
 
-		[Command("pronounRoles")]
-		[RequireOwner()]
-		public async Task testpronouns()
-		{
-			IRole masculineRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == SharedConstants.MasculinePronounRoleName);
-			IRole feminineRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == SharedConstants.FemininePronnounRoleName);
-			IRole nongenderedRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == SharedConstants.NongenderedPronounRolename);
-			string roleNotFound = "Role Not Found";
-
-			Context.Channel.SendMessageAsync($"Masculine Role: {masculineRole.Name ?? roleNotFound}{Environment.NewLine}Feminine Role: {feminineRole.Name ?? roleNotFound}{Environment.NewLine}Nongendered Role: {nongenderedRole.Name ?? roleNotFound}");
-		}
 
 		[Command("testRun")]
 		[RequireOwner()]

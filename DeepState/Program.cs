@@ -25,7 +25,7 @@ using DeepState.Utilities;
 using OMH = DartsDiscordBots.Handlers.OnMessageHandlers;
 using ORH = DartsDiscordBots.Handlers.OnReactHandlers;
 using FluentScheduler;
-using DeepState.Data.Constants;
+using HungerGameConstants = DeepState.Data.Constants.HungerGameConstants;
 
 namespace DeepState
 {
@@ -171,7 +171,9 @@ namespace DeepState
 			//One of the voting reactions, :x:, can also be used to clear DeepState reacts, so we run this regardless.
 			new Thread(() => { _ = OnReactHandlers.ClearDeepStateReactionCheck(reactionEmote, channel, msg, _client.CurrentUser); }).Start();
 			//We only want to process Msg.Author.IsBot requests here actually, so we put this before too.
-			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction,  msg, _client.CurrentUser, HungerGameConstants.HungerGameTributesEmbedTitle, HungerGameUtilities.TributeEmbedPagingCallback, _services); }).Start();
+			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.HungerGameTributesEmbedTitle, PagingUtilities.TributeEmbedPagingCallback, _services); }).Start();
+			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.OpenRequestEmbedTitle, PagingUtilities.OpenRequestsPaginingCallback, _services); }).Start();
+			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.ClosedRequestEmbedTitle, PagingUtilities.ClosedRequestsPaginingCallback, _services); }).Start();
 
 			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name) || msg.Author.IsBot)
 			{

@@ -1,5 +1,4 @@
 ﻿using DartsDiscordBots.Utilities;
-using DeepState.Constants;
 using DeepState.Data.Constants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
@@ -59,8 +58,8 @@ namespace DeepState.Utilities
 				{
 					embed.AddField($"~~*{tributeName}*~~", $"**Status:** {HungerGameConstants.HowDeadAreYou.GetRandom()} | *Died defending the honor of District {tribute.District}* | {tribute.DeathMessage} | *{tribute.ObituaryMessage}*");
 				}
-				embed.WithFooter($"{currentPage}");
 			}
+			embed.WithFooter($"{currentPage}");
 
 			return embed.Build();
 		}
@@ -367,7 +366,7 @@ namespace DeepState.Utilities
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} was garbage collected by the C# CLR.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} did not respect a phantom's airspace",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got bombarded by SaryuSaryu.",
-				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got {SharedConstants.BooHooCrackerID}'d by DeepState.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got {DeepState.Constants.SharedConstants.BooHooCrackerID}'d by DeepState.",
 				$"{victimName} claimed publically to have information that would lead to the arrest of Hillary Cliton. {victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} were never heard from again.",
 				$"Killed by Addision Michael 'Mitch' McConnell III. Never seen a turtle move that quick!",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} removed the 'DO NOT REMOVE' tag from a matress. Spontaneously combusted shortly after.",
@@ -425,25 +424,6 @@ namespace DeepState.Utilities
 			embed.AddField("Cause of Death", goreyDetails);
 			embed.AddField("District", district);
 			return embed.Build();
-		}
-
-		public static Embed TributeEmbedPagingCallback(IMessage msg, IServiceProvider serviceProvider, int currentPage, bool incrementPage)
-		{
-			HungerGamesService service = ((HungerGamesService)serviceProvider.GetService(typeof(HungerGamesService)));
-			IChannel channel = msg.Channel;
-			IGuild guild = ((IGuildChannel)channel).Guild;
-			List<HungerGamesTribute> tributes;
-			if (incrementPage)
-			{
-				tributes = service.GetPagedTributeList(guild.Id, out currentPage, ++currentPage);
-			}
-			else
-			{
-				tributes = service.GetPagedTributeList(guild.Id, out currentPage, --currentPage);
-			}
-
-
-			return BuildTributeEmbed(tributes, currentPage, guild);
 		}
 
 		public static int DetermineNumberOfVictimsForDay(int daysRemaining, int livingTributesRemaining)
