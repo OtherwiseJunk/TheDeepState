@@ -142,17 +142,17 @@ namespace DeepState.Data.Services
 			string fieldMessage;
 			if (request.Price != null)
 			{
-				fieldMessage = $"Status:{request.Status.ToString()} Created On:{request.CreationDatetime.ToString("yyyy-MM-dd - HH:mm tt")} {Environment.NewLine}" +
-				$"Current Price: {request.Price}";
+				fieldMessage = $"**Status:**{request.Status.ToString()} **Created On:**{request.CreationDatetime.ToString("yyyy-MM-dd - HH:mm tt")} {Environment.NewLine}" +
+				$"**Current Price:** {request.Price}";
 			}
 			else
 			{
-				fieldMessage = $"Status:{request.Status.ToString()} Created On:{request.CreationDatetime.ToString("yyyy-MM-dd - HH:mm tt")} {Environment.NewLine}";
+				fieldMessage = $"**Status:**{request.Status.ToString()} **Created On:**{request.CreationDatetime.ToString("yyyy-MM-dd - HH:mm tt")} {Environment.NewLine}";
 			}
 
 			if (modTeamMemberUser != null)
 			{
-				fieldMessage += $"{Environment.NewLine}Last Modified By: {DDBUtils.GetDisplayNameForUser(modTeamMemberUser)} on {request.UpdateDatetime.ToString("yyyy-MM-dd - HH:mm tt")}";
+				fieldMessage += $"{Environment.NewLine}**Last Modified By:** {DDBUtils.GetDisplayNameForUser(modTeamMemberUser)} on {request.UpdateDatetime.ToString("yyyy-MM-dd - HH:mm tt")}";
 			}
 
 			return fieldMessage;

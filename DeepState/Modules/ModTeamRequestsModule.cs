@@ -25,7 +25,7 @@ namespace DeepState.Modules
 
 		[Command("request")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
-		public async Task AddModTeamRequest([Summary("The request to be sent to the mod team. Minimum 20 characters.")] string requestMessage)
+		public async Task AddModTeamRequest([Summary("The request to be sent to the mod team. Minimum 20 characters."), Remainder] string requestMessage)
 		{
 			if (requestMessage.Length < 20)
 			{
@@ -89,12 +89,12 @@ namespace DeepState.Modules
 		[Command("reject")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
 		[RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup), RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
-		public async Task RejectRequest([Summary("The request ID to reject. Can be found from >requests.")] int requestId, [Summary("The request to be sent to the mod team. Minimum 20 characters.")] string rejectionMessage="")
+		public async Task RejectRequest([Summary("The request ID to reject. Can be found from >requests.")] int requestId, [Summary("The request to be sent to the mod team. Minimum 20 characters."), Remainder] string rejectionMessage="")
 		{
 			if (_requestService.OpenRequestExists(requestId))
 			{
 				_requestService.RejectRequest(requestId, Context.Message.Author.Id, rejectionMessage);
-				_ = Context.Channel.SendMessageAsync("Sorry, a request needs at least 20 characters. Can you expand a bit?");
+				_ = Context.Channel.SendMessageAsync("Ok, I've rejected the request and let the user know.");
 				ModTeamRequest request = _requestService.GetRequest(requestId);
 				IDMChannel channel = Context.Guild.GetUserAsync(request.RequestingUserDiscordId).Result.GetOrCreateDMChannelAsync().Result;
 				string message = $"{Context.Message.Author.Username} has rejected your request: {request.Request}";
@@ -113,26 +113,26 @@ namespace DeepState.Modules
 		[Command("complete"), Alias("jobdone")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
 		[RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup), RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
-		public async Task CompleteRequest([Summary("The request ID to reject. Can be found from >requests.")] int requestId, [Summary("The request to be sent to the mod team. Minimum 20 characters.")] string completionMessage="")
+		public async Task CompleteRequest([Summary("The request ID to reject. Can be found from >requests.")] int requestId, [Summary("The request to be sent to the mod team. Minimum 20 characters."), Remainder] string completionMessage="")
 		{
 			if (_requestService.OpenRequestExists(requestId))
 			{
 				ModTeamRequest request = _requestService.GetRequest(requestId);
 				double requestingUserBalance = _userRecordService.GetUserBalance(request.RequestingUserDiscordId, Context.Guild.Id);
-				if (requestingUserBalance >= request.Price)
+				if (requestingUserBalance >= request.Price || request.Price == null)
 				{
-					_requestService.CompleteRequest(requestId, Context.Message.Author.Id, completionMessage);					
-
+					_requestService.CompleteRequest(requestId, Context.Message.Author.Id, completionMessage);
+					await Context.Channel.SendMessageAsync("Ok, I've marked that request as complete. Any price has been deducted from the users account.");
 					IDMChannel channel = Context.Guild.GetUserAsync(request.RequestingUserDiscordId).Result.GetOrCreateDMChannelAsync().Result;
 					if (request.Price != null)
 					{
 						double price = (double)request.Price;
 						_userRecordService.Deduct(request.RequestingUserDiscordId, Context.Guild.Id, price);
-						_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufiled your request: {request.Request}. {price.ToString("F8")} libcoin was deducted from your account for this request.");
+						_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufiled your request: {request.Request}. {price.ToString("F8")} libcoin was deducted from your account for this request. {completionMessage}]");
 					}
 					else
 					{
-						_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufiled your request: {request.Request}.");
+						_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufiled your request: {request.Request}. {completionMessage}");
 					}
 				}
 				else
