@@ -49,7 +49,7 @@ namespace DeepState.Data.Services
 					DiscordGuildId = guildId,
 					Request = RequestMessage
 				});
-				_ = context.SaveChangesAsync();
+				context.SaveChanges();
 			}
 		}
 
@@ -63,6 +63,7 @@ namespace DeepState.Data.Services
 				request.modifyingModDiscordId = modDiscordId;
 				request.Status = RequestStatus.Priced;
 				request.UpdateDatetime = DateTime.Now;
+				context.SaveChanges();
 			}
 		}
 
@@ -76,6 +77,7 @@ namespace DeepState.Data.Services
 				request.Status = RequestStatus.Rejected;
 				request.ClosingMessage = rejectionReason;
 				request.UpdateDatetime = DateTime.Now;
+				context.SaveChanges();
 			}
 		}
 		public void CompleteRequest(int requestId, ulong modDiscordId, string completionMessage)
@@ -88,7 +90,9 @@ namespace DeepState.Data.Services
 				request.Status = RequestStatus.Completed;
 				request.ClosingMessage = completionMessage;
 				request.UpdateDatetime = DateTime.Now;
+				context.SaveChanges();
 			}
+
 		}
 		public List<ModTeamRequest> GetOpenModTeamRequestPage(ulong guildId, out int successfulPage, int page = 0)
 		{

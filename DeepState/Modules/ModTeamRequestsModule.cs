@@ -29,7 +29,7 @@ namespace DeepState.Modules
 		{
 			if (requestMessage.Length < 20)
 			{
-				_ = Context.Channel.SendMessageAsync("Sorry, a request needs at least 20 characters. Can you expand a bit?");
+				await Context.Channel.SendMessageAsync("Sorry, a request needs at least 20 characters. Can you expand a bit?");
 			}
 			else
 			{
