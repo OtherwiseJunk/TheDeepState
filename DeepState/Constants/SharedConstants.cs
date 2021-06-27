@@ -27,6 +27,7 @@ namespace DeepState.Constants
 		public static ulong SelfCareChannelId = 736092567497867284;
 		public static ulong SeriousDiscussionChannelId = 732019626367516682;
 		public static ulong DiscordSuggestionsChannelId = 740033615617982514;
+		public static ulong RequestsChannelId = 858490606145634354;
 		#endregion
 
 		#region Channel Lists

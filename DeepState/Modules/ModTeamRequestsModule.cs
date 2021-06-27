@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 
 namespace DeepState.Modules
 {
@@ -35,6 +36,8 @@ namespace DeepState.Modules
 			{
 				_requestService.CreateRequest(Context.Message.Author.Id, Context.Guild.Id, requestMessage);
 				_ = Context.Channel.SendMessageAsync("Ok, I've submitted your request!");
+				ITextChannel requests = (ITextChannel) Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
+				await requests.SendMessageAsync($"{DDBUtils.GetDisplayNameForUser((IGuildUser)Context.Message.Author)} has subitted a new request: {requestMessage}");
 			}
 		}
 
@@ -79,6 +82,8 @@ namespace DeepState.Modules
 				ModTeamRequest request = _requestService.GetRequest(requestId);
 				IDMChannel channel = Context.Guild.GetUserAsync(request.RequestingUserDiscordId).Result.GetOrCreateDMChannelAsync().Result;
 				await channel.SendMessageAsync($"{Context.Message.Author.Username} has set a price of {price.ToString("F8")} libcoin for your request: {request.Request}");
+				ITextChannel requests = (ITextChannel)Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
+				await requests.SendMessageAsync($"{DDBUtils.GetDisplayNameForUser((IGuildUser)Context.Message.Author)} has priced request {requestId}. `{request.Request}`");
 			}
 			else
 			{
@@ -103,6 +108,8 @@ namespace DeepState.Modules
 					message += $"{Environment.NewLine}{Environment.NewLine}Rejection Reason: {rejectionMessage}";
 				}
 				await channel.SendMessageAsync(message);
+				ITextChannel requests = (ITextChannel)Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
+				await requests.SendMessageAsync($"{DDBUtils.GetDisplayNameForUser((IGuildUser)Context.Message.Author)} has rejected request {requestId}. `{request.Request}`");
 			}
 			else
 			{
@@ -134,6 +141,9 @@ namespace DeepState.Modules
 					{
 						_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufiled your request: {request.Request}. {completionMessage}");
 					}
+
+					ITextChannel requests = (ITextChannel)Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
+					await requests.SendMessageAsync($"{DDBUtils.GetDisplayNameForUser((IGuildUser)Context.Message.Author)} has completed request {requestId}. `{request.Request}`");
 				}
 				else
 				{
