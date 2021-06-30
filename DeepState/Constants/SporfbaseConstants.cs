@@ -2,7 +2,7 @@
 {
 	public class SporfbaseConstants
 	{
-		public static string ServerAddress { get; set; } = "sporfbase.com";
-		public static ushort ServerPort { get; set; } = 25565;
+		public const string ServerAddress { get; set; } = "sporfbase.com";
+		public const ushort ServerPort { get; set; } = 25565;
 	}
 }
