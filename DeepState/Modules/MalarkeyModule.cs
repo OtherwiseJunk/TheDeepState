@@ -38,15 +38,15 @@ namespace DeepState.Modules
 
 		[Command("mstatus"), Alias("minecraft", "minecraftstatus"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
 		[Summary("Returns a message with a status of Sporf's Minecraft server")]
-		public async Task MinecraftStatus()
+		public async Task MinecraftStatus(string serverAddress=SporfbaseConstants.ServerAddress, ushort serverPort=SporfbaseConstants.ServerPort)
 		{
-			MineStat ms = new MineStat(SporfbaseConstants.ServerAddress, SporfbaseConstants.ServerPort);
+			MineStat ms = new MineStat(serverAddress, serverPort);
 
 			if (ms.ServerUp)
 			{
 				EmbedBuilder eb = new EmbedBuilder();
 
-				eb.WithTitle($"{SporfbaseConstants.ServerAddress} Status");
+				eb.WithTitle($"{serverAddress} Status");
 				eb.AddField("Player Count:", $"{ms.CurrentPlayers}/{ms.MaximumPlayers}");
 				eb.AddField("MotD:", $"{ms.Motd}");				
 				await Context.Channel.SendMessageAsync("", false, eb.Build());
