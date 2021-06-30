@@ -38,7 +38,7 @@ namespace DeepState.Modules
 
 		[Command("mstatus"), Alias("minecraft", "minecraftstatus"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
 		[Summary("Returns a message with a status of Sporf's Minecraft server")]
-		public async Task MinecraftStatus()
+		public async Task MinecraftStatus(string serverAddress="", string serverPort="")
 		{
 			MineStat ms = new MineStat(SporfbaseConstants.ServerAddress, SporfbaseConstants.ServerPort);
 
