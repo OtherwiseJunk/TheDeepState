@@ -55,14 +55,5 @@ namespace DeepState.Handlers
 				var response = msg.AddReactionAsync(SharedConstants.MalarkeyLevels.GetRandom());
 			}
 		}
-
-		public static async Task CommandInDiscordSuggestionsHandler(SocketMessage msg)
-		{
-			if (msg.Content.First() == BotProperties.CommandPrefix && msg.Channel.Id == SharedConstants.DiscordSuggestionsChannelId)
-			{
-				_ = msg.Author.GetOrCreateDMChannelAsync().Result.SendMessageAsync("Hey, I saw that. YOU KNOW WHERE MY COMMANDS SHOULD GO !");
-				_ = msg.DeleteAsync();
-			}
-		}
 	}
 }

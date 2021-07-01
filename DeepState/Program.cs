@@ -159,7 +159,6 @@ namespace DeepState
 				new Thread(() => { _ = OnMessageHandlers.RandomReactCheck(messageParam); }).Start();
 				new Thread(() => { OnMessageHandlers.Imposter(messageParam, Utils.IsSus(messageParam.Content)); }).Start();
 				new Thread(() => { _ = OnMessageHandlers.MalarkeyLevelOfHandler(message); }).Start();
-				new Thread(() => { _ = OnMessageHandlers.CommandInDiscordSuggestionsHandler(message); }).Start();
 			}
 
 		}
