@@ -72,82 +72,32 @@ namespace DeepState.Utilities
 				IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
 				IMessageChannel tributeAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.TributeAnnouncementChannelId).Result;
 				IMessageChannel corpseAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.CorpseAnnouncementChannelId).Result;
+				IRole tributeRole = guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
+				IRole corpseRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
 
 				List<HungerGamesTribute> tributes = hgService.GetTributeList(config.DiscordGuildId);
 
-				int tributesRemaining = tributes.Where(t => t.IsAlive).Count();
+				bool isFirstDayOfGames = (now.Day == 8 || now.Day == 22);
+				bool moreThanOneLivingTributeRemains = tributes.Where(t => t.IsAlive).Count() > 1;
+				bool isAHungerGamesWeek = ((now.Day >= 8 && now.Day <= 14) || (now.Day >= 22 && now.Day <= 28));
+				bool isTheFirstHungerGamesWeekOfTheMonth = (now.Day >= 8 && now.Day <= 14);
+				bool isfirstRegistrationWeek = now.Day < 8;
 
-				if (now.Day == 8 && tributes.Where(t => t.IsAlive).Count() > 1)
+				if (isFirstDayOfGames && moreThanOneLivingTributeRemains)
 				{
 					tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
 				}
-				if (now.Day >= 8 && tributes.Where(t => t.IsAlive).Count() > 1)
+				if (isAHungerGamesWeek && moreThanOneLivingTributeRemains)
 				{
-
-					Random rand = Utils.CreateSeededRandom();
 					//Add +1, as we haven't done en elimination for the day yet.
-					int daysRemaining = (DateTime.DaysInMonth(now.Year, now.Month) - now.Day) + 1;
-					
-					int numberOfVictims = DetermineNumberOfVictimsForDay(daysRemaining, tributesRemaining);
-					Console.WriteLine($"[HUNGERGAMES] There will be {numberOfVictims} victims today.");
+					int daysRemaining = isTheFirstHungerGamesWeekOfTheMonth ? ((14 - now.Day) + 1) : ((28 - now.Day) + 1);
 
-					HungerGamesTribute victim;
+					RolltheDaysDeaths(config, daysRemaining, tributes, guild, tributeAnnouncementChannel, corpseAnnouncementChannel, hgService, tributeRole, corpseRole);
 
-					IRole tributeRole = guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
-					IRole corpseRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
+					tributes = hgService.GetTributeList(config.DiscordGuildId);
+					bool doesOneLivingTributeRemain = tributes.Where(t => t.IsAlive).Count() > 1;
 
-					for (int i = 0; i < numberOfVictims; i++)
-					{
-						if(i != 0)
-						{
-							int sleepTime = rand.Next((60 * 1000 * 30), (60 * 1000 * 120));
-							Console.WriteLine($"[HUNGERGAMES] Waiting {sleepTime} miliseconds before attempting to KILL AGAIN.");
-							Thread.Sleep(sleepTime);
-						}
-						List<HungerGamesTribute> nullUsers = tributes.Where(t => t.IsAlive).Where(t => !guild.GetUsersAsync().Result.Select(u => u.Id).Contains(t.DiscordUserId)).ToList();
-						int district = rand.Next(1, 12);
-						if (nullUsers.Count > 0)
-						{
-							victim = nullUsers.GetRandom();
-						}
-						else
-						{
-							victim = tributes.Where(t => t.IsAlive).ToList().GetRandom();
-						}
-
-						IGuildUser victimUser = guild.GetUserAsync(victim.DiscordUserId).Result;
-						string victimName = DDBUtils.GetDisplayNameForUser(victimUser);
-
-						Dictionary<PronounConjugations, List<string>> pronouns = Utils.GetUserPronouns(victimUser, guild);
-						string goreyDetails = GetCauseOfDeathDescription(victim.DiscordUserId, victimName, guild, tributes, pronouns);
-						string obituary = GetObituary(pronouns, victimUser);
-
-						Embed announcementEmbed = BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district);
-						_ = tributeAnnouncementChannel.SendMessageAsync(embed: announcementEmbed).Result.PinAsync();
-						hgService.KillTribute(victim.DiscordUserId, guild.Id, goreyDetails, obituary, district);
-						if (victimUser != null)
-						{
-							new Thread(() =>
-							{
-								//wait 10 minutes, then remove Tribute role from the corpse. Allows for RP.
-								Thread.Sleep(60 * 10 * 1000);
-								victimUser.RemoveRoleAsync(tributeRole);
-								if (corpseRole != null)
-								{
-									victimUser.AddRoleAsync(corpseRole);
-								}
-								if (corpseAnnouncementChannel != null)
-								{
-									corpseAnnouncementChannel.SendMessageAsync("Hey ghosts, welcome your new dead friend!", embed: announcementEmbed);
-								}
-							}).Start();
-						}
-
-						hgService.GetTributeList(config.DiscordGuildId);						
-					}
-
-
-					if (tributes.Where(t => t.IsAlive).Count() == 1)
+					if (doesOneLivingTributeRemain)
 					{
 						RunHungerGamesCleanup(guild, tributeAnnouncementChannel, tributeRole, corpseRole, guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.ChampionRoleName.ToLower()), tributes, hgService, urService);
 					}
@@ -155,22 +105,88 @@ namespace DeepState.Utilities
 				}
 				else
 				{
-					int daysRemaining = (8 - now.Day);
+					int daysRemaining = isfirstRegistrationWeek ? (8 - now.Day) : (22 - now.Day);
 					int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
 					double potSize = hgService.GetPrizePool(guild.Id);
 
-					StringBuilder sb = new StringBuilder($"```Good Morning! There are {daysRemaining} days remaining until our glorious games begin!{Environment.NewLine}");
-					if (numberOfTributes > 0)
-					{
-						sb.Append($"{Environment.NewLine}We have {numberOfTributes} Tributes ready to fight for the honor of their districts, all vying for the chance to take homme the grand prize, {potSize.ToString("F8")} libcoin!{Environment.NewLine}");
-					}
-					else
-					{
-						sb.Append($"{Environment.NewLine}However it looks like so far this server is filled with COWARDS and no on has volunteered as tribute.{Environment.NewLine}");
-					}
-					sb.Append($"{Environment.NewLine}If you're brave enough, `>hc reg` today to join the battle royale! For the low low price of {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoin! Winner takes home 100% of all entry fees!```");
-					tributeAnnouncementChannel.SendMessageAsync(sb.ToString());
+					tributeAnnouncementChannel.SendMessageAsync(BuildLeadUpHype(daysRemaining, numberOfTributes, potSize));
 				}
+			}
+		}
+
+		private static string BuildLeadUpHype(int daysRemaining, int numberOfTributes, double potSize)
+		{
+			StringBuilder sb = new StringBuilder($"```Good Morning! There are {daysRemaining} days remaining until our glorious games begin!{Environment.NewLine}");
+			if (numberOfTributes > 0)
+			{
+				sb.Append($"{Environment.NewLine}We have {numberOfTributes} Tributes ready to fight for the honor of their districts, all vying for the chance to take homme the grand prize, {potSize.ToString("F8")} libcoin!{Environment.NewLine}");
+			}
+			else
+			{
+				sb.Append($"{Environment.NewLine}However it looks like so far this server is filled with COWARDS and no on has volunteered as tribute.{Environment.NewLine}");
+			}
+			sb.Append($"{Environment.NewLine}If you're brave enough, `>hc reg` today to join the battle royale! For the low low price of {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoin! Winner takes home 100% of all entry fees!```");
+
+			return sb.ToString();
+		}
+
+		private static void RolltheDaysDeaths(HungerGamesServerConfiguration config, int daysRemaining, List<HungerGamesTribute> tributes, IGuild guild, IMessageChannel tributeAnnouncementChannel, IMessageChannel corpseAnnouncementChannel, HungerGamesService hgService, IRole tributeRole, IRole? corpseRole)
+		{
+			Random rand = Utils.CreateSeededRandom();
+			HungerGamesTribute victim;
+			int tributesRemaining = tributes.Where(t => t.IsAlive).Count();
+			int numberOfVictims = DetermineNumberOfVictimsForDay(daysRemaining, tributesRemaining);
+
+			Console.WriteLine($"[HUNGERGAMES] There will be {numberOfVictims} victims today.");
+
+			for (int i = 0; i < numberOfVictims; i++)
+			{
+				if (i != 0)
+				{
+					int sleepTime = rand.Next((60 * 1000 * 30), (60 * 1000 * 120));
+					Console.WriteLine($"[HUNGERGAMES] Waiting {sleepTime} miliseconds before attempting to KILL AGAIN.");
+					Thread.Sleep(sleepTime);
+				}
+				List<HungerGamesTribute> nullUsers = tributes.Where(t => t.IsAlive).Where(t => !guild.GetUsersAsync().Result.Select(u => u.Id).Contains(t.DiscordUserId)).ToList();
+				int district = rand.Next(1, 12);
+				if (nullUsers.Count > 0)
+				{
+					victim = nullUsers.GetRandom();
+				}
+				else
+				{
+					victim = tributes.Where(t => t.IsAlive).ToList().GetRandom();
+				}
+
+				IGuildUser victimUser = guild.GetUserAsync(victim.DiscordUserId).Result;
+				string victimName = DDBUtils.GetDisplayNameForUser(victimUser);
+
+				Dictionary<PronounConjugations, List<string>> pronouns = Utils.GetUserPronouns(victimUser, guild);
+				string goreyDetails = GetCauseOfDeathDescription(victim.DiscordUserId, victimName, guild, tributes, pronouns);
+				string obituary = GetObituary(pronouns, victimUser);
+
+				Embed announcementEmbed = BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district);
+				_ = tributeAnnouncementChannel.SendMessageAsync(embed: announcementEmbed).Result.PinAsync();
+				hgService.KillTribute(victim.DiscordUserId, guild.Id, goreyDetails, obituary, district);
+				if (victimUser != null)
+				{
+					new Thread(() =>
+					{
+						//wait 10 minutes, then remove Tribute role from the corpse. Allows for RP.
+						Thread.Sleep(60 * 10 * 1000);
+						victimUser.RemoveRoleAsync(tributeRole);
+						if (corpseRole != null)
+						{
+							victimUser.AddRoleAsync(corpseRole);
+						}
+						if (corpseAnnouncementChannel != null)
+						{
+							corpseAnnouncementChannel.SendMessageAsync("Hey ghosts, welcome your new dead friend!", embed: announcementEmbed);
+						}
+					}).Start();
+				}
+
+				hgService.GetTributeList(config.DiscordGuildId);
 			}
 		}
 
