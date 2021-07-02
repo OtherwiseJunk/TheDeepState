@@ -87,6 +87,8 @@ namespace DeepState.Utilities
 				{
 					tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
 				}
+
+
 				if (isAHungerGamesWeek && moreThanOneLivingTributeRemains)
 				{
 					//Add +1, as we haven't done en elimination for the day yet.
