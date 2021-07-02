@@ -101,7 +101,8 @@ namespace DeepState.Utilities
 
 					if (doesOneLivingTributeRemain)
 					{
-						RunHungerGamesCleanup(guild, tributeAnnouncementChannel, tributeRole, corpseRole, guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.ChampionRoleName.ToLower()), tributes, hgService, urService);
+						IRole championRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.ChampionRoleName.ToLower());
+						RunHungerGamesCleanup(guild, tributeAnnouncementChannel, tributeRole, corpseRole, championRole, tributes, hgService, urService);
 					}
 
 				}
@@ -168,14 +169,25 @@ namespace DeepState.Utilities
 				string obituary = GetObituary(pronouns, victimUser);
 
 				Embed announcementEmbed = BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district);
-				_ = tributeAnnouncementChannel.SendMessageAsync(embed: announcementEmbed).Result.PinAsync();
+				IUserMessage msg = tributeAnnouncementChannel.SendMessageAsync(embed: announcementEmbed).Result;
+				msg.PinAsync();				
 				hgService.KillTribute(victim.DiscordUserId, guild.Id, goreyDetails, obituary, district);
+				tributes = hgService.GetTributeList(config.DiscordGuildId);
 				if (victimUser != null)
 				{
 					new Thread(() =>
 					{
+						_ = victimUser.GetOrCreateDMChannelAsync().Result.SendMessageAsync($"Sad to say, you've bought the farm! {msg.GetJumpUrl()}");
 						//wait 10 minutes, then remove Tribute role from the corpse. Allows for RP.
-						Thread.Sleep(60 * 10 * 1000);
+						if (tributes.Count(t => t.IsAlive) > 1)
+						{
+							Thread.Sleep(60 * 10 * 1000);
+						}
+						else
+						{
+							//If you're the last to die, you get 60 seconds to do your thing and then you're OUT.
+							Thread.Sleep(60 * 1000);
+						}
 						victimUser.RemoveRoleAsync(tributeRole);
 						if (corpseRole != null)
 						{
@@ -188,7 +200,7 @@ namespace DeepState.Utilities
 					}).Start();
 				}
 
-				hgService.GetTributeList(config.DiscordGuildId);
+
 			}
 		}
 
