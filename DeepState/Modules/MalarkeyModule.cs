@@ -36,7 +36,7 @@ namespace DeepState.Modules
 			await Context.Channel.SendMessageAsync(string.Join(Environment.NewLine, pollGameList));
 		}
 
-		[Command("mstatus"), Alias("minecraft", "minecraftstatus"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
+		[Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
 		[Summary("Returns a message with a status of Sporf's Minecraft server")]
 		public async Task MinecraftStatus(string serverAddress=SporfbaseConstants.ServerAddress, ushort serverPort=SporfbaseConstants.ServerPort)
 		{
