@@ -108,7 +108,7 @@ namespace DeepState.Utilities
 				}
 				else
 				{
-					int daysRemaining = isfirstRegistrationWeek ? (8 - now.Day) -1 : (22 - now.Day) -1;
+					int daysRemaining = isfirstRegistrationWeek ? (8 - now.Day) : (22 - now.Day);
 					int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
 					double potSize = hgService.GetPrizePool(guild.Id);
 
