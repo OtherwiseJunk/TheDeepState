@@ -101,7 +101,7 @@ namespace DeepState.Utilities
 						RolltheDaysDeaths(config, daysRemaining, tributes, guild, tributeAnnouncementChannel, corpseAnnouncementChannel, hgService, tributeRole, corpseRole);
 
 						tributes = hgService.GetTributeList(config.DiscordGuildId);
-						bool doesOneLivingTributeRemain = tributes.Where(t => t.IsAlive).Count() > 1;
+						bool doesOneLivingTributeRemain = tributes.Where(t => t.IsAlive).Count() == 1;
 
 						if (doesOneLivingTributeRemain)
 						{
