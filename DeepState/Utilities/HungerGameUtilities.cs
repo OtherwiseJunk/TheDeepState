@@ -8,10 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using static DeepState.Constants.SharedConstants;
-using Utils = DeepState.Utilities.Utilities;
 using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
+using Utils = DeepState.Utilities.Utilities;
 
 namespace DeepState.Utilities
 {
@@ -69,11 +68,14 @@ namespace DeepState.Utilities
 			DateTime now = DateTime.Now;
 			foreach (HungerGamesServerConfiguration config in hgService.GetAllConfigurations())
 			{
+				Console.WriteLine($"Evaluating {config.DiscordGuildId}'s hunger Games....");
 				IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
 				IMessageChannel tributeAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.TributeAnnouncementChannelId).Result;
 				IMessageChannel corpseAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.CorpseAnnouncementChannelId).Result;
 				IRole tributeRole = guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
 				IRole corpseRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
+				Console.WriteLine($"{guild.Name}'s configurations:");
+				Console.WriteLine($"Found tribute announcement channel? {tributeAnnouncementChannel != null} {Environment.NewLine} Found corpse announcment channel? {corpseAnnouncementChannel != null} {Environment.NewLine} Found Tribute Role? {tributeRole != null} {Environment.NewLine} Found Corpse Role? {corpseRole != null}");
 
 				List<HungerGamesTribute> tributes = hgService.GetTributeList(config.DiscordGuildId);
 
@@ -83,6 +85,7 @@ namespace DeepState.Utilities
 				bool isTheFirstHungerGamesWeekOfTheMonth = (now.Day >= 8 && now.Day <= 14);
 				bool isfirstRegistrationWeek = now.Day < 8;
 
+				Console.WriteLine($"Is First Day? {isFirstDayOfGames} {Environment.NewLine} More than one tributes remain? {moreThanOneLivingTributeRemains} {Environment.NewLine} Is A Hunger Games Week? {isAHungerGamesWeek} {Environment.NewLine} Is this the First hunger games of the month? {isTheFirstHungerGamesWeekOfTheMonth} {Environment.NewLine} Is this the first hunger games registration period of the month? {isfirstRegistrationWeek}");
 				if (isFirstDayOfGames && moreThanOneLivingTributeRemains)
 				{
 					tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
@@ -93,7 +96,7 @@ namespace DeepState.Utilities
 				{
 					//Add +1, as we haven't done en elimination for the day yet.
 					int daysRemaining = isTheFirstHungerGamesWeekOfTheMonth ? ((14 - now.Day) + 1) : ((28 - now.Day) + 1);
-
+					
 					RolltheDaysDeaths(config, daysRemaining, tributes, guild, tributeAnnouncementChannel, corpseAnnouncementChannel, hgService, tributeRole, corpseRole);
 
 					tributes = hgService.GetTributeList(config.DiscordGuildId);
