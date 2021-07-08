@@ -86,37 +86,39 @@ namespace DeepState.Utilities
 				bool isfirstRegistrationWeek = now.Day < 8;
 
 				Console.WriteLine($"Is First Day? {isFirstDayOfGames} {Environment.NewLine} More than one tributes remain? {moreThanOneLivingTributeRemains} {Environment.NewLine} Is A Hunger Games Week? {isAHungerGamesWeek} {Environment.NewLine} Is this the First hunger games of the month? {isTheFirstHungerGamesWeekOfTheMonth} {Environment.NewLine} Is this the first hunger games registration period of the month? {isfirstRegistrationWeek}");
-				if (isFirstDayOfGames && moreThanOneLivingTributeRemains)
-				{
-					tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
-				}
-
-
-				if (isAHungerGamesWeek && moreThanOneLivingTributeRemains)
-				{
-					//Add +1, as we haven't done en elimination for the day yet.
-					int daysRemaining = isTheFirstHungerGamesWeekOfTheMonth ? ((14 - now.Day) + 1) : ((28 - now.Day) + 1);
-					
-					RolltheDaysDeaths(config, daysRemaining, tributes, guild, tributeAnnouncementChannel, corpseAnnouncementChannel, hgService, tributeRole, corpseRole);
-
-					tributes = hgService.GetTributeList(config.DiscordGuildId);
-					bool doesOneLivingTributeRemain = tributes.Where(t => t.IsAlive).Count() > 1;
-
-					if (doesOneLivingTributeRemain)
+				new Thread(() => {
+					if (isFirstDayOfGames && moreThanOneLivingTributeRemains)
 					{
-						IRole championRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.ChampionRoleName.ToLower());
-						RunHungerGamesCleanup(guild, tributeAnnouncementChannel, tributeRole, corpseRole, championRole, tributes, hgService, urService);
+						tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
 					}
 
-				}
-				else
-				{
-					int daysRemaining = isfirstRegistrationWeek ? (8 - now.Day) : (22 - now.Day);
-					int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
-					double potSize = hgService.GetPrizePool(guild.Id);
 
-					tributeAnnouncementChannel.SendMessageAsync(BuildLeadUpHype(daysRemaining, numberOfTributes, potSize));
-				}
+					if (isAHungerGamesWeek && moreThanOneLivingTributeRemains)
+					{
+						//Add +1, as we haven't done en elimination for the day yet.
+						int daysRemaining = isTheFirstHungerGamesWeekOfTheMonth ? ((14 - now.Day) + 1) : ((28 - now.Day) + 1);
+
+						RolltheDaysDeaths(config, daysRemaining, tributes, guild, tributeAnnouncementChannel, corpseAnnouncementChannel, hgService, tributeRole, corpseRole);
+
+						tributes = hgService.GetTributeList(config.DiscordGuildId);
+						bool doesOneLivingTributeRemain = tributes.Where(t => t.IsAlive).Count() > 1;
+
+						if (doesOneLivingTributeRemain)
+						{
+							IRole championRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.ChampionRoleName.ToLower());
+							RunHungerGamesCleanup(guild, tributeAnnouncementChannel, tributeRole, corpseRole, championRole, tributes, hgService, urService);
+						}
+
+					}
+					else
+					{
+						int daysRemaining = isfirstRegistrationWeek ? (8 - now.Day) : (22 - now.Day);
+						int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
+						double potSize = hgService.GetPrizePool(guild.Id);
+
+						tributeAnnouncementChannel.SendMessageAsync(BuildLeadUpHype(daysRemaining, numberOfTributes, potSize));
+					}
+				}).Start();
 			}
 		}
 
