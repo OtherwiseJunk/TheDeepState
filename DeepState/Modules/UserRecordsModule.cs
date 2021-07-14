@@ -181,7 +181,7 @@ namespace DeepState.Modules
 			if (_UserRecordsService.UserRecordExists(userId, guildId))
 			{
 				int dartoshis =(int) _UserRecordsService.GetUserBalance(userId, guildId) * DartoshiConstant;
-				await _ = Context.Channel.SendMessageAsync($"Looks like you have {dartoshis} Dartoshis.");
+				await Context.Channel.SendMessageAsync($"Looks like you have {dartoshis} Dartoshis.");
 			}
 			else
 			{
