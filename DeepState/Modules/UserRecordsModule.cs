@@ -172,7 +172,7 @@ namespace DeepState.Modules
 			}
 		}
 
-		[Command("dartoshis")]
+		[Command("dartoshis"), Alias("dartoshi")]
 		[Summary("Gives the user their balance in Dartoshis (0.00000001 libcoin is 1 Dartoshi).")]
 		public async Task GetDartoshis()
 		{
@@ -180,8 +180,8 @@ namespace DeepState.Modules
 			ulong userId = Context.Message.Author.Id;
 			if (_UserRecordsService.UserRecordExists(userId, guildId))
 			{
-				int dartoshis =(int) _UserRecordsService.GetUserBalance(userId, guildId) * DartoshiConstant;
-				await Context.Channel.SendMessageAsync($"Looks like you have {dartoshis} Dartoshis.");
+				double dartoshis = _UserRecordsService.GetUserBalance(userId, guildId) * DartoshiConstant;
+				await Context.Channel.SendMessageAsync($"Looks like you have {dartoshis.ToString("F0")} Dartoshis.");
 			}
 			else
 			{
