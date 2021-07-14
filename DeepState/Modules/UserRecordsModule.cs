@@ -15,6 +15,7 @@ namespace DeepState.Modules
 {
 	public class UserRecordsModule : ModuleBase
 	{
+		public int DartoshiConstant = 100000000;
 		private UserRecordsService _UserRecordsService { get; set; }
 		public UserRecordsModule(UserRecordsService service)
 		{
@@ -168,6 +169,23 @@ namespace DeepState.Modules
 			else
 			{
 				_ = Context.Channel.SendMessageAsync($"Listen friend, I hate to embarass you like this in front of all your friends... but you don't actually _have_ {amount.ToString("F8")} libcoins.");
+			}
+		}
+
+		[Command("dartoshis")]
+		[Summary("Gives the user their balance in Dartoshis (0.00000001 libcoin is 1 Dartoshi).")]
+		public async Task GetDartoshis()
+		{
+			ulong guildId = Context.Guild.Id;
+			ulong userId = Context.Message.Author.Id;
+			if (_UserRecordsService.UserRecordExists(userId, guildId))
+			{
+				int dartoshis =(int) _UserRecordsService.GetUserBalance(userId, guildId) * DartoshiConstant;
+				await _ = Context.Channel.SendMessageAsync($"Looks like you have {dartoshis} Dartoshis.");
+			}
+			else
+			{
+				_ = Context.Channel.SendMessageAsync("Sorry, it looks like you don't have a balance yet! It'll happen eventually I'm sure.");
 			}
 		}
 	}

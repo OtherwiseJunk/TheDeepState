@@ -29,7 +29,7 @@ namespace DeepState.Utilities
 			return HungerGameUtilities.BuildTributeEmbed(tributes, currentPage, guild);
 		}
 
-		public static Embed OpenRequestsPaginingCallback(IMessage msg, IServiceProvider serviceProvider, int currentPage, bool incrementPage)
+		public static Embed OpenRequestsPagingCallback(IMessage msg, IServiceProvider serviceProvider, int currentPage, bool incrementPage)
 		{
 			ModTeamRequestService service = ((ModTeamRequestService)serviceProvider.GetService(typeof(ModTeamRequestService)));
 			IChannel channel = msg.Channel;
@@ -47,7 +47,7 @@ namespace DeepState.Utilities
 			return service.BuildRequestsEmebed(requests, currentPage, guild, true);
 		}
 
-		public static Embed ClosedRequestsPaginingCallback(IMessage msg, IServiceProvider serviceProvider, int currentPage, bool incrementPage)
+		public static Embed ClosedRequestsPagingCallback(IMessage msg, IServiceProvider serviceProvider, int currentPage, bool incrementPage)
 		{
 			ModTeamRequestService service = ((ModTeamRequestService)serviceProvider.GetService(typeof(ModTeamRequestService)));
 			IChannel channel = msg.Channel;

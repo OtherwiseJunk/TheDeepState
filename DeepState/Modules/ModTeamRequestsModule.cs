@@ -42,17 +42,32 @@ namespace DeepState.Modules
 		}
 
 		[Command("requests")]
-		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
-		[RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup), RequireOwner(Group = SharedConstants.AdminsOnlyGroup)]
+		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]		
 		public async Task GetOpenRequestLIst()
 		{
-			new Thread(() => {
-				List<ModTeamRequest> requests = _requestService.GetOpenModTeamRequestPage(Context.Guild.Id, out int successfulPage);
-				Embed embed = _requestService.BuildRequestsEmebed(requests, successfulPage, Context.Guild, true);
-				IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
-				msg.AddReactionAsync(new Emoji("⬅️"));
-				msg.AddReactionAsync(new Emoji("➡️"));
-			}).Start();
+			IGuildUser user = (IGuildUser) Context.User;
+			Thread getRequests;
+			if (user.GuildPermissions.ManageMessages)
+			{
+				getRequests = new Thread(() =>
+				{
+					List<ModTeamRequest> requests = _requestService.GetOpenModTeamRequestPage(Context.Guild.Id, out int successfulPage);
+					Embed embed = _requestService.BuildRequestsEmebed(requests, successfulPage, Context.Guild, true);
+					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
+					msg.AddReactionAsync(new Emoji("⬅️"));
+					msg.AddReactionAsync(new Emoji("➡️"));
+				});
+			}
+			else
+			{
+				getRequests = new Thread(() =>
+				{
+					List<ModTeamRequest> requests = _requestService.GetOpenModTeamRequestPage(Context.Guild.Id, out int successfulPage);
+					Embed embed = _requestService.BuildRequestsEmebed(requests, successfulPage, Context.Guild, true);
+					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
+				});
+			}
+			getRequests.Start();
 		}
 
 		[Command("closed")]

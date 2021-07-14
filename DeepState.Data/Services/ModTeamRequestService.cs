@@ -94,12 +94,21 @@ namespace DeepState.Data.Services
 			}
 
 		}
+		public List<ModTeamRequest> GetUsersRequestsPage(ulong guildId, ulong userId, out int successfulPage, int page = 0)
+		{
+			using (ModTeamRequestContext context = _dbContextFactory.CreateDbContext())
+			{
+				List<ModTeamRequest> userRequests = context.Requests.AsQueryable()
+					.Where(mtr => mtr.DiscordGuildId == guildId && mtr.RequestingUserDiscordId == userId && (mtr.Status == RequestStatus.Priced || mtr.Status == RequestStatus.Opened)).ToList();
+				return PagingUtilities.GetPagedList<ModTeamRequest>(userRequests, out successfulPage, page);
+			}
+		}
 		public List<ModTeamRequest> GetOpenModTeamRequestPage(ulong guildId, out int successfulPage, int page = 0)
 		{
 			using (ModTeamRequestContext context = _dbContextFactory.CreateDbContext())
 			{
 				List<ModTeamRequest> guildRequests = context.Requests.AsQueryable()
-					.Where(mtr => mtr.Status == RequestStatus.Priced || mtr.Status == RequestStatus.Opened).ToList();
+					.Where(mtr => mtr.DiscordGuildId == guildId && (mtr.Status == RequestStatus.Priced || mtr.Status == RequestStatus.Opened)).ToList();
 				return PagingUtilities.GetPagedList<ModTeamRequest>(guildRequests, out successfulPage, page);
 			}
 		}
@@ -108,7 +117,7 @@ namespace DeepState.Data.Services
 			using(ModTeamRequestContext context = _dbContextFactory.CreateDbContext())
 			{
 				List<ModTeamRequest> guildRequests = context.Requests.AsQueryable()
-					.Where(mtr => mtr.Status == RequestStatus.Completed || mtr.Status == RequestStatus.Rejected).ToList();
+					.Where(mtr => mtr.DiscordGuildId == guildId && (mtr.Status == RequestStatus.Completed || mtr.Status == RequestStatus.Rejected)).ToList();
 				return PagingUtilities.GetPagedList<ModTeamRequest>(guildRequests, out successfulPage, page);
 			}
 		}
