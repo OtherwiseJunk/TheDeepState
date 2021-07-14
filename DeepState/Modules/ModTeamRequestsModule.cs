@@ -62,7 +62,7 @@ namespace DeepState.Modules
 			{
 				getRequests = new Thread(() =>
 				{
-					List<ModTeamRequest> requests = _requestService.GetOpenModTeamRequestPage(Context.Guild.Id, out int successfulPage);
+					List<ModTeamRequest> requests = _requestService.GetUsersRequestsPage(Context.Guild.Id, Context.User.Id, out int successfulPage);
 					Embed embed = _requestService.BuildRequestsEmebed(requests, successfulPage, Context.Guild, true);
 					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
 				});

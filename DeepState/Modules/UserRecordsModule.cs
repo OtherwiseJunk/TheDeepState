@@ -15,7 +15,7 @@ namespace DeepState.Modules
 {
 	public class UserRecordsModule : ModuleBase
 	{
-		public int DartoshiConstant = 100000000;
+		
 		private UserRecordsService _UserRecordsService { get; set; }
 		public UserRecordsModule(UserRecordsService service)
 		{
