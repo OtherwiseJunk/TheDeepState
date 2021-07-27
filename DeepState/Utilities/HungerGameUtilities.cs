@@ -84,6 +84,7 @@ namespace DeepState.Utilities
 				bool isAHungerGamesWeek = ((now.Day >= 8 && now.Day <= 14) || (now.Day >= 22 && now.Day <= 28));
 				bool isTheFirstHungerGamesWeekOfTheMonth = (now.Day >= 8 && now.Day <= 14);
 				bool isfirstRegistrationWeek = now.Day < 8;
+				bool isSecondRegistrationWeek = now.Day > 28;
 
 				Console.WriteLine($"Is First Day? {isFirstDayOfGames} {Environment.NewLine} More than one tributes remain? {moreThanOneLivingTributeRemains} {Environment.NewLine} Is A Hunger Games Week? {isAHungerGamesWeek} {Environment.NewLine} Is this the First hunger games of the month? {isTheFirstHungerGamesWeekOfTheMonth} {Environment.NewLine} Is this the first hunger games registration period of the month? {isfirstRegistrationWeek}");
 				new Thread(() => {
@@ -110,7 +111,7 @@ namespace DeepState.Utilities
 						}
 
 					}
-					else
+					else if (isfirstRegistrationWeek || isSecondRegistrationWeek)
 					{
 						int daysRemaining = isfirstRegistrationWeek ? (8 - now.Day) : (22 - now.Day);
 						int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
