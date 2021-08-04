@@ -78,6 +78,18 @@ namespace DeepState.Modules
 			_ = Context.Channel.SendMessageAsync(embed: embed.Build());
 		}
 
+		[Command("imgonnacome")]
+		public async Task ImGonnaCome()
+		{
+			_ = Context.Channel.SendMessageAsync("https://youtu.be/NRCf3KUEVyw");
+		}
+
+		[Command("donotcome")]
+		public async Task DoNotCome()
+		{
+			_ = Context.Channel.SendMessageAsync("https://media.tenor.com/images/a7b5e8c66c4214d3f04f3726a5475a65/tenor.gif");
+		}
+
 		[Command("portal")]
 		[Summary("Opens a portal to another channel. Generally used for off-topic discussion in a channel.")]
 		public async Task OpenAPortal([Summary("A # link to the channel to open the portal to.")]ITextChannel portalTargetChannel)
