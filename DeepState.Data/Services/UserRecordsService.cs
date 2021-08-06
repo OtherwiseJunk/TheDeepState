@@ -33,8 +33,13 @@ namespace DeepState.Data.Services
 			{
 				if (UserRecordExists(userId, guildId))
 				{
-					context.UserRecords.AsQueryable().FirstAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId)
-						.Result.LibcraftCoinBalance += payoutAmount;
+					UserRecord userRecord = context.UserRecords.AsQueryable().FirstAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId)
+						.Result;
+					List<UserRecord> guildRecords = GetGuildUserRecords(guildId);
+					double totalCirculation = CalculateTotalCirculation(guildRecords);
+					double pieceOfThePie = userRecord.LibcraftCoinBalance / totalCirculation;
+					payoutAmount *= (1 - pieceOfThePie);
+					userRecord.LibcraftCoinBalance += payoutAmount;
 				}
 				else
 				{
@@ -72,7 +77,7 @@ namespace DeepState.Data.Services
 		{
 			Random rand = new Random(Guid.NewGuid().GetHashCode());
 			double roll = (rand.NextDouble() + 0.01) * LARGEST_PAYOUT;
-			return roll >= SMALLEST_PAYOUT ? roll : SMALLEST_PAYOUT;
+			return Math.Round(roll >= SMALLEST_PAYOUT ? roll : SMALLEST_PAYOUT, 8);
 		}
 		public List<UserRecord> GetGuildTopTenBalances(ulong guildId)
 		{
