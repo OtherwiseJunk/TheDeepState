@@ -90,7 +90,7 @@ namespace DeepState.Utilities
 					{
 						foreach (IEmote emote in RewardEmotes)
 						{
-							if (msg.Reactions.ContainsKey(emote){
+							if (msg.Reactions.ContainsKey(emote)){
 								if (msg.Reactions[emote].ReactionCount >= 10)
 								{
 									service.Grant(msg.Author.Id, (msg.Channel as IGuildChannel).GuildId, UserRecordsService.LARGEST_PAYOUT);
