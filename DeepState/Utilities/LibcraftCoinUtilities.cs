@@ -1,4 +1,5 @@
-﻿using DeepState.Data.Services;
+﻿using DeepState.Constants;
+using DeepState.Data.Services;
 using Discord;
 using Discord.WebSocket;
 using System;
@@ -12,13 +13,20 @@ namespace DeepState.Utilities
 {
 	public static class LibcraftCoinUtilities
 	{
-		private static object DictionaryLock = new object();
+		private static object ActivityDictionaryLock = new object();
+		private static object ReactionDictionaryLock = new object();
+
+		public static IEmote bog = Emote.Parse(SharedConstants.BogId);
+		public static IEmote laughingFace = Emote.Parse(SharedConstants.LaughingFaceID);
+		public static List<IEmote> RewardEmotes = new List<IEmote> { bog, laughingFace };
+
 		private static Dictionary<ulong, List<ulong>> LCCListOfActiveUsersByGuild = new Dictionary<ulong, List<ulong>>();
+		private static Dictionary<ulong, IUserMessage> MessageByIdReactionTracker = new Dictionary<ulong, IUserMessage>();
 		public static async Task LibcraftCoinCheck(UserRecordsService service)
 		{
 			Random rand = Utils.CreateSeededRandom();
 			int nextDuration = rand.Next(60000, 240000);
-			lock (DictionaryLock)
+			lock (ActivityDictionaryLock)
 			{
 				foreach (ulong guildId in LCCListOfActiveUsersByGuild.Keys)
 				{
@@ -37,7 +45,7 @@ namespace DeepState.Utilities
 		{
 			ulong messageUserId = msg.Author.Id;
 			ulong messageGuildId = ((IGuildChannel)msg.Channel).GuildId;
-			lock (DictionaryLock)
+			lock (ActivityDictionaryLock)
 			{
 				if (LCCListOfActiveUsersByGuild.Keys.Contains(messageGuildId))
 				{
@@ -52,6 +60,58 @@ namespace DeepState.Utilities
 					LCCListOfActiveUsersByGuild[messageGuildId] = new List<ulong> { messageUserId };
 				}
 			}
+		}
+
+		public static async Task LibcoinReactHandler(SocketReaction reaction, ISocketMessageChannel channel, IMessage msg) {
+			if(msg.Channel as IGuildChannel != null)
+			{
+				lock (ReactionDictionaryLock)
+				{
+					if (!MessageByIdReactionTracker.Keys.Contains(msg.Id))
+					{
+						MessageByIdReactionTracker.Add(msg.Id, msg as IUserMessage);
+					}
+				}
+			}
+		}
+
+		public static async Task LibcoinReactionChecker(UserRecordsService service)
+		{
+			Random rand = Utils.CreateSeededRandom();
+			int nextDuration = rand.Next((7 * 60 * 1000), rand.Next(14 * 60 * 1000));
+			List<ulong> handledKeys = new List<ulong>();
+
+			lock (ReactionDictionaryLock)
+			{
+				foreach (ulong id in MessageByIdReactionTracker.Keys)
+				{
+					IUserMessage msg = MessageByIdReactionTracker[id];
+					if((DateTime.Now - msg.Timestamp.LocalDateTime).TotalMinutes >= 5)
+					{
+						foreach (IEmote emote in RewardEmotes)
+						{
+							if (msg.Reactions.ContainsKey(emote){
+								if (msg.Reactions[emote].ReactionCount >= 10)
+								{
+									service.Grant(msg.Author.Id, (msg.Channel as IGuildChannel).GuildId, UserRecordsService.LARGEST_PAYOUT);
+
+								}
+								else if (msg.Reactions[emote].ReactionCount >= 5)
+								{
+									service.Grant(msg.Author.Id, (msg.Channel as IGuildChannel).GuildId, UserRecordsService.SMALLEST_PAYOUT);
+								}
+							}
+						}
+						handledKeys.Add(id);
+					}
+				}
+				foreach(ulong id in handledKeys)
+				{
+					MessageByIdReactionTracker.Remove(id);
+				}
+			}
+			Thread.Sleep(nextDuration);
+			new Thread(() => _ = LibcraftCoinCheck(service)).Start();
 		}
 	}
 }
