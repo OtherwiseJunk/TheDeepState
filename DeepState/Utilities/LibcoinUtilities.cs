@@ -129,7 +129,7 @@ namespace DeepState.Utilities
 				IGuildUser user = guild.GetUserAsync(record.DiscordUserId).Result;
 				string userName = DDBUtils.GetDisplayNameForUser(user);
 
-				embed.AddField($"{place}. {userName}", $"{record.LibcraftCoinBalance.ToString("F8")}");
+				embed.AddField($"{place + ( currentPage * 10)}. {userName}", $"{record.LibcraftCoinBalance.ToString("F8")}");
 				place++;
 			}
 			embed.WithFooter($"{currentPage}");

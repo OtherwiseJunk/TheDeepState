@@ -56,8 +56,9 @@ namespace DeepState.Modules
 			}
 		}
 
-		[Command("leaderboard"), Alias("top10")]
-		[Summary("Returns the top 10 LibCoin balances for this guild.")]
+		[Command("leaderboard"),Alias("lb")]
+
+		[Summary("Returns the LibCoin balances for this guild.")]
 		public async Task GetGuildLibcoinLeaderboard()
 		{
 			int currentPage;
