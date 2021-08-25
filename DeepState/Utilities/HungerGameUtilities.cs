@@ -308,7 +308,7 @@ namespace DeepState.Utilities
 				$"{victimName} died after {murdererName} tried to explain {HungerGameConstants.ThingsToExplain.GetRandom()}",
 				$"{victimName} killed by a stray cannonball during {murdererName}'s live orchestral performance of Tchaivkovsky's 1812 Overture",
 				$"{victimName} died listening to {murdererName}'s Karaoke performance of 'Baby Got Back' by Sir-Mix-A-Lot",
-				$"{victimName} died when {murdererName} botched their Murder-Suicide attempt."
+				$"{victimName} died when {murdererName} botched their Murder-Suicide attempt.",
 			};
 			//add 5 "chances" for generic random tribute weapon kills.
 			tributeKillDetails.AddRange(Enumerable.Repeat(HungerGameConstants.RandomTributeWeaponKill, 25));
@@ -381,7 +381,7 @@ namespace DeepState.Utilities
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got ratioed.",
 				$"{victimName} Was redistricted out of the ⛈️T H U N D E R D O M E⛈️.",
 				$"Julienned by 🇺🇸President Joe Biden's🇺🇸 DEVASTATING LAZER EYES after Joe mistook {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()} for God.",
-				$"{victimPronounsByConjugation[PronounConjugations.Objective].GetRandom().ToPascalCase()} gained insight into the illusory nature of the self and popped out of existence.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} gained insight into the illusory nature of the self and popped out of existence.",
 				"Was taken behind the gym by 🇺🇸President Joe Biden🇺🇸.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} had a run in with Cornpop (who as we all know, is a bad dude!)",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got nabbed for tax fraud and summarily executed for their crimes.",
@@ -411,6 +411,7 @@ namespace DeepState.Utilities
 				$"{victimName} was killed when firing the ceremonial surrender cannon during the battle of fort sumpter when the surrender cannon unintentionally exploded.",
 				$"{victimName} died after Joe Manchin refused to abolish the filibuster to save {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()}.",
 				$"{victimName} as compleated by the Phyrexians.",
+				$"{victimName} made like a bird and flew into a window."
 			};
 
 			return environmentalKillDetails.GetRandom();
