@@ -41,7 +41,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("balance")]
-		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup),RequireUserPermission(ChannelPermission.ManageMessages,Group = SharedConstants.AdminsOnlyGroup)]
+		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup), RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup)]
 		public async Task Balance([Summary("An @ ping of the user you're granting cash")] SocketGuildUser user)
 		{
 			ulong guildId = Context.Guild.Id;
@@ -54,6 +54,13 @@ namespace DeepState.Modules
 			{
 				_ = Context.Channel.SendMessageAsync("Sorry, it looks like they don't have a balance yet! It'll happen eventually I'm sure.");
 			}
+		}
+
+		[Command("top10")]
+		public async Task Top10userPleaseMock()
+		{
+			_ = Context.Message.AddReactionAsync(Emote.Parse(SharedConstants.YouAreWhiteID));
+			await Context.Channel.SendMessageAsync("https://dart.s-ul.eu/vKP4k4so");
 		}
 
 		[Command("leaderboard"),Alias("lb")]
