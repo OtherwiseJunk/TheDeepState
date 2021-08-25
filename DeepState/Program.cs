@@ -73,8 +73,8 @@ namespace DeepState
 			await _client.LoginAsync(TokenType.Bot, token);
 			await _client.StartAsync();
 
-			new Thread( () => _ = LibcraftCoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>() ) ).Start();
-			new Thread( () => _ = LibcraftCoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>() ) ).Start();
+			new Thread( () => _ = LibcoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>() ) ).Start();
+			new Thread( () => _ = LibcoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>() ) ).Start();
 			// Block this task until the program is closed.
 			await Task.Delay(-1);
 		}
@@ -152,7 +152,7 @@ namespace DeepState
 				return;
 			}
 
-			new Thread(() => { LibcraftCoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
+			new Thread(() => { LibcoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
 
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
 			{
@@ -182,7 +182,8 @@ namespace DeepState
 			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.HungerGameTributesEmbedTitle, PagingUtilities.TributeEmbedPagingCallback, _services); }).Start();
 			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.OpenRequestEmbedTitle, PagingUtilities.OpenRequestsPagingCallback, _services); }).Start();
 			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.ClosedRequestEmbedTitle, PagingUtilities.ClosedRequestsPagingCallback, _services); }).Start();
-			new Thread(() => { _ = LibcraftCoinUtilities.LibcoinReactHandler(reaction, msg.Channel as ISocketMessageChannel, msg); }).Start();
+			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.LibcoinBalancesEmbedTitle, PagingUtilities.LibcoinLeaderboardPagingCallback, _services); }).Start();
+			new Thread(() => { _ = LibcoinUtilities.LibcoinReactHandler(reaction, msg.Channel as ISocketMessageChannel, msg); }).Start();
 
 			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name) || msg.Author.IsBot)
 			{

@@ -2,12 +2,14 @@
 using DeepState.Data.Models;
 using DeepState.Data.Services;
 using DeepState.Modules.Preconditions;
+using DeepState.Utilities;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 
@@ -58,11 +60,25 @@ namespace DeepState.Modules
 		[Summary("Returns the top 10 LibCoin balances for this guild.")]
 		public async Task GetGuildLibcoinLeaderboard()
 		{
-			EmbedBuilder embedBuilder = new EmbedBuilder();
-			List<UserRecord> topBalances = _UserRecordsService.GetGuildTopTenBalances(Context.Guild.Id);
-			embedBuilder.Title = $"Top {topBalances.Count} LibCoin Balances";
+			int currentPage;
+			List<UserRecord> balances = _UserRecordsService.GetPagedGuildBalances(Context.Guild.Id, out currentPage);
+
+			if (balances.Count == 0)
+			{
+				_ = Context.Channel.SendMessageAsync("No one here has a balance. You're quick.");
+			}
+			else
+			{
+				new Thread(() => {
+					Embed embed = LibcoinUtilities.BuildLeaderboardEmbed(balances, currentPage, Context.Guild);
+					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
+					msg.AddReactionAsync(new Emoji("⬅️"));
+					msg.AddReactionAsync(new Emoji("➡️"));
+				}).Start();
+			}
+			
 			int place = 1;
-			foreach (UserRecord record in topBalances)
+			foreach (UserRecord record in balances)
 			{
 				IGuildUser user = Context.Guild.GetUserAsync(record.DiscordUserId).Result;
 				string username = DDBUtils.GetDisplayNameForUser(user);

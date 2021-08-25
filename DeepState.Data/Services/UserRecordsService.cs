@@ -7,6 +7,7 @@ using System.Linq;
 using MathNet.Numerics.Statistics;
 using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 using Discord;
+using DeepState.Data.Utilities;
 
 namespace DeepState.Data.Services
 {
@@ -65,6 +66,16 @@ namespace DeepState.Data.Services
 				context.SaveChanges();
 			}
 		}
+
+		public List<UserRecord> GetPagedGuildBalances(ulong guildId, out int successfulPage, int page = 0)
+		{
+			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
+			{
+				List<UserRecord> guildBalances = context.UserRecords.AsQueryable().Where(ur => ur.DiscordGuildId == guildId).OrderByDescending(ur => ur.LibcraftCoinBalance).ToList();
+				return PagingUtilities.GetPagedList<UserRecord>(guildBalances, out successfulPage, page);
+			}
+		}
+
 		public double GetUserBalance(ulong userId, ulong guildId)
 		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
@@ -78,13 +89,6 @@ namespace DeepState.Data.Services
 			Random rand = new Random(Guid.NewGuid().GetHashCode());
 			double roll = (rand.NextDouble() + 0.01) * LARGEST_PAYOUT;
 			return Math.Round(roll >= SMALLEST_PAYOUT ? roll : SMALLEST_PAYOUT, 8);
-		}
-		public List<UserRecord> GetGuildTopTenBalances(ulong guildId)
-		{
-			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
-			{
-				return GetGuildUserRecords(guildId).OrderByDescending(ur => ur.LibcraftCoinBalance).Take(10).ToList();
-			}
 		}
 
 		public List<UserRecord> GetGuildUserRecords(ulong guildId){

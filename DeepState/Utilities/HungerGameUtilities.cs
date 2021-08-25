@@ -1,4 +1,5 @@
 ﻿using DartsDiscordBots.Utilities;
+using DeepState.Constants;
 using DeepState.Data.Constants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
@@ -42,7 +43,7 @@ namespace DeepState.Utilities
 			tributes = tributes.OrderByDescending(t => t.IsAlive).ToList();
 
 			EmbedBuilder embed = new EmbedBuilder();
-			embed.Title = HungerGameConstants.HungerGameTributesEmbedTitle;
+			embed.Title = PagedEmbedConstants.HungerGameTributesEmbedTitle;
 
 			foreach (HungerGamesTribute tribute in tributes)
 			{
