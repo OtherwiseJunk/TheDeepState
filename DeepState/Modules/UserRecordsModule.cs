@@ -76,16 +76,6 @@ namespace DeepState.Modules
 					msg.AddReactionAsync(new Emoji("➡️"));
 				}).Start();
 			}
-			
-			int place = 1;
-			foreach (UserRecord record in balances)
-			{
-				IGuildUser user = Context.Guild.GetUserAsync(record.DiscordUserId).Result;
-				string username = DDBUtils.GetDisplayNameForUser(user);
-				embedBuilder.AddField($"{place}. {username}", $"{record.LibcraftCoinBalance.ToString("F8")}");
-				place++;
-			}
-			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
 		}
 
 		[Command("stats")]
