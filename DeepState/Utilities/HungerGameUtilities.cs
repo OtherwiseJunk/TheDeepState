@@ -309,6 +309,7 @@ namespace DeepState.Utilities
 				$"{victimName} killed by a stray cannonball during {murdererName}'s live orchestral performance of Tchaivkovsky's 1812 Overture",
 				$"{victimName} died listening to {murdererName}'s Karaoke performance of 'Baby Got Back' by Sir-Mix-A-Lot",
 				$"{victimName} died when {murdererName} botched their Murder-Suicide attempt.",
+				$"{murdererName} saw them fucking around, and helped {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} find out."
 			};
 			//add 5 "chances" for generic random tribute weapon kills.
 			tributeKillDetails.AddRange(Enumerable.Repeat(HungerGameConstants.RandomTributeWeaponKill, 25));
