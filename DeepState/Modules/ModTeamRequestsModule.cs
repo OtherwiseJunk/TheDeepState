@@ -34,10 +34,11 @@ namespace DeepState.Modules
 			}
 			else
 			{
-				_requestService.CreateRequest(Context.Message.Author.Id, Context.Guild.Id, requestMessage);
+				int requestId = _requestService.CreateRequest(Context.Message.Author.Id, Context.Guild.Id, requestMessage);
+				
 				IMessage msg = Context.Channel.SendMessageAsync("Ok, I've submitted your request!").Result;
 				ITextChannel requests = (ITextChannel) Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
-				await requests.SendMessageAsync($"{DDBUtils.GetDisplayNameForUser((IGuildUser)Context.Message.Author)} has subitted a new request: {requestMessage} {Environment.NewLine} Link: {msg.GetJumpUrl()}");
+				await requests.SendMessageAsync($"{DDBUtils.GetDisplayNameForUser((IGuildUser)Context.Message.Author)} has submitted a new request: {requestId}. {requestMessage} {Environment.NewLine} Link: {msg.GetJumpUrl()}");
 			}
 		}
 

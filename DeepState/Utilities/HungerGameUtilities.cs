@@ -376,6 +376,8 @@ namespace DeepState.Utilities
 				"Was R1'd",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} drank Bone Hurting Juice. Yum Yum!",
 				"Died of Boredom.",
+				"// TODO: Come up with funnier environmental kills",
+				"Placeholder Message, Please Replace Before Pushing To Prod !!!!!!!!!!!!!",
 				"McNuked.",
 				"Died of cringe.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got ratioed.",
