@@ -277,6 +277,14 @@ namespace DeepState.Utilities
 					break;
 				case CauseOfDeathCategories.Environmental:
 					goreyDetails = GetEnvironmentalKillDetails(victimPronounsByConjugation, victim);
+					if (victim.Id == TheDad && Utils.PercentileCheck(1))
+					{
+						goreyDetails = "Died on some weird fucking hill, IDFK.";
+					}
+					if (victim.Id == TheCheeselessQuesadillaUser && Utils.PercentileCheck(80))
+					{
+						goreyDetails = "Poor Young Lucas was struck down in his prime by a Chipotle employee when they ordered a Quesadilla with no cheese.";
+					}
 					break;
 			}
 			return goreyDetails;
