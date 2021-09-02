@@ -271,7 +271,7 @@ namespace DeepState.Utilities
 					HungerGamesTribute murderer = usualSuspects.Where(t => t.IsAlive).ToList().GetRandom();
 					IGuildUser murdererUser = guild.GetUserAsync(murderer.DiscordUserId).Result;
 					goreyDetails = GetTributeKillDetails(murdererUser, victimPronounsByConjugation, victim);
-					if(murdererUser.Id == TheBotmaker && (victim.Id == TheCheatingUser | victim.Id == ThePoliceUser))
+					if(murdererUser.Id == TheBotmaker && (victim.Id == TheCheatingUser || victim.Id == ThePoliceUser))
 					{
 						goreyDetails = "Junk shoved them in a fucking locker, like they said they would.";
 					}
