@@ -305,7 +305,7 @@ namespace DeepState.Utilities
 				$"Ripped in half by {murdererName}. {murdererName} just kind of grabbed {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} by either buttcheek and tore. Fucking Brutal, yanno?",
 				$"{murdererName} jammed a beehive on {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} head and watched them run off a cliff.",
 				$"{murdererName} conjured a massive Fireball and chucked it at {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()}.",
-				$"{victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got dropped into an active volcano by a murder of crows, trained by {murdererName}",
+				$"{victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got dropped into an active volcano by a murder of crows, trained by {murdererName}.",
 				$"{murdererName} offered a teamup, then poisoned {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} food that evening.",
 				$"{murdererName} shot {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} in the head {rand.Next(17,69)} times. I thought for sure {victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} might make it, but that last bullet really did {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} in.",
 				$"After a particularly sick burn by {murdererName}, {victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} continued to insist 'im not owned! im not owned!!', as they slowly shrunk and transform into a cob of corn.",
@@ -313,11 +313,12 @@ namespace DeepState.Utilities
 				$"{murdererName} R1'd {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} real quick, into non-existance. BainCapitalist shed a single, pride-filled tear.",
 				$"Impaled through the chest from behind by {murdererName} just as {victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} got to the climax of {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} monologue. Hate it when that happens.",
 				$"{victimName} killed {murdererName}. *Checks Notes* Wait, shit. Sorry. {murdererName} killed {victimName}. Sorry folx, they're so similar I mix them up.",
-				$"{victimName} died after {murdererName} tried to explain {HungerGameConstants.ThingsToExplain.GetRandom()}",
-				$"{victimName} killed by a stray cannonball during {murdererName}'s live orchestral performance of Tchaivkovsky's 1812 Overture",
-				$"{victimName} died listening to {murdererName}'s Karaoke performance of 'Baby Got Back' by Sir-Mix-A-Lot",
+				$"{victimName} died after {murdererName} tried to explain {HungerGameConstants.ThingsToExplain.GetRandom()}.",
+				$"{victimName} killed by a stray cannonball during {murdererName}'s live orchestral performance of Tchaivkovsky's 1812 Overture.",
+				$"{victimName} died listening to {murdererName}'s Karaoke performance of 'Baby Got Back' by Sir-Mix-A-Lot.",
 				$"{victimName} died when {murdererName} botched their Murder-Suicide attempt.",
-				$"{murdererName} saw them fucking around, and helped {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} find out."
+				$"{murdererName} saw them fucking around, and helped {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} find out.",
+				$"{victimName} died of humiliation after being destroyed in a rap battle by {murdererName}."
 			};
 			//add 5 "chances" for generic random tribute weapon kills.
 			tributeKillDetails.AddRange(Enumerable.Repeat(HungerGameConstants.RandomTributeWeaponKill, 25));
