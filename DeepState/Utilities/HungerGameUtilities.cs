@@ -271,6 +271,10 @@ namespace DeepState.Utilities
 					HungerGamesTribute murderer = usualSuspects.Where(t => t.IsAlive).ToList().GetRandom();
 					IGuildUser murdererUser = guild.GetUserAsync(murderer.DiscordUserId).Result;
 					goreyDetails = GetTributeKillDetails(murdererUser, victimPronounsByConjugation, victim);
+					if(murdererUser.Id == TheBotmaker && (victim.Id == TheCheatingUser | victim.Id == ThePoliceUser))
+					{
+						goreyDetails = "Junk shoved them in a fucking locker, like they said they would.";
+					}
 					break;
 				case CauseOfDeathCategories.TributeTeamup:
 					//TODO. Don't want to bother with Tribute Teamups for the first round.
@@ -318,8 +322,12 @@ namespace DeepState.Utilities
 				$"{victimName} died listening to {murdererName}'s Karaoke performance of 'Baby Got Back' by Sir-Mix-A-Lot.",
 				$"{victimName} died when {murdererName} botched their Murder-Suicide attempt.",
 				$"{murdererName} saw them fucking around, and helped {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} find out.",
-				$"{victimName} died of humiliation after being destroyed in a rap battle by {murdererName}."
-			};
+				$"{victimName} died of humiliation after being destroyed in a rap battle by {murdererName}.",
+				$"{victimName} exploded after being hit by a crocket fired by {murdererName}. Critical Hit!",
+				$"{victimName} was blown up by {murdererName}'s sticky trap while trying to flank",
+				$"",
+
+		};
 			//add 5 "chances" for generic random tribute weapon kills.
 			tributeKillDetails.AddRange(Enumerable.Repeat(HungerGameConstants.RandomTributeWeaponKill, 25));
 
@@ -423,7 +431,12 @@ namespace DeepState.Utilities
 				$"{victimName} was killed when firing the ceremonial surrender cannon during the battle of fort sumpter when the surrender cannon unintentionally exploded.",
 				$"{victimName} died after Joe Manchin refused to abolish the filibuster to save {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()}.",
 				$"{victimName} as compleated by the Phyrexians.",
-				$"{victimName} made like a bird and flew into a window."
+				$"{victimName} made like a bird and flew into a window.",
+				$"{victimName} died when their medic didn't UBERcharge {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()} in time.",
+				$"{victimName} aggro'd the witch alone. What an idiot",
+				$"{victimName} was thrown into the Mississippi River by a tank while waiting for the rescue boat to arrive. Should've stayed on the restaurant roof.",
+				$"{victimName} did not survive the Cheese Burger Apocolypse",
+				$"{victimName} drowned in {victimPronounsByConjugation[PronounConjugations.Possessive]} own tears while watching Clannad."
 			};
 
 			return environmentalKillDetails.GetRandom();

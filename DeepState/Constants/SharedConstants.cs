@@ -43,6 +43,7 @@ namespace DeepState.Constants
 		public static ulong TheCheatingUser = 696443422130831370;
 		public static ulong TheDad = 622578719252283432;
 		public static ulong TheCheeselessQuesadillaUser = 144986616467947520;
+		public static ulong TheBotmaker = 94545463906144256;
 		#endregion
 
 		#region Role ID Lists
