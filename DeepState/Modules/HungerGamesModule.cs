@@ -36,7 +36,11 @@ namespace DeepState.Modules
 		public async Task RegisterHungerGameTribute()
 		{
 			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HGC.TributeRoleName.ToLower());
-			if (_service.TributeExists(Context.Guild.Id, Context.User.Id))
+			if (SharedConstants.KnownSocks.Contains(Context.Message.Author.Id))
+			{
+				await Context.Channel.SendMessageAsync("Sorry, I'm prejudiced against SockAccounts. They creep me out.");
+			}
+			else if (_service.TributeExists(Context.Guild.Id, Context.User.Id))
 			{
 				await Context.Channel.SendMessageAsync("Sorry, you're already registered for this month's game!");
 			}

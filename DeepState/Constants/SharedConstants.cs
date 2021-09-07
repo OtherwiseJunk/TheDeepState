@@ -46,6 +46,13 @@ namespace DeepState.Constants
 		public static ulong TheBotmaker = 94545463906144256;
 		#endregion
 
+		#region User Id Lists
+		public static List<ulong> KnownSocks = new List<ulong>
+		{
+			883895808238432346
+		};
+		#endregion
+
 		#region Role ID Lists
 		public static List<string> PronounLowercaseRoleNames = new List<string> {
 			MasculinePronounRoleName,
