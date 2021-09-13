@@ -15,18 +15,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Utils = DeepState.Utilities.Utilities;
 using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
+using DeepState.Data.Constants;
 
 namespace DeepState.Modules
 {
 	[Group("hungergames"), Alias("hg")]
 	public class HungerGamesModule : ModuleBase
 	{
-		public HungerGamesService _service { get; set; }
+		public HungerGamesService _hgService { get; set; }
+		public UserRecordsService _urService { get; set; }
 		public IMessageReliabilityService _messenger { get; set; }
 
-		public HungerGamesModule(HungerGamesService service, IMessageReliabilityService messenger)
+		public HungerGamesModule(HungerGamesService service, IMessageReliabilityService messenger, UserRecordsService urService)
 		{
-			_service = service;
+			_hgService = service;
+			_urService = urService;
 			_messenger = messenger;
 		}
 
@@ -40,13 +43,13 @@ namespace DeepState.Modules
 			{
 				await Context.Channel.SendMessageAsync("Sorry, I'm prejudiced against SockAccounts. They creep me out.");
 			}
-			else if (_service.TributeExists(Context.Guild.Id, Context.User.Id))
+			else if (_hgService.TributeExists(Context.Guild.Id, Context.User.Id))
 			{
 				await Context.Channel.SendMessageAsync("Sorry, you're already registered for this month's game!");
 			}
 			else
 			{
-				_service.RegisterTribute(Context.Guild.Id, Context.User.Id);
+				_hgService.RegisterTribute(Context.Guild.Id, Context.User.Id);
 				await Context.Channel.SendMessageAsync($"Gosh you're brave. Ok! I've registered you as a Tribute in this month's ⛈️ **T H U N D E R D O M E** ⛈️, and deducted {HGC.CostOfAdmission.ToString("F8")} libcoins from your account. Good luck! {Environment.NewLine} https://media1.tenor.com/images/f9da8dd0e06d31730afb9ad12abed53c/tenor.gif?itemid=17203535");
 				if (tributeRole != null)
 				{
@@ -60,7 +63,7 @@ namespace DeepState.Modules
 		public async Task GetTributeList()
 		{
 			int currentPage;
-			List<HungerGamesTribute> tributes = _service.GetPagedTributeList(Context.Guild.Id, out currentPage);
+			List<HungerGamesTribute> tributes = _hgService.GetPagedTributeList(Context.Guild.Id, out currentPage);
 
 			if (tributes.Count == 0)
 			{
@@ -80,9 +83,9 @@ namespace DeepState.Modules
 		[Command("pot")]
 		public async Task GetGuildPot()
 		{
-			if (_service.PrizePoolExists(Context.Guild.Id))
+			if (_hgService.PrizePoolExists(Context.Guild.Id))
 			{
-				await Context.Channel.SendMessageAsync($"Looks like there's a grand total of {_service.GetPrizePool(Context.Guild.Id).ToString("F8")} on the line!");
+				await Context.Channel.SendMessageAsync($"Looks like there's a grand total of {_hgService.GetPrizePool(Context.Guild.Id).ToString("F8")} on the line!");
 			}
 		}
 
@@ -91,7 +94,7 @@ namespace DeepState.Modules
 		public async Task AssignTributeRoles()
 		{
 			IRole tributeRole = Context.Guild.Roles.First(r => r.Name.ToLower() == HGC.TributeRoleName.ToLower());
-			List<HungerGamesTribute> tributes = _service.GetTributeList(Context.Guild.Id);
+			List<HungerGamesTribute> tributes = _hgService.GetTributeList(Context.Guild.Id);
 			foreach (HungerGamesTribute tribute in tributes)
 			{
 				IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId).Result;
@@ -116,12 +119,12 @@ namespace DeepState.Modules
 		[RequireUserPermission(GuildPermission.ManageMessages)]
 		public async Task SetTributeAnnouncementChannel()
 		{
-			if (_service.TributeAnnouncementConfigurationExists(Context.Guild.Id))
+			if (_hgService.TributeAnnouncementConfigurationExists(Context.Guild.Id))
 			{
 				await Context.Channel.SendMessageAsync("Someone already registered a channel for this, I'll overwrite it and use this channel instead.");
 			}
 
-			_service.SetTributeAnnouncementChannel(Context.Guild.Id, Context.Channel.Id);
+			_hgService.SetTributeAnnouncementChannel(Context.Guild.Id, Context.Channel.Id);
 			await Context.Channel.SendMessageAsync("Ok, i'll do my daily obituaries here, starting on the 8th of every month!");
 		}
 
@@ -130,12 +133,12 @@ namespace DeepState.Modules
 		[RequireUserPermission(GuildPermission.ManageMessages)]
 		public async Task SetCorpseAnnouncementChannel()
 		{
-			if (_service.CorpseAnnouncementConfigurationExists(Context.Guild.Id))
+			if (_hgService.CorpseAnnouncementConfigurationExists(Context.Guild.Id))
 			{
 				await Context.Channel.SendMessageAsync("Someone already registered a channel for this, I'll overwrite it and use this channel instead.");
 			}
 
-			_service.SetCorpseAnnouncementChannel(Context.Guild.Id, Context.Channel.Id);
+			_hgService.SetCorpseAnnouncementChannel(Context.Guild.Id, Context.Channel.Id);
 			await Context.Channel.SendMessageAsync("Ok, i'll do my daily obituaries here, starting on the 8th of every month!");
 		}
 
@@ -159,7 +162,7 @@ namespace DeepState.Modules
 			victim = Context.Guild.GetUserAsync(victimDiscordId).Result;
 			string victimName = DDBUtils.GetDisplayNameForUser(victim);
 			var pronounDict = Utils.GetUserPronouns(victim, Context.Guild);
-			List<HungerGamesTribute> tributes = _service.GetTributeList(Context.Guild.Id);
+			List<HungerGamesTribute> tributes = _hgService.GetTributeList(Context.Guild.Id);
 			string goreyDetails = HungerGameUtilities.GetCauseOfDeathDescription(victimDiscordId, victimName, Context.Guild, tributes, pronounDict);
 			string obituary = HungerGameUtilities.GetObituary(pronounDict, victim);
 			_ = Context.Channel.SendMessageAsync(embed: HungerGameUtilities.BuildTributeDeathEmbed(victim, goreyDetails, obituary, rand.Next(1, 12)));
@@ -170,7 +173,26 @@ namespace DeepState.Modules
 		[RequireOwner()]
 		public async Task testRun()
 		{
-			HungerGameUtilities.DailyEvent(_service, null, Context.Client);
+			HungerGameUtilities.DailyEvent(_hgService, null, Context.Client);
+		}
+
+		[Command("cleanup"), Alias("wrap")]
+		[RequireUserPermission(ChannelPermission.ManageMessages)]
+		public async Task runCleanup()
+		{
+			HungerGamesServerConfiguration config = _hgService.GetAllConfigurations().FirstOrDefault(c => c.DiscordGuildId == Context.Guild.Id);
+			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
+			IRole corpseRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
+			IRole championRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.ChampionRoleName.ToLower());
+			IMessageChannel tributeAnnouncementChannel = (IMessageChannel) await Context.Guild.GetChannelAsync(config.TributeAnnouncementChannelId);
+			Console.WriteLine(@$"Tribute Role Null? {tributeRole == null}");
+			Console.WriteLine(@$"Corpse Role Null? {corpseRole == null}");
+			Console.WriteLine(@$"Champion Role Null? {championRole == null}");
+			if (config != null)
+			{
+				HungerGameUtilities.RunHungerGamesCleanup(Context.Guild, tributeAnnouncementChannel, tributeRole, corpseRole, championRole, _hgService.GetTributeList(Context.Guild.Id), _hgService, _urService);
+			}
+			
 		}
 	}
 }
