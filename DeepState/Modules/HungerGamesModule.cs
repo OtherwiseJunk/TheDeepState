@@ -194,5 +194,19 @@ namespace DeepState.Modules
 			}
 			
 		}
+
+		[Command("announce"), Alias("anc")]
+		[RequireOwner()]
+		public async Task MakeAnnouncement([Remainder]string announcement)
+		{
+			foreach(HungerGamesServerConfiguration config in _hgService.GetAllConfigurations())
+			{
+				IMessageChannel announcementChannel = (IMessageChannel) await Context.Guild.GetChannelAsync(config.TributeAnnouncementChannelId);
+				if(announcementChannel != null)
+				{
+					await announcementChannel.SendMessageAsync(announcement);
+				}
+			}
+		}
 	}
 }
