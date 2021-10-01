@@ -89,7 +89,8 @@ namespace DeepState.Utilities
 				bool isThirdRegistrationPeriod = now.Day > 20 && now.Day < 24;
 
 				Console.WriteLine($"Is First Day? {isFirstDayOfGames} {Environment.NewLine} More than one tributes remain? {moreThanOneLivingTributeRemains} {Environment.NewLine} Is this the first hunger games registration period of the month? {isfirstRegistrationPeriod}");
-				new Thread(() => {
+				new Thread(() =>
+				{
 					if (isFirstDayOfGames && moreThanOneLivingTributeRemains)
 					{
 						tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
@@ -100,9 +101,9 @@ namespace DeepState.Utilities
 					{
 						//Add +1, as we haven't done en elimination for the day yet.
 						int daysRemaining;
-						if(now.Day >= 4 && now.Day <= 10)
+						if (now.Day >= 4 && now.Day <= 10)
 						{
-							daysRemaining = 10 - now.Day + 1; 
+							daysRemaining = 10 - now.Day + 1;
 						}
 						else if (now.Day >= 14 && now.Day <= 20)
 						{
@@ -127,13 +128,27 @@ namespace DeepState.Utilities
 					}
 					else if (isfirstRegistrationPeriod || isSecondRegistrationPeroid || isThirdRegistrationPeriod)
 					{
-						int daysRemaining = isfirstRegistrationPeriod ? (8 - now.Day) : (22 - now.Day);
+						int daysRemaining;
+						if (isfirstRegistrationPeriod)
+						{
+							daysRemaining = 4 - now.Day + 1;
+						}
+						else if (isSecondRegistrationPeroid)
+						{
+							daysRemaining = 14 - now.Day + 1;
+						}
+						else
+						{
+							daysRemaining = 24 - now.Day + 1;
+						}
 						int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
 						double potSize = hgService.GetPrizePool(guild.Id);
 
 						tributeAnnouncementChannel.SendMessageAsync(BuildLeadUpHype(daysRemaining, numberOfTributes, potSize));
 					}
-				}).Start();
+				})
+				{
+				}.Start();
 			}
 		}
 
