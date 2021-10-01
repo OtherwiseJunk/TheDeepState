@@ -82,12 +82,13 @@ namespace DeepState.Utilities
 
 				bool isFirstDayOfGames = (now.Day == 8 || now.Day == 22);
 				bool moreThanOneLivingTributeRemains = tributes.Where(t => t.IsAlive).Count() > 1;
-				bool isAHungerGamesWeek = ((now.Day >= 8 && now.Day <= 14) || (now.Day >= 22 && now.Day <= 28));
+				bool isAHungerGamesWeek = ((now.Day >= 4 && now.Day <= 10) || (now.Day >= 14 && now.Day <= 20) || (now.Day >= 24 && now.Day <= 30));
 				bool isTheFirstHungerGamesWeekOfTheMonth = (now.Day >= 8 && now.Day <= 14);
-				bool isfirstRegistrationPeriod = now.Day < 8;
-				bool isSecondRegistrationPeroid = now.Day > 24 && now.Day < 22;
+				bool isfirstRegistrationPeriod = now.Day < 4;
+				bool isSecondRegistrationPeroid = now.Day > 10 && now.Day < 14;
+				bool isThirdRegistrationPeriod = now.Day > 20 && now.Day < 24;
 
-				Console.WriteLine($"Is First Day? {isFirstDayOfGames} {Environment.NewLine} More than one tributes remain? {moreThanOneLivingTributeRemains} {Environment.NewLine} Is A Hunger Games Week? {isAHungerGamesWeek} {Environment.NewLine} Is this the First hunger games of the month? {isTheFirstHungerGamesWeekOfTheMonth} {Environment.NewLine} Is this the first hunger games registration period of the month? {isfirstRegistrationPeriod}");
+				Console.WriteLine($"Is First Day? {isFirstDayOfGames} {Environment.NewLine} More than one tributes remain? {moreThanOneLivingTributeRemains} {Environment.NewLine} Is this the first hunger games registration period of the month? {isfirstRegistrationPeriod}");
 				new Thread(() => {
 					if (isFirstDayOfGames && moreThanOneLivingTributeRemains)
 					{
@@ -98,7 +99,19 @@ namespace DeepState.Utilities
 					if (isAHungerGamesWeek && moreThanOneLivingTributeRemains)
 					{
 						//Add +1, as we haven't done en elimination for the day yet.
-						int daysRemaining = isTheFirstHungerGamesWeekOfTheMonth ? ((14 - now.Day) + 1) : ((28 - now.Day) + 1);
+						int daysRemaining;
+						if(now.Day >= 4 && now.Day <= 10)
+						{
+							daysRemaining = 10 - now.Day + 1; 
+						}
+						else if (now.Day >= 14 && now.Day <= 20)
+						{
+							daysRemaining = 20 - now.Day + 1;
+						}
+						else
+						{
+							daysRemaining = 30 - now.Day + 1;
+						}
 
 						RolltheDaysDeaths(config, daysRemaining, tributes, guild, tributeAnnouncementChannel, corpseAnnouncementChannel, hgService, tributeRole, corpseRole);
 
@@ -112,7 +125,7 @@ namespace DeepState.Utilities
 						}
 
 					}
-					else if (isfirstRegistrationPeriod || isSecondRegistrationPeroid )
+					else if (isfirstRegistrationPeriod || isSecondRegistrationPeroid || isThirdRegistrationPeriod)
 					{
 						int daysRemaining = isfirstRegistrationPeriod ? (8 - now.Day) : (22 - now.Day);
 						int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;

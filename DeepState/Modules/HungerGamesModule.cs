@@ -35,7 +35,7 @@ namespace DeepState.Modules
 
 		[Command("register"), Alias("reg")]
 		[RequireLibcoinBalance(HGC.CostOfAdmission)]
-		[RequireDayOfMonthRange(1, 7, Group = SharedConstants.HungerGamesRegistrationDateGroup), RequireDayOfMonthRange(15,21, Group = SharedConstants.HungerGamesRegistrationDateGroup)]
+		[RequireDayOfMonthRange(1, 7, Group = SharedConstants.HungerGamesRegistrationDateGroup), RequireDayOfMonthRange(15, 21, Group = SharedConstants.HungerGamesRegistrationDateGroup)]
 		public async Task RegisterHungerGameTribute()
 		{
 			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HGC.TributeRoleName.ToLower());
@@ -71,7 +71,8 @@ namespace DeepState.Modules
 			}
 			else
 			{
-				new Thread(() => {
+				new Thread(() =>
+				{
 					Embed embed = HungerGameUtilities.BuildTributeEmbed(tributes, currentPage, Context.Guild);
 					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
 					msg.AddReactionAsync(new Emoji("⬅️"));
@@ -87,6 +88,29 @@ namespace DeepState.Modules
 			{
 				await Context.Channel.SendMessageAsync($"Looks like there's a grand total of {_hgService.GetPrizePool(Context.Guild.Id).ToString("F8")} on the line!");
 			}
+		}
+
+		[Command("readycheck"), Alias("rc")]
+		[RequireUserPermission(ChannelPermission.ManageMessages)]
+		public async Task ReadyCheck()
+		{
+			bool tributeRoleExists = RoleExists(HGC.TributeRoleName, Context);
+			bool championRoleExists = RoleExists(HGC.ChampionRoleName, Context);
+			bool corpseRoleExists = RoleExists(HGC.CorpseRoleName, Context);
+
+			await Context.Channel.SendMessageAsync(@$"Tribute Role Exists? {tributeRoleExists}
+Champion Role Exists? {championRoleExists}
+Corpse Role Exists? {corpseRoleExists}");
+		}
+
+		public bool RoleExists(string RoleName, ICommandContext context)
+		{
+			IRole role = context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == RoleName.ToLower());
+			if (role != null)
+			{
+				return true;
+			}
+			return false;
 		}
 
 		[Command("roleup")]
@@ -184,7 +208,7 @@ namespace DeepState.Modules
 			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
 			IRole corpseRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
 			IRole championRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.ChampionRoleName.ToLower());
-			IMessageChannel tributeAnnouncementChannel = (IMessageChannel) await Context.Guild.GetChannelAsync(config.TributeAnnouncementChannelId);
+			IMessageChannel tributeAnnouncementChannel = (IMessageChannel)await Context.Guild.GetChannelAsync(config.TributeAnnouncementChannelId);
 			Console.WriteLine(@$"Tribute Role Null? {tributeRole == null}");
 			Console.WriteLine(@$"Corpse Role Null? {corpseRole == null}");
 			Console.WriteLine(@$"Champion Role Null? {championRole == null}");
@@ -192,17 +216,17 @@ namespace DeepState.Modules
 			{
 				HungerGameUtilities.RunHungerGamesCleanup(Context.Guild, tributeAnnouncementChannel, tributeRole, corpseRole, championRole, _hgService.GetTributeList(Context.Guild.Id), _hgService, _urService);
 			}
-			
+
 		}
 
 		[Command("announce"), Alias("anc")]
 		[RequireOwner()]
-		public async Task MakeAnnouncement([Remainder]string announcement)
+		public async Task MakeAnnouncement([Remainder] string announcement)
 		{
-			foreach(HungerGamesServerConfiguration config in _hgService.GetAllConfigurations())
+			foreach (HungerGamesServerConfiguration config in _hgService.GetAllConfigurations())
 			{
-				IMessageChannel announcementChannel = (IMessageChannel) await Context.Guild.GetChannelAsync(config.TributeAnnouncementChannelId);
-				if(announcementChannel != null)
+				IMessageChannel announcementChannel = (IMessageChannel)await Context.Guild.GetChannelAsync(config.TributeAnnouncementChannelId);
+				if (announcementChannel != null)
 				{
 					await announcementChannel.SendMessageAsync(announcement);
 				}
