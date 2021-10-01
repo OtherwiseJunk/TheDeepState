@@ -99,19 +99,18 @@ namespace DeepState.Utilities
 
 					if (isAHungerGamesWeek && moreThanOneLivingTributeRemains)
 					{
-						//Add +1, as we haven't done en elimination for the day yet.
 						int daysRemaining;
 						if (now.Day >= 4 && now.Day <= 10)
 						{
-							daysRemaining = 10 - now.Day + 1;
+							daysRemaining = 10 - now.Day;
 						}
 						else if (now.Day >= 14 && now.Day <= 20)
 						{
-							daysRemaining = 20 - now.Day + 1;
+							daysRemaining = 20 - now.Day;
 						}
 						else
 						{
-							daysRemaining = 30 - now.Day + 1;
+							daysRemaining = 30 - now.Day;
 						}
 
 						RolltheDaysDeaths(config, daysRemaining, tributes, guild, tributeAnnouncementChannel, corpseAnnouncementChannel, hgService, tributeRole, corpseRole);
@@ -131,15 +130,15 @@ namespace DeepState.Utilities
 						int daysRemaining;
 						if (isfirstRegistrationPeriod)
 						{
-							daysRemaining = 4 - now.Day + 1;
+							daysRemaining = 4 - now.Day;
 						}
 						else if (isSecondRegistrationPeroid)
 						{
-							daysRemaining = 14 - now.Day + 1;
+							daysRemaining = 14 - now.Day;
 						}
 						else
 						{
-							daysRemaining = 24 - now.Day + 1;
+							daysRemaining = 24 - now.Day;
 						}
 						int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
 						double potSize = hgService.GetPrizePool(guild.Id);
