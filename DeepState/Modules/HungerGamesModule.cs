@@ -35,7 +35,7 @@ namespace DeepState.Modules
 
 		[Command("register"), Alias("reg")]
 		[RequireLibcoinBalance(HGC.CostOfAdmission)]
-		[RequireDayOfMonthRange(1, 7, Group = SharedConstants.HungerGamesRegistrationDateGroup), RequireDayOfMonthRange(15, 21, Group = SharedConstants.HungerGamesRegistrationDateGroup)]
+		[RequireDayOfMonthRange(1, 3, Group = SharedConstants.HungerGamesRegistrationDateGroup), RequireDayOfMonthRange(11, 13, Group = SharedConstants.HungerGamesRegistrationDateGroup), RequireDayOfMonthRange(21, 23, Group = SharedConstants.HungerGamesRegistrationDateGroup)]
 		public async Task RegisterHungerGameTribute()
 		{
 			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HGC.TributeRoleName.ToLower());
