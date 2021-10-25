@@ -11,17 +11,26 @@ using TraceLd.MineStatSharp;
 using DartsDiscordBots.Permissions;
 using DeepState.Utilities;
 using DartsDiscordBots.Utilities;
+using DartsDiscordBots.Services.Interfaces;
 
 namespace DeepState.Modules
 {
 	public class MalarkeyModule : ModuleBase
 	{
+		public IMessageReliabilityService _messenger { get; set; }
+
+		public MalarkeyModule(IMessageReliabilityService messanger)
+		{
+			_messenger = messanger;
+		}
+
 		[Command("jackbox")]
 		[Summary("Makes a jackbox poll, and will announce a winner after 5 mintues. User must provide a comma separated list of the jack.")]
 		public async Task Jackbox([Summary("A comma seperated list of the versions of jackbox to make the list for")] string versions)
 		{
 			List<string> versionList = versions.Split(',').ToList();
 			List<string> pollGameList = new List<string>();
+			MessageReference reference = Context.Message.Reference ?? new MessageReference(Context.Message.Id);
 
 			for (int i = 1; i < 9; i++)
 			{
@@ -33,8 +42,9 @@ namespace DeepState.Modules
 					pollGameList.AddRange(gameList);
 				}
 			}
+			string outputList = string.Join(Environment.NewLine, pollGameList);
 
-			await Context.Channel.SendMessageAsync(string.Join(Environment.NewLine, pollGameList));
+			await _messenger.SendMessageToChannel(outputList, Context.Channel, reference, new List<ulong>(Context.Message.MentionedUserIds), Environment.NewLine);
 		}
 
 		[Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
