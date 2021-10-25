@@ -14,6 +14,7 @@ namespace DeepState.Constants
 		private static List<string> JackboxFiveGames { get; set; }
 		private static List<string> JackboxSixGames { get; set; }
 		private static List<string> JackboxSevenGames { get; set; }
+		private static List<string> JackboxEightGames { get; set; }
 		public static Dictionary<int, List<string>> JackboxGameListByNumber { get; set; }
 		static JackboxConstants()
 		{
@@ -79,6 +80,14 @@ namespace DeepState.Constants
 				":muscle: Champ'd Up (3-8 Champs)",
 				":rofl: Quiplash 3 (3-8 Funny People)"
 			};
+			JackboxEightGames = new List<string>()
+			{
+				":pencil2: Drawful Animate (3-10 Underpaid Animators)",
+				":pie: The Wheel of Enormous Proportions (2-8 Wonderers)",
+				":moneybag: Job Job (3-10 Employees)",
+				":pick: The Poll Mine (2-10 Miners)",
+				":mag: Weapons Drawn (4-8 Detective/Murderers"
+			};
 			JackboxGameListByNumber = new Dictionary<int, List<string>>()
 			{
 				{ 1, JackboxOneGames},
@@ -88,6 +97,7 @@ namespace DeepState.Constants
 				{ 5, JackboxFiveGames},
 				{ 6, JackboxSixGames},
 				{ 7, JackboxSevenGames},
+				{ 8, JackBoxEightGames}
 			};
 
 		}
