@@ -23,7 +23,7 @@ namespace DeepState.Modules
 			List<string> versionList = versions.Split(',').ToList();
 			List<string> pollGameList = new List<string>();
 
-			for (int i = 1; i < 8; i++)
+			for (int i = 1; i < 9; i++)
 			{
 				if (versionList.Contains(i.ToString()))
 				{
