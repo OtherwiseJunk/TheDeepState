@@ -97,7 +97,7 @@ namespace DeepState.Constants
 				{ 5, JackboxFiveGames},
 				{ 6, JackboxSixGames},
 				{ 7, JackboxSevenGames},
-				{ 8, JackBoxEightGames}
+				{ 8, JackboxEightGames}
 			};
 
 		}

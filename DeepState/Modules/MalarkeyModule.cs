@@ -27,7 +27,7 @@ namespace DeepState.Modules
 			{
 				if (versionList.Contains(i.ToString()))
 				{
-					pollGameList.Add($"==JACKBOX {i} GAMES==");
+					pollGameList.Add($"**==JACKBOX {i} GAMES==**");
 					Dictionary<int, List<string>> jackbox = JackboxConstants.JackboxGameListByNumber;
 					var gameList = jackbox[i];
 					pollGameList.AddRange(gameList);
