@@ -17,51 +17,6 @@ namespace DeepState.Modules
 {
 	public class MalarkeyModule : ModuleBase
 	{
-		public IMessageReliabilityService _messenger { get; set; }
-
-		public MalarkeyModule(IMessageReliabilityService messanger)
-		{
-			_messenger = messanger;
-		}
-
-		[Command("jackbox")]
-		[Summary("Makes a jackbox poll, and will announce a winner after 5 mintues. User must provide a comma separated list of the jack.")]
-		public async Task Jackbox([Summary("A comma seperated list of the versions of jackbox to make the list for")] string versions)
-		{
-			List<string> versionList = versions.Split(',').ToList();
-			List<string> pollGameList = new List<string>();
-			MessageReference reference = Context.Message.Reference ?? new MessageReference(Context.Message.Id);
-
-			for (int i = 1; i < 9; i++)
-			{
-				if (versionList.Contains(i.ToString()))
-				{
-					pollGameList.Add($"**==JACKBOX {i} GAMES==**");
-					Dictionary<int, List<string>> jackbox = JackboxConstants.JackboxGameListByNumber;
-					var gameList = jackbox[i];
-					pollGameList.AddRange(gameList);
-				}
-			}
-			string outputList = string.Join(Environment.NewLine, pollGameList);
-
-			await _messenger.SendMessageToChannel(outputList, Context.Channel, reference, new List<ulong>(Context.Message.MentionedUserIds), Environment.NewLine);
-		}
-		[Command("jackboxrnd"), Alias("jbr")]
-		public async Task JackboxRandom([Summary("A comma seperated list of the versions of jackbox to make the list for")] string versions="1,2,3,4,5,6,7,8")
-		{
-			List<string> versionList = versions.Split(',').ToList();
-			List<string> fullGameList = new List<string>();
-			foreach(List<string> games in JackboxConstants.JackboxGameListByNumber.Values)
-			{
-				if(versionList.Contains(JackboxConstants.JackboxGameListByNumber.FirstOrDefault(jb => jb.Value == games).Key.ToString()))
-				{
-					fullGameList.AddRange(games);
-				}				
-			}
-			string game = fullGameList.GetRandom();
-			await Context.Channel.SendMessageAsync($"Game: {game}. Jackbox Version: {JackboxConstants.JackboxGameListByNumber.FirstOrDefault(jb => jb.Value.Contains(game)).Key}");
-		}
-
 		[Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
 		[Summary("Returns a message with a status of Sporf's Minecraft server")]
 		public async Task MinecraftStatus(string serverAddress=SporfbaseConstants.ServerAddress, ushort serverPort=SporfbaseConstants.ServerPort)
