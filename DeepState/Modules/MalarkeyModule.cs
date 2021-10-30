@@ -46,6 +46,21 @@ namespace DeepState.Modules
 
 			await _messenger.SendMessageToChannel(outputList, Context.Channel, reference, new List<ulong>(Context.Message.MentionedUserIds), Environment.NewLine);
 		}
+		[Command("jackboxrnd"), Alias("jbr")]
+		public async Task JackboxRandom([Summary("A comma seperated list of the versions of jackbox to make the list for")] string versions="1,2,3,4,5,6,7,8")
+		{
+			List<string> versionList = versions.Split(',').ToList();
+			List<string> fullGameList = new List<string>();
+			foreach(List<string> games in JackboxConstants.JackboxGameListByNumber.Values)
+			{
+				if(versionList.Contains(JackboxConstants.JackboxGameListByNumber.FirstOrDefault(jb => jb.Value == games).Key.ToString()))
+				{
+					fullGameList.AddRange(games);
+				}				
+			}
+			string game = fullGameList.GetRandom();
+			await Context.Channel.SendMessageAsync($"Game: {game}. Jackbox Version: {JackboxConstants.JackboxGameListByNumber.FirstOrDefault(jb => jb.Value.Contains(game)).Key}");
+		}
 
 		[Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
 		[Summary("Returns a message with a status of Sporf's Minecraft server")]
