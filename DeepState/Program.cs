@@ -27,6 +27,8 @@ using ORH = DartsDiscordBots.Handlers.OnReactHandlers;
 using FluentScheduler;
 using HungerGameConstants = DeepState.Data.Constants.HungerGameConstants;
 using Serilog;
+using DartsDiscordBots.Modules.Jackbox;
+using DartsDiscordBots.Modules.Jackbox.Interfaces;
 
 namespace DeepState
 {
@@ -103,6 +105,7 @@ namespace DeepState
 				.AddSingleton<HungerGamesService>()
 				.AddSingleton<UserRecordsService>()
 				.AddSingleton<ModTeamRequestService>()
+				.AddSingleton<JackboxService>()
 				.AddSingleton<ILogger>(log)
 				.AddDbContext<OOCDBContext>()
 				.AddDbContext<GuildUserRecordContext>()
@@ -110,7 +113,8 @@ namespace DeepState
 				.AddDbContextFactory<OOCDBContext>()
 				.AddDbContextFactory<GuildUserRecordContext>()
 				.AddDbContextFactory<HungerGamesContext>()
-				.AddDbContextFactory<ModTeamRequestContext>();
+				.AddDbContextFactory<ModTeamRequestContext>()
+				.AddDbContextFactory<JackboxContext>();
 
 			return map.BuildServiceProvider();
 		}
@@ -133,6 +137,7 @@ namespace DeepState
 			await _commands.AddModuleAsync<UserRecordsModule>(_services);
 			await _commands.AddModuleAsync<HungerGamesModule>(_services);
 			await _commands.AddModuleAsync<ModTeamRequestModule>(_services);
+			await _commands.AddModuleAsync<JackboxModule>(_services);
 
 #if !DEBUG
 			
