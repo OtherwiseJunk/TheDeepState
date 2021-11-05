@@ -373,6 +373,7 @@ namespace DeepState.Utilities
 
 			List<string> environmentalKillDetails = new List<string>
 			{
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} went to Brazil",
 				"Smote by God for being far, far, too horny.",
 				$"Attacked by a roving pack of enraged twitter users, who cancelled {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()}, permanently.",
 				"Chased off a cliff by a swarm of Japanese Murder Hornets.",
