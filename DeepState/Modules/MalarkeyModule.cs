@@ -17,7 +17,7 @@ namespace DeepState.Modules
 {
 	public class MalarkeyModule : ModuleBase
 	{
-		[Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
+		[Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 })]
 		[Summary("Returns a message with a status of Sporf's Minecraft server")]
 		public async Task MinecraftStatus(string serverAddress=SporfbaseConstants.ServerAddress, ushort serverPort=SporfbaseConstants.ServerPort)
 		{
@@ -45,7 +45,7 @@ namespace DeepState.Modules
 			await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/745024703365644320/840383340790939658/theweekend.mp4");
 		}
 
-		[Command("walkingdad"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
+		[Command("walkingdad"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 })]
 		[Summary("Check in on the server's favorite dad!")]
 		public async Task WalkingDad()
 		{

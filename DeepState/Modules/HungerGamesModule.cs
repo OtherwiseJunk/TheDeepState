@@ -38,6 +38,25 @@ namespace DeepState.Modules
 		[RequireDayOfMonthRange(1, 3, Group = SharedConstants.HungerGamesRegistrationDateGroup), RequireDayOfMonthRange(11, 13, Group = SharedConstants.HungerGamesRegistrationDateGroup), RequireDayOfMonthRange(21, 23, Group = SharedConstants.HungerGamesRegistrationDateGroup)]
 		public async Task RegisterHungerGameTribute()
 		{
+			if (Context.Guild.Id == SharedConstants.LibcraftGuildId)
+			{
+				if (Context.Channel.Id == SharedConstants.LCBotCOmmandsChannel)
+				{
+					await RegisterTribute();
+				}
+				else
+				{
+					await Context.Message.AddReactionAsync(Emote.Parse(SharedConstants.BooHooCrackerID));
+				}
+			}
+			else
+			{
+				await RegisterTribute();
+			}
+		}
+
+		public async Task RegisterTribute()
+		{
 			IRole tributeRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HGC.TributeRoleName.ToLower());
 			if (SharedConstants.KnownSocks.Contains(Context.Message.Author.Id))
 			{

@@ -7,6 +7,10 @@ namespace DeepState.Constants
 	{
 		#region Discord ID Variables
 
+		#region Guild Ids
+		public const ulong LibcraftGuildId = 698639095940907048;
+		#endregion
+
 		#region Emote Ids
 		public static string BogId = "<:bog:763615501992591361>";
 		public static string ConcernedFroggyId = "<:concernfroggy:737512429310836806>";
@@ -28,6 +32,7 @@ namespace DeepState.Constants
 		public static ulong SeriousDiscussionChannelId = 732019626367516682;
 		public static ulong DiscordSuggestionsChannelId = 740033615617982514;
 		public static ulong RequestsChannelId = 858490606145634354;
+		public static ulong LCBotCOmmandsChannel = 718986327642734654;
 		#endregion
 
 		#region Channel Lists
