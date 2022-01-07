@@ -27,6 +27,8 @@ using ORH = DartsDiscordBots.Handlers.OnReactHandlers;
 using FluentScheduler;
 using HungerGameConstants = DeepState.Data.Constants.HungerGameConstants;
 using Serilog;
+using DartsDiscordBots.Modules.Jackbox;
+using DartsDiscordBots.Modules.Jackbox.Interfaces;
 
 namespace DeepState
 {
@@ -73,8 +75,8 @@ namespace DeepState
 			await _client.LoginAsync(TokenType.Bot, token);
 			await _client.StartAsync();
 
-			new Thread( () => _ = LibcraftCoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>() ) ).Start();
-			new Thread( () => _ = LibcraftCoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>() ) ).Start();
+			new Thread( () => _ = LibcoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>() ) ).Start();
+			new Thread( () => _ = LibcoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>() ) ).Start();
 			// Block this task until the program is closed.
 			await Task.Delay(-1);
 		}
@@ -98,11 +100,12 @@ namespace DeepState
 				.AddSingleton<IHelpConfig, HelpConfig>()
 				.AddSingleton<IBotInformation, BotInformation>()
 				.AddSingleton<IMessageReliabilityService, MessageReliabilityService>()
+				.AddSingleton<IJackboxService, JackboxService>()
 				.AddSingleton<ImagingService>()
 				.AddSingleton<OutOfContextService>()
 				.AddSingleton<HungerGamesService>()
 				.AddSingleton<UserRecordsService>()
-				.AddSingleton<ModTeamRequestService>()
+				.AddSingleton<ModTeamRequestService>()				
 				.AddSingleton<ILogger>(log)
 				.AddDbContext<OOCDBContext>()
 				.AddDbContext<GuildUserRecordContext>()
@@ -110,7 +113,8 @@ namespace DeepState
 				.AddDbContextFactory<OOCDBContext>()
 				.AddDbContextFactory<GuildUserRecordContext>()
 				.AddDbContextFactory<HungerGamesContext>()
-				.AddDbContextFactory<ModTeamRequestContext>();
+				.AddDbContextFactory<ModTeamRequestContext>()
+				.AddDbContextFactory<JackboxContext>();
 
 			return map.BuildServiceProvider();
 		}
@@ -133,6 +137,7 @@ namespace DeepState
 			await _commands.AddModuleAsync<UserRecordsModule>(_services);
 			await _commands.AddModuleAsync<HungerGamesModule>(_services);
 			await _commands.AddModuleAsync<ModTeamRequestModule>(_services);
+			await _commands.AddModuleAsync<JackboxModule>(_services);
 
 #if !DEBUG
 			
@@ -152,7 +157,7 @@ namespace DeepState
 				return;
 			}
 
-			new Thread(() => { LibcraftCoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
+			new Thread(() => { LibcoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
 
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
 			{
@@ -182,7 +187,8 @@ namespace DeepState
 			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.HungerGameTributesEmbedTitle, PagingUtilities.TributeEmbedPagingCallback, _services); }).Start();
 			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.OpenRequestEmbedTitle, PagingUtilities.OpenRequestsPagingCallback, _services); }).Start();
 			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.ClosedRequestEmbedTitle, PagingUtilities.ClosedRequestsPagingCallback, _services); }).Start();
-			new Thread(() => { _ = LibcraftCoinUtilities.LibcoinReactHandler(reaction, msg.Channel as ISocketMessageChannel, msg); }).Start();
+			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.LibcoinBalancesEmbedTitle, PagingUtilities.LibcoinLeaderboardPagingCallback, _services); }).Start();
+			new Thread(() => { _ = LibcoinUtilities.LibcoinReactHandler(reaction, msg.Channel as ISocketMessageChannel, msg); }).Start();
 
 			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name) || msg.Author.IsBot)
 			{

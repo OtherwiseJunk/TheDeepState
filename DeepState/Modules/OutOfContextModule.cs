@@ -14,6 +14,7 @@ using System.Net;
 using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 using System.Text;
 using System.Security.Cryptography;
+using DeepState.Constants;
 
 namespace DeepState.Modules
 {
@@ -69,7 +70,7 @@ namespace DeepState.Modules
 			_ = message.DeleteAsync();
 		}
 
-		[Command("oocdelete"), Alias("oocdel"), RequireUserPermission(ChannelPermission.ManageMessages), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
+		[Command("oocdelete"), Alias("oocdel"), RequireUserPermission(ChannelPermission.ManageMessages), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 })]
 		[Summary("Allows users with the Manage Messages privilege to delete the OOCRecord that the triggering message is responding to.")]
 		public async Task DeleteOOCItem()
 		{
@@ -114,7 +115,7 @@ namespace DeepState.Modules
 			}
 		}
 
-		[Command("ooc"), Alias("libcraftmoment"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 }), RequireChannel(new ulong[] { 718986327642734654, 777400598789095445, 716841087137873920, 176357319687405569, 701194133074608198, 831675528431403039 })]
+		[Command("ooc"), Alias("libcraftmoment"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 }), RequireChannel(new ulong[] { 718986327642734654, 777400598789095445, 716841087137873920, 176357319687405569, 701194133074608198, 831675528431403039 })]
 		[Summary("Returns a random entry from the databse of base64 image strings.")]
 		public async Task RetrieveRandomOutOfContext()
 		{
@@ -130,7 +131,7 @@ namespace DeepState.Modules
 			}).Start();
 		}
 
-		[Command("ooclog"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 }), RequireChannel(new ulong[] { 718986327642734654, 777400598789095445, 716841087137873920, 176357319687405569, 701194133074608198, 831675528431403039 })]
+		[Command("ooclog"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 }), RequireChannel(new ulong[] { 718986327642734654, 777400598789095445, 716841087137873920, 176357319687405569, 701194133074608198, 831675528431403039 })]
 		[Summary("Stores the attached image in the message this command is replying to.")]
 		public async Task LogOutOfContext()
 		{

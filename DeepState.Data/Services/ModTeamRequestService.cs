@@ -32,15 +32,15 @@ namespace DeepState.Data.Services
 
 		public ModTeamRequest GetRequest(int requestId)
 		{
-			using(ModTeamRequestContext context = _dbContextFactory.CreateDbContext())
+			using (ModTeamRequestContext context = _dbContextFactory.CreateDbContext())
 			{
 				return context.Requests.First(mtr => mtr.RequestId == requestId);
 			}
 		}
 
-		public void CreateRequest(ulong userId, ulong guildId, string RequestMessage)
+		public int CreateRequest(ulong userId, ulong guildId, string RequestMessage)
 		{
-			using(ModTeamRequestContext context = _dbContextFactory.CreateDbContext())
+			using (ModTeamRequestContext context = _dbContextFactory.CreateDbContext())
 			{
 				_logger.Information($"[ModTeamRequestService] Creating a request for userID {userId} in guild {guildId}: {RequestMessage}");
 				context.Add(new ModTeamRequest
@@ -50,6 +50,8 @@ namespace DeepState.Data.Services
 					Request = RequestMessage
 				});
 				context.SaveChanges();
+
+				return context.Requests.First(r => r.RequestingUserDiscordId == userId && r.DiscordGuildId == guildId && r.Request == RequestMessage).RequestId;
 			}
 		}
 

@@ -38,7 +38,8 @@ namespace DeepState.Data.Services
 		{
 			using(HungerGamesContext context = _contextFactory.CreateDbContext())
 			{
-				return context.PrizePools.First(p => p.DiscordGuildId == guildId).PrizePool;
+				HungerGamesPrizePool pool = context.PrizePools.FirstOrDefault(p => p.DiscordGuildId == guildId);
+				return pool == null ? 0.0 : pool.PrizePool;
 			}
 		}
 		public void RegisterTribute(ulong guildId, ulong userId)

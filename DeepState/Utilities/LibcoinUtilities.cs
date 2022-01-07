@@ -1,4 +1,5 @@
 ﻿using DeepState.Constants;
+using DeepState.Data.Models;
 using DeepState.Data.Services;
 using Discord;
 using Discord.WebSocket;
@@ -7,11 +8,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 using Utils = DeepState.Utilities.Utilities;
 
 namespace DeepState.Utilities
 {
-	public static class LibcraftCoinUtilities
+	public static class LibcoinUtilities
 	{
 		private static object ActivityDictionaryLock = new object();
 		private static object ReactionDictionaryLock = new object();
@@ -112,6 +114,27 @@ namespace DeepState.Utilities
 			}
 			Thread.Sleep(nextDuration);
 			new Thread(() => _ = LibcraftCoinCheck(service)).Start();
+		}
+
+		internal static Embed BuildLeaderboardEmbed(List<UserRecord> userRecords, int currentPage, IGuild guild)
+		{
+			userRecords = userRecords.OrderByDescending(ur => ur.LibcraftCoinBalance).ToList();
+
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.Title = PagedEmbedConstants.LibcoinBalancesEmbedTitle;
+
+			int place = 1;
+			foreach (UserRecord record in userRecords)
+			{
+				IGuildUser user = guild.GetUserAsync(record.DiscordUserId).Result;
+				string userName = DDBUtils.GetDisplayNameForUser(user);
+
+				embed.AddField($"{place + ( currentPage * 10)}. {userName}", $"{record.LibcraftCoinBalance.ToString("F8")}");
+				place++;
+			}
+			embed.WithFooter($"{currentPage}");
+
+			return embed.Build();
 		}
 	}
 }

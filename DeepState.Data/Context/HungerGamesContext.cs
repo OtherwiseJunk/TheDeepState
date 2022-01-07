@@ -22,7 +22,7 @@ namespace DeepState.Data.Context
 				.HasDefaultValue("");
 			modelBuilder.Entity<HungerGamesTribute>()
 				.Property(t => t.ObituaryMessage)
-				.HasDefaultValue("");
+				.HasDefaultValue("");			
 		}
 		public DbSet<HungerGamesTribute> Tributes { get; set; }
 		public DbSet<HungerGamesPrizePool> PrizePools { get; set; }

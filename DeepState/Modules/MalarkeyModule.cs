@@ -11,32 +11,13 @@ using TraceLd.MineStatSharp;
 using DartsDiscordBots.Permissions;
 using DeepState.Utilities;
 using DartsDiscordBots.Utilities;
+using DartsDiscordBots.Services.Interfaces;
 
 namespace DeepState.Modules
 {
 	public class MalarkeyModule : ModuleBase
 	{
-		[Command("jackbox")]
-		[Summary("Makes a jackbox poll, and will announce a winner after 5 mintues. User must provide a comma separated list of the jack.")]
-		public async Task Jackbox([Summary("A comma seperated list of the versions of jackbox to make the list for")] string versions)
-		{
-			List<string> versionList = versions.Split(',').ToList();
-			List<string> pollGameList = new List<string>();
-
-			for (int i = 1; i < 8; i++)
-			{
-				if (versionList.Contains(i.ToString()))
-				{
-					Dictionary<int, List<string>> jackbox = JackboxConstants.JackboxGameListByNumber;
-					var gameList = jackbox[i];
-					pollGameList.AddRange(gameList);
-				}
-			}
-
-			await Context.Channel.SendMessageAsync(string.Join(Environment.NewLine, pollGameList));
-		}
-
-		[Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
+		[Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 })]
 		[Summary("Returns a message with a status of Sporf's Minecraft server")]
 		public async Task MinecraftStatus(string serverAddress=SporfbaseConstants.ServerAddress, ushort serverPort=SporfbaseConstants.ServerPort)
 		{
@@ -64,7 +45,7 @@ namespace DeepState.Modules
 			await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/745024703365644320/840383340790939658/theweekend.mp4");
 		}
 
-		[Command("walkingdad"), RequireGuild(new ulong[] { 698639095940907048, 95887290571685888 })]
+		[Command("walkingdad"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 })]
 		[Summary("Check in on the server's favorite dad!")]
 		public async Task WalkingDad()
 		{

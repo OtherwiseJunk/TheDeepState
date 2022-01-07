@@ -1,4 +1,5 @@
 ﻿using DartsDiscordBots.Utilities;
+using DeepState.Constants;
 using DeepState.Data.Constants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
@@ -42,7 +43,7 @@ namespace DeepState.Utilities
 			tributes = tributes.OrderByDescending(t => t.IsAlive).ToList();
 
 			EmbedBuilder embed = new EmbedBuilder();
-			embed.Title = HungerGameConstants.HungerGameTributesEmbedTitle;
+			embed.Title = PagedEmbedConstants.HungerGameTributesEmbedTitle;
 
 			foreach (HungerGamesTribute tribute in tributes)
 			{
@@ -81,13 +82,15 @@ namespace DeepState.Utilities
 
 				bool isFirstDayOfGames = (now.Day == 8 || now.Day == 22);
 				bool moreThanOneLivingTributeRemains = tributes.Where(t => t.IsAlive).Count() > 1;
-				bool isAHungerGamesWeek = ((now.Day >= 8 && now.Day <= 14) || (now.Day >= 22 && now.Day <= 28));
+				bool isAHungerGamesWeek = ((now.Day >= 4 && now.Day <= 10) || (now.Day >= 14 && now.Day <= 20) || (now.Day >= 24 && now.Day <= 30));
 				bool isTheFirstHungerGamesWeekOfTheMonth = (now.Day >= 8 && now.Day <= 14);
-				bool isfirstRegistrationWeek = now.Day < 8;
-				bool isSecondRegistrationWeek = now.Day > 24 && now.Day < 22 ;
+				bool isfirstRegistrationPeriod = now.Day < 4;
+				bool isSecondRegistrationPeroid = now.Day > 10 && now.Day < 14;
+				bool isThirdRegistrationPeriod = now.Day > 20 && now.Day < 24;
 
-				Console.WriteLine($"Is First Day? {isFirstDayOfGames} {Environment.NewLine} More than one tributes remain? {moreThanOneLivingTributeRemains} {Environment.NewLine} Is A Hunger Games Week? {isAHungerGamesWeek} {Environment.NewLine} Is this the First hunger games of the month? {isTheFirstHungerGamesWeekOfTheMonth} {Environment.NewLine} Is this the first hunger games registration period of the month? {isfirstRegistrationWeek}");
-				new Thread(() => {
+				Console.WriteLine($"Is First Day? {isFirstDayOfGames} {Environment.NewLine} More than one tributes remain? {moreThanOneLivingTributeRemains} {Environment.NewLine} Is this the first hunger games registration period of the month? {isfirstRegistrationPeriod}");
+				new Thread(() =>
+				{
 					if (isFirstDayOfGames && moreThanOneLivingTributeRemains)
 					{
 						tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
@@ -96,8 +99,19 @@ namespace DeepState.Utilities
 
 					if (isAHungerGamesWeek && moreThanOneLivingTributeRemains)
 					{
-						//Add +1, as we haven't done en elimination for the day yet.
-						int daysRemaining = isTheFirstHungerGamesWeekOfTheMonth ? ((14 - now.Day) + 1) : ((28 - now.Day) + 1);
+						int daysRemaining;
+						if (now.Day >= 4 && now.Day <= 10)
+						{
+							daysRemaining = 10 - now.Day;
+						}
+						else if (now.Day >= 14 && now.Day <= 20)
+						{
+							daysRemaining = 20 - now.Day;
+						}
+						else
+						{
+							daysRemaining = 30 - now.Day;
+						}
 
 						RolltheDaysDeaths(config, daysRemaining, tributes, guild, tributeAnnouncementChannel, corpseAnnouncementChannel, hgService, tributeRole, corpseRole);
 
@@ -111,15 +125,29 @@ namespace DeepState.Utilities
 						}
 
 					}
-					else if (isfirstRegistrationWeek || isSecondRegistrationWeek)
+					else if (isfirstRegistrationPeriod || isSecondRegistrationPeroid || isThirdRegistrationPeriod)
 					{
-						int daysRemaining = isfirstRegistrationWeek ? (8 - now.Day) : (22 - now.Day);
+						int daysRemaining;
+						if (isfirstRegistrationPeriod)
+						{
+							daysRemaining = 4 - now.Day;
+						}
+						else if (isSecondRegistrationPeroid)
+						{
+							daysRemaining = 14 - now.Day;
+						}
+						else
+						{
+							daysRemaining = 24 - now.Day;
+						}
 						int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
 						double potSize = hgService.GetPrizePool(guild.Id);
 
 						tributeAnnouncementChannel.SendMessageAsync(BuildLeadUpHype(daysRemaining, numberOfTributes, potSize));
 					}
-				}).Start();
+				})
+				{
+				}.Start();
 			}
 		}
 
@@ -210,7 +238,7 @@ namespace DeepState.Utilities
 			}
 		}
 
-		private static void RunHungerGamesCleanup(IGuild guild, IMessageChannel announcementChannel, IRole tributeRole, IRole? corpseRole, IRole? championRole, List<HungerGamesTribute> tributes, HungerGamesService hgService, UserRecordsService urService)
+		public static void RunHungerGamesCleanup(IGuild guild, IMessageChannel announcementChannel, IRole tributeRole, IRole? corpseRole, IRole? championRole, List<HungerGamesTribute> tributes, HungerGamesService hgService, UserRecordsService urService)
 		{
 			Console.WriteLine("We have a winner! Starting closing ceremonies.");
 			Random rand = Utils.CreateSeededRandom();
@@ -226,7 +254,7 @@ namespace DeepState.Utilities
 			foreach (HungerGamesTribute corpse in corpses)
 			{
 				IGuildUser victimUser = guild.GetUserAsync(corpse.DiscordUserId).Result;
-				if (corpseRole != null)
+				if (corpseRole != null && victimUser != null)
 				{
 					victimUser.RemoveRoleAsync(corpseRole);
 				}
@@ -270,12 +298,24 @@ namespace DeepState.Utilities
 					HungerGamesTribute murderer = usualSuspects.Where(t => t.IsAlive).ToList().GetRandom();
 					IGuildUser murdererUser = guild.GetUserAsync(murderer.DiscordUserId).Result;
 					goreyDetails = GetTributeKillDetails(murdererUser, victimPronounsByConjugation, victim);
+					if(murdererUser.Id == TheBotmaker && (victim.Id == TheCheatingUser || victim.Id == ThePoliceUser))
+					{
+						goreyDetails = "Junk shoved them in a fucking locker, like they said they would.";
+					}
 					break;
 				case CauseOfDeathCategories.TributeTeamup:
 					//TODO. Don't want to bother with Tribute Teamups for the first round.
 					break;
 				case CauseOfDeathCategories.Environmental:
 					goreyDetails = GetEnvironmentalKillDetails(victimPronounsByConjugation, victim);
+					if (victim.Id == TheDad && Utils.PercentileCheck(1))
+					{
+						goreyDetails = "Died on some weird fucking hill, IDFK.";
+					}
+					if (victim.Id == TheCheeselessQuesadillaUser && Utils.PercentileCheck(80))
+					{
+						goreyDetails = "Poor Young Lucas was struck down in his prime by a Chipotle employee when they ordered a Quesadilla with no cheese.";
+					}
 					break;
 			}
 			return goreyDetails;
@@ -296,7 +336,7 @@ namespace DeepState.Utilities
 				$"Ripped in half by {murdererName}. {murdererName} just kind of grabbed {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} by either buttcheek and tore. Fucking Brutal, yanno?",
 				$"{murdererName} jammed a beehive on {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} head and watched them run off a cliff.",
 				$"{murdererName} conjured a massive Fireball and chucked it at {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()}.",
-				$"{victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got dropped into an active volcano by a murder of crows, trained by {murdererName}",
+				$"{victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got dropped into an active volcano by a murder of crows, trained by {murdererName}.",
 				$"{murdererName} offered a teamup, then poisoned {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} food that evening.",
 				$"{murdererName} shot {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} in the head {rand.Next(17,69)} times. I thought for sure {victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} might make it, but that last bullet really did {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} in.",
 				$"After a particularly sick burn by {murdererName}, {victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} continued to insist 'im not owned! im not owned!!', as they slowly shrunk and transform into a cob of corn.",
@@ -304,11 +344,15 @@ namespace DeepState.Utilities
 				$"{murdererName} R1'd {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} real quick, into non-existance. BainCapitalist shed a single, pride-filled tear.",
 				$"Impaled through the chest from behind by {murdererName} just as {victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} got to the climax of {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} monologue. Hate it when that happens.",
 				$"{victimName} killed {murdererName}. *Checks Notes* Wait, shit. Sorry. {murdererName} killed {victimName}. Sorry folx, they're so similar I mix them up.",
-				$"{victimName} died after {murdererName} tried to explain {HungerGameConstants.ThingsToExplain.GetRandom()}",
-				$"{victimName} killed by a stray cannonball during {murdererName}'s live orchestral performance of Tchaivkovsky's 1812 Overture",
-				$"{victimName} died listening to {murdererName}'s Karaoke performance of 'Baby Got Back' by Sir-Mix-A-Lot",
-				$"{victimName} died when {murdererName} botched their Murder-Suicide attempt."
-			};
+				$"{victimName} died after {murdererName} tried to explain {HungerGameConstants.ThingsToExplain.GetRandom()}.",
+				$"{victimName} killed by a stray cannonball during {murdererName}'s live orchestral performance of Tchaivkovsky's 1812 Overture.",
+				$"{victimName} died listening to {murdererName}'s Karaoke performance of 'Baby Got Back' by Sir-Mix-A-Lot.",
+				$"{victimName} died when {murdererName} botched their Murder-Suicide attempt.",
+				$"{murdererName} saw them fucking around, and helped {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} find out.",
+				$"{victimName} died of humiliation after being destroyed in a rap battle by {murdererName}.",
+				$"{victimName} exploded after being hit by a crocket fired by {murdererName}. Critical Hit!",
+				$"{victimName} was blown up by {murdererName}'s sticky trap while trying to flank",
+		};
 			//add 5 "chances" for generic random tribute weapon kills.
 			tributeKillDetails.AddRange(Enumerable.Repeat(HungerGameConstants.RandomTributeWeaponKill, 25));
 
@@ -329,6 +373,7 @@ namespace DeepState.Utilities
 
 			List<string> environmentalKillDetails = new List<string>
 			{
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} went to Brazil",
 				"Smote by God for being far, far, too horny.",
 				$"Attacked by a roving pack of enraged twitter users, who cancelled {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()}, permanently.",
 				"Chased off a cliff by a swarm of Japanese Murder Hornets.",
@@ -375,12 +420,14 @@ namespace DeepState.Utilities
 				"Was R1'd",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} drank Bone Hurting Juice. Yum Yum!",
 				"Died of Boredom.",
+				"// TODO: Come up with funnier environmental kills",
+				"Placeholder Message, Please Replace Before Pushing To Prod !!!!!!!!!!!!!",
 				"McNuked.",
 				"Died of cringe.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got ratioed.",
 				$"{victimName} Was redistricted out of the ⛈️T H U N D E R D O M E⛈️.",
 				$"Julienned by 🇺🇸President Joe Biden's🇺🇸 DEVASTATING LAZER EYES after Joe mistook {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()} for God.",
-				$"{victimPronounsByConjugation[PronounConjugations.Objective].GetRandom().ToPascalCase()} gained insight into the illusory nature of the self and popped out of existence.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} gained insight into the illusory nature of the self and popped out of existence.",
 				"Was taken behind the gym by 🇺🇸President Joe Biden🇺🇸.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} had a run in with Cornpop (who as we all know, is a bad dude!)",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got nabbed for tax fraud and summarily executed for their crimes.",
@@ -410,6 +457,12 @@ namespace DeepState.Utilities
 				$"{victimName} was killed when firing the ceremonial surrender cannon during the battle of fort sumpter when the surrender cannon unintentionally exploded.",
 				$"{victimName} died after Joe Manchin refused to abolish the filibuster to save {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()}.",
 				$"{victimName} as compleated by the Phyrexians.",
+				$"{victimName} made like a bird and flew into a window.",
+				$"{victimName} died when their medic didn't UBERcharge {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()} in time.",
+				$"{victimName} aggro'd the witch alone. What an idiot",
+				$"{victimName} was thrown into the Mississippi River by a tank while waiting for the rescue boat to arrive. Should've stayed on the restaurant roof.",
+				$"{victimName} did not survive the Cheese Burger Apocolypse",
+				$"{victimName} drowned in {victimPronounsByConjugation[PronounConjugations.Possessive]} own tears while watching Clannad."
 			};
 
 			return environmentalKillDetails.GetRandom();

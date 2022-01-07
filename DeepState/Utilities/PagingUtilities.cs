@@ -64,5 +64,23 @@ namespace DeepState.Utilities
 
 			return service.BuildRequestsEmebed(requests, currentPage, guild, false);
 		}
+
+		public static Embed LibcoinLeaderboardPagingCallback(IMessage msg, IServiceProvider serviceProvider, int currentPage, bool incrementPage)
+		{
+			UserRecordsService service = ((UserRecordsService)serviceProvider.GetService(typeof(UserRecordsService)));
+			IChannel channel = msg.Channel;
+			IGuild guild = ((IGuildChannel)channel).Guild;
+			List<UserRecord> requests;
+			if (incrementPage)
+			{
+				requests = service.GetPagedGuildBalances(guild.Id, out currentPage, ++currentPage);
+			}
+			else
+			{
+				requests = service.GetPagedGuildBalances(guild.Id, out currentPage, --currentPage);
+			}
+
+			return LibcoinUtilities.BuildLeaderboardEmbed(requests, currentPage, guild);
+		}
 	}
 }

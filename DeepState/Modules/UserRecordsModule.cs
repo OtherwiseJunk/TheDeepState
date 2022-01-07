@@ -2,12 +2,14 @@
 using DeepState.Data.Models;
 using DeepState.Data.Services;
 using DeepState.Modules.Preconditions;
+using DeepState.Utilities;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
 using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 
@@ -39,7 +41,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("balance")]
-		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup),RequireUserPermission(ChannelPermission.ManageMessages,Group = SharedConstants.AdminsOnlyGroup)]
+		[RequireOwner(Group = SharedConstants.AdminsOnlyGroup), RequireUserPermission(ChannelPermission.ManageMessages, Group = SharedConstants.AdminsOnlyGroup)]
 		public async Task Balance([Summary("An @ ping of the user you're granting cash")] SocketGuildUser user)
 		{
 			ulong guildId = Context.Guild.Id;
@@ -54,22 +56,34 @@ namespace DeepState.Modules
 			}
 		}
 
-		[Command("leaderboard"), Alias("top10")]
-		[Summary("Returns the top 10 LibCoin balances for this guild.")]
+		[Command("top10")]
+		public async Task Top10userPleaseMock()
+		{
+			_ = Context.Message.AddReactionAsync(Emote.Parse(SharedConstants.YouAreWhiteID));
+			await Context.Channel.SendMessageAsync("https://dart.s-ul.eu/vKP4k4so");
+		}
+
+		[Command("leaderboard"),Alias("lb")]
+
+		[Summary("Returns the LibCoin balances for this guild.")]
 		public async Task GetGuildLibcoinLeaderboard()
 		{
-			EmbedBuilder embedBuilder = new EmbedBuilder();
-			List<UserRecord> topBalances = _UserRecordsService.GetGuildTopTenBalances(Context.Guild.Id);
-			embedBuilder.Title = $"Top {topBalances.Count} LibCoin Balances";
-			int place = 1;
-			foreach (UserRecord record in topBalances)
+			int currentPage;
+			List<UserRecord> balances = _UserRecordsService.GetPagedGuildBalances(Context.Guild.Id, out currentPage);
+
+			if (balances.Count == 0)
 			{
-				IGuildUser user = Context.Guild.GetUserAsync(record.DiscordUserId).Result;
-				string username = DDBUtils.GetDisplayNameForUser(user);
-				embedBuilder.AddField($"{place}. {username}", $"{record.LibcraftCoinBalance.ToString("F8")}");
-				place++;
+				_ = Context.Channel.SendMessageAsync("No one here has a balance. You're quick.");
 			}
-			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
+			else
+			{
+				new Thread(() => {
+					Embed embed = LibcoinUtilities.BuildLeaderboardEmbed(balances, currentPage, Context.Guild);
+					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
+					msg.AddReactionAsync(new Emoji("⬅️"));
+					msg.AddReactionAsync(new Emoji("➡️"));
+				}).Start();
+			}
 		}
 
 		[Command("stats")]
