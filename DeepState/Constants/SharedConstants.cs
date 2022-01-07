@@ -25,6 +25,7 @@ namespace DeepState.Constants
 		public static string RomneyRightEyeID = "<:romneyrighteye:809203888858464307>";
 		public static string RomneyLeftEyeID = "<:romneylefteye:809203904071598180>";
 		public static string SusID = "<:sus:811454356914044968>";
+		public static string GodIWishThatWereMeID = "<:godiwishthatwereme:929146317958152213>";
 		#endregion
 
 		#region Channel Ids
@@ -98,7 +99,8 @@ namespace DeepState.Constants
 			SharedConstants.ForeheadID,
 			SharedConstants.BooHooCrackerID,
 			SharedConstants.LaughingFaceID,
-			SharedConstants.BonkID
+			SharedConstants.BonkID,
+			SharedConstants.GodIWishThatWereMeID
 		};
 		#endregion
 
