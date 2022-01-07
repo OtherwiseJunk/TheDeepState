@@ -151,11 +151,15 @@ namespace DeepState.Modules
 					{
 						double price = (double)request.Price;
 						_userRecordService.Deduct(request.RequestingUserDiscordId, Context.Guild.Id, price);
-						_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufiled your request: {request.Request}. {price.ToString("F8")} libcoin was deducted from your account for this request. {completionMessage}]");
+						if(price < 1e-8f) {
+							_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufilled your request: {request.Request}. {completionMessage}");
+						} else {
+							_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufilled your request: {request.Request}. {price.ToString("F8")} libcoin was deducted from your account for this request. {completionMessage}");
+						}						
 					}
 					else
 					{
-						_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufiled your request: {request.Request}. {completionMessage}");
+						_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufilled your request: {request.Request}. {completionMessage}");
 					}
 
 					ITextChannel requests = (ITextChannel)Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
