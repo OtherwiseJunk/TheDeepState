@@ -17,7 +17,7 @@ namespace DeepState.Modules
 	{
 		ModTeamRequestService _requestService { get; set; }
 		UserRecordsService _userRecordService { get; set; }
-		int minRequestMessageLength = 10;
+		const int minRequestMessageLength = 10;
 
 		public ModTeamRequestModule(ModTeamRequestService requestService, UserRecordsService userRecordService)
 		{
