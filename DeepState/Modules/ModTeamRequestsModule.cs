@@ -17,6 +17,7 @@ namespace DeepState.Modules
 	{
 		ModTeamRequestService _requestService { get; set; }
 		UserRecordsService _userRecordService { get; set; }
+		int minRequestMessageLength = 10;
 
 		public ModTeamRequestModule(ModTeamRequestService requestService, UserRecordsService userRecordService)
 		{
@@ -26,11 +27,11 @@ namespace DeepState.Modules
 
 		[Command("request")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
-		public async Task AddModTeamRequest([Summary("The request to be sent to the mod team. Minimum 20 characters."), Remainder] string requestMessage)
+		public async Task AddModTeamRequest([Summary($"The request to be sent to the mod team. Minimum {minRequestMessageLength} characters."), Remainder] string requestMessage)
 		{
-			if (requestMessage.Length < 20)
+			if (requestMessage.Length < minRequestMessageLength)
 			{
-				await Context.Channel.SendMessageAsync("Sorry, a request needs at least 20 characters. Can you expand a bit?");
+				await Context.Channel.SendMessageAsync($"Sorry, a request needs at least {minRequestMessageLength} characters. Can you expand a bit?");
 			}
 			else
 			{

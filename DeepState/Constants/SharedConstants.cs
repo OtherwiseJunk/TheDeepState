@@ -26,6 +26,7 @@ namespace DeepState.Constants
 		public static string RomneyLeftEyeID = "<:romneylefteye:809203904071598180>";
 		public static string SusID = "<:sus:811454356914044968>";
 		public static string GodIWishThatWereMeID = "<:godiwishthatwereme:929146317958152213>";
+		public static string RageID = "<:rage:929155553735876668>";
 		#endregion
 
 		#region Channel Ids
