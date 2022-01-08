@@ -27,7 +27,8 @@ namespace DeepState.Modules
 
 		[Command("request")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
-		public async Task AddModTeamRequest([Summary("The request to be sent to the mod team. Minimum " + minRequestMessageLength + " characters."), Remainder] string requestMessage)
+		// when you change `minRequestMessageLength` make sure to change this
+		public async Task AddModTeamRequest([Summary("The request to be sent to the mod team. Minimum 10 characters."), Remainder] string requestMessage)
 		{
 			if (requestMessage.Length < minRequestMessageLength)
 			{
