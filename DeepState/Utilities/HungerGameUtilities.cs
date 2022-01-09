@@ -352,6 +352,7 @@ namespace DeepState.Utilities
 				$"{victimName} died of humiliation after being destroyed in a rap battle by {murdererName}.",
 				$"{victimName} exploded after being hit by a crocket fired by {murdererName}. Critical Hit!",
 				$"{victimName} was blown up by {murdererName}'s sticky trap while trying to flank",
+				$"{SharedConstants.RageID}{SharedConstants.RageID} You"
 		};
 			//add 5 "chances" for generic random tribute weapon kills.
 			tributeKillDetails.AddRange(Enumerable.Repeat(HungerGameConstants.RandomTributeWeaponKill, 25));
