@@ -387,7 +387,7 @@ namespace DeepState.Utilities
 				"Pricked to death.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} walked into a cactus whilst trying to escape a Creeper.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} drowned.",
-				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} drowned while trying to escape a Drowned Zombie.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalSCase()} drowned while trying to escape a Drowned Zombie.",
 				"Experienced kinetic energy.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} blew up.",
 				"Killed by Intentional Game Design.",
