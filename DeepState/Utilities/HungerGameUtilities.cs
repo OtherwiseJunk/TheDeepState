@@ -505,6 +505,10 @@ namespace DeepState.Utilities
 			{
 				avatarUrl = HungerGameConstants.AvatarURLs.GetRandom();
 			}
+			if(victim.GetGuildAvatarUrl() != null)
+			{
+				avatarUrl = victim.GetGuildAvatarUrl();
+			}
 			EmbedBuilder embed = new EmbedBuilder();
 			string victimName = DDBUtils.GetDisplayNameForUser(victim);
 			embed.WithTitle($"Tribute {victimName} has fallen!");
