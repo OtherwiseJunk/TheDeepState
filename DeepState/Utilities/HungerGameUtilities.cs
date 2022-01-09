@@ -73,6 +73,7 @@ namespace DeepState.Utilities
 				IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
 				IMessageChannel tributeAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.TributeAnnouncementChannelId).Result;
 				IMessageChannel corpseAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.CorpseAnnouncementChannelId).Result;
+				IMessageChannel libcraftBotChannel = (IMessageChannel)guild.GetChannelAsync(LCBotCommandsChannel);
 				IRole tributeRole = guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
 				IRole corpseRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
 				Console.WriteLine($"{guild.Name}'s configurations:");
@@ -94,6 +95,7 @@ namespace DeepState.Utilities
 					if (isFirstDayOfGames && moreThanOneLivingTributeRemains)
 					{
 						tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
+						libcraftBotChannel.SendMessageAsync("Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
 					}
 
 
@@ -387,7 +389,7 @@ namespace DeepState.Utilities
 				"Pricked to death.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} walked into a cactus whilst trying to escape a Creeper.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} drowned.",
-				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalSCase()} drowned while trying to escape a Drowned Zombie.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} drowned while trying to escape a Drowned Zombie.",
 				"Experienced kinetic energy.",
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} blew up.",
 				"Killed by Intentional Game Design.",
