@@ -168,10 +168,11 @@ namespace DeepState
 			}
 
 		}
-		private async Task OnReact(Cacheable<IUserMessage, ulong> message, ISocketMessageChannel channel, SocketReaction reaction)
+		private async Task OnReact(Cacheable<IUserMessage, ulong> cachedMessage, Cacheable<IMessageChannel,ulong> cachedChannel, SocketReaction reaction)
 		{
+			ISocketMessageChannel channel = (ISocketMessageChannel)cachedChannel.Value;
 			IEmote reactionEmote;
-			IMessage msg = channel.GetMessageAsync(message.Id).Result;
+			IMessage msg = channel.GetMessageAsync(cachedMessage.Id).Result;
 			if ((reaction.Emote as Emote) != null)
 			{
 				reactionEmote = (Emote)reaction.Emote;

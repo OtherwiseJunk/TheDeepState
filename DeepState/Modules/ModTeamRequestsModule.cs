@@ -96,7 +96,7 @@ namespace DeepState.Modules
 				_requestService.PriceRequest(requestId, Context.Message.Author.Id, price);
 				_ = Context.Channel.SendMessageAsync($"Ok, I've set the price for Request {requestId} to {price.ToString("F8")} libcoins.");
 				ModTeamRequest request = _requestService.GetRequest(requestId);
-				IDMChannel channel = Context.Guild.GetUserAsync(request.RequestingUserDiscordId).Result.GetOrCreateDMChannelAsync().Result;
+				IDMChannel channel = Context.Guild.GetUserAsync(request.RequestingUserDiscordId).Result.CreateDMChannelAsync().Result;
 				await channel.SendMessageAsync($"{Context.Message.Author.Username} has set a price of {price.ToString("F8")} libcoin for your request: {request.Request}");
 				ITextChannel requests = (ITextChannel)Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
 				await requests.SendMessageAsync($"{DDBUtils.GetDisplayNameForUser((IGuildUser)Context.Message.Author)} has priced request {requestId}. `{request.Request}`");
@@ -117,7 +117,7 @@ namespace DeepState.Modules
 				_requestService.RejectRequest(requestId, Context.Message.Author.Id, rejectionMessage);
 				_ = Context.Channel.SendMessageAsync("Ok, I've rejected the request and let the user know.");
 				ModTeamRequest request = _requestService.GetRequest(requestId);
-				IDMChannel channel = Context.Guild.GetUserAsync(request.RequestingUserDiscordId).Result.GetOrCreateDMChannelAsync().Result;
+				IDMChannel channel = Context.Guild.GetUserAsync(request.RequestingUserDiscordId).Result.CreateDMChannelAsync().Result;
 				string message = $"{Context.Message.Author.Username} has rejected your request: {request.Request}";
 				if (!String.IsNullOrEmpty(rejectionMessage))
 				{
@@ -146,7 +146,7 @@ namespace DeepState.Modules
 				{
 					_requestService.CompleteRequest(requestId, Context.Message.Author.Id, completionMessage);
 					await Context.Channel.SendMessageAsync("Ok, I've marked that request as complete. Any price has been deducted from the users account.");
-					IDMChannel channel = Context.Guild.GetUserAsync(request.RequestingUserDiscordId).Result.GetOrCreateDMChannelAsync().Result;
+					IDMChannel channel = Context.Guild.GetUserAsync(request.RequestingUserDiscordId).Result.CreateDMChannelAsync().Result;
 					if (request.Price != null)
 					{
 						double price = (double)request.Price;

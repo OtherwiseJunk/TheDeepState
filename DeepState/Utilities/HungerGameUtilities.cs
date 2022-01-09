@@ -211,7 +211,7 @@ namespace DeepState.Utilities
 				{
 					new Thread(() =>
 					{
-						_ = victimUser.GetOrCreateDMChannelAsync().Result.SendMessageAsync($"Sad to say, you've bought the farm! {msg.GetJumpUrl()}");
+						_ = victimUser.CreateDMChannelAsync().Result.SendMessageAsync($"Sad to say, you've bought the farm! {msg.GetJumpUrl()}");
 						//wait 10 minutes, then remove Tribute role from the corpse. Allows for RP.
 						if (tributes.Count(t => t.IsAlive) > 1)
 						{
