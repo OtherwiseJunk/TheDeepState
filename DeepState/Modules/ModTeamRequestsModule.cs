@@ -17,6 +17,7 @@ namespace DeepState.Modules
 	{
 		ModTeamRequestService _requestService { get; set; }
 		UserRecordsService _userRecordService { get; set; }
+		const int minRequestMessageLength = 10;
 
 		public ModTeamRequestModule(ModTeamRequestService requestService, UserRecordsService userRecordService)
 		{
@@ -26,11 +27,12 @@ namespace DeepState.Modules
 
 		[Command("request")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]
-		public async Task AddModTeamRequest([Summary("The request to be sent to the mod team. Minimum 20 characters."), Remainder] string requestMessage)
+		// when you change `minRequestMessageLength` make sure to change this
+		public async Task AddModTeamRequest([Summary("The request to be sent to the mod team. Minimum 10 characters."), Remainder] string requestMessage)
 		{
-			if (requestMessage.Length < 20)
+			if (requestMessage.Length < minRequestMessageLength)
 			{
-				await Context.Channel.SendMessageAsync("Sorry, a request needs at least 20 characters. Can you expand a bit?");
+				await Context.Channel.SendMessageAsync($"Sorry, a request needs at least {minRequestMessageLength} characters. Can you expand a bit?");
 			}
 			else
 			{
@@ -151,11 +153,15 @@ namespace DeepState.Modules
 					{
 						double price = (double)request.Price;
 						_userRecordService.Deduct(request.RequestingUserDiscordId, Context.Guild.Id, price);
-						_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufiled your request: {request.Request}. {price.ToString("F8")} libcoin was deducted from your account for this request. {completionMessage}]");
+						if(price < 1e-8f) {
+							_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufilled your request: {request.Request}. {completionMessage}");
+						} else {
+							_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufilled your request: {request.Request}. {price.ToString("F8")} libcoin was deducted from your account for this request. {completionMessage}");
+						}						
 					}
 					else
 					{
-						_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufiled your request: {request.Request}. {completionMessage}");
+						_ = channel.SendMessageAsync($"{Context.Message.Author.Username} has fufilled your request: {request.Request}. {completionMessage}");
 					}
 
 					ITextChannel requests = (ITextChannel)Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
