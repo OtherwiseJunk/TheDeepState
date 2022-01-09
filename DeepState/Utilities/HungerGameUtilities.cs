@@ -256,10 +256,6 @@ namespace DeepState.Utilities
 			foreach (HungerGamesTribute corpse in corpses)
 			{
 				IGuildUser victimUser = guild.GetUserAsync(corpse.DiscordUserId).Result;
-				if (corpseRole != null && victimUser != null)
-				{
-					victimUser.RemoveRoleAsync(corpseRole);
-				}
 				_ = announcementChannel.SendMessageAsync(embed: BuildTributeDeathEmbed(victimUser, corpse.DeathMessage, corpse.ObituaryMessage, corpse.District));
 				Thread.Sleep(15 * 1000);
 			}
@@ -279,7 +275,7 @@ namespace DeepState.Utilities
 				winnerUser.AddRoleAsync(championRole);
 				Console.WriteLine("Ok, role assigned!");
 			}
-			winnerUser.RemoveRoleAsync(tributeRole);
+
 			double prize = hgService.GetPrizePool(guild.Id);
 			urService.Grant(winner.DiscordUserId, guild.Id, prize);
 
@@ -288,6 +284,23 @@ namespace DeepState.Utilities
 			Console.WriteLine($"Sweet, payout of {prize.ToString("F8")} the user succeeded! Good Hunger Games everyone, I'll see you next time.");
 
 			hgService.EndGame(guild.Id, tributes);
+
+			new Thread(() =>
+			{
+				Thread.Sleep(12 * 60 * 60 * 1000);
+				foreach (HungerGamesTribute corpse in corpses)
+				{
+					IGuildUser victimUser = guild.GetUserAsync(corpse.DiscordUserId).Result;
+					if (corpseRole != null && victimUser != null)
+					{
+						victimUser.RemoveRoleAsync(corpseRole);
+					}
+				}
+				winnerUser.RemoveRoleAsync(tributeRole);
+			})
+			{
+
+			}.Start();
 		}
 		public static string GetCauseOfDeathDescription(ulong victimUserId, string victimName, IGuild guild, List<HungerGamesTribute> tributes, Dictionary<PronounConjugations, List<string>> victimPronounsByConjugation)
 		{
