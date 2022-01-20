@@ -53,7 +53,7 @@ namespace DeepState.Modules
 				// Add the default version of any game not already in the list
 				gameList.AddRange(
 					context.JackboxGames.Include(jbg => jbg.Ratings).AsQueryable<JackboxGame>()
-					.Where(jbg => !gameList.Select(g => g.Name).Contains(jbg.Name) && jbg.DiscordGuildId == JackboxConstants.DefaultDiscordGuildId)
+					.Where(jbg => !gameList.Select(g => g.Name).Contains(jbg.Name) && jbg.DiscordGuildId == JackboxConstants.DefaultDiscordGuildId && versionList.Contains(jbg.JackboxVersion))
 				);
 				// Ratings are store on default versions, retrieve it for all games in the list with a custom modification
 				gameList.ForEach((JackboxGame game) =>
