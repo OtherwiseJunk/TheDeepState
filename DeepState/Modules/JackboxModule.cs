@@ -5,6 +5,7 @@ using DartsDiscordBots.Services.Interfaces;
 using DartsDiscordBots.Utilities;
 using Discord;
 using Discord.Commands;
+using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -146,7 +147,7 @@ namespace DeepState.Models
 				await Context.Channel.SendMessageAsync(game != null ? $"Ok, I've stored your rating for {gameName}" : $"Sorry, unable to find a game by the name `{gameName}`");
 			}
 			[Command]
-			public async Task GetUserRatings([Summary("A Mention of the user whose ratings you'd like to view")] IGuildUser rater)
+			public async Task GetUserRatings([Summary("A Mention of the user whose ratings you'd like to view")] SocketGuildUser rater)
 			{
 				List<GameRating> ratings = _jb.GetPlayerGameRatings(rater.Id);
 				if(ratings.Count == 0)

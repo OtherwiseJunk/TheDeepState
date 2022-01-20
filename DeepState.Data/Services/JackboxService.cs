@@ -72,7 +72,7 @@ namespace DeepState.Modules
 		{
 			using (JackboxContext context = _contextFactory.CreateDbContext())
 			{
-				return context.GameRatings.FirstOrDefault(gr => gr.DiscordUserId == discordUserId && gr.JackboxGame.Name == gameName);
+				return context.GameRatings.Include(r => r.JackboxGame).FirstOrDefault(gr => gr.DiscordUserId == discordUserId && gr.JackboxGame.Name == gameName);
 			}
 		}
 
@@ -80,7 +80,7 @@ namespace DeepState.Modules
 		{
 			using (JackboxContext context = _contextFactory.CreateDbContext())
 			{
-				return context.GameRatings.AsQueryable<GameRating>().Where(gr => gr.DiscordUserId == discordUserId).ToList();
+				return context.GameRatings.Include(r => r.JackboxGame).AsQueryable<GameRating>().Where(gr => gr.DiscordUserId == discordUserId).ToList();
 			}
 		}
 
