@@ -49,7 +49,7 @@ namespace DeepState.Modules
 		[Summary("Check in on the server's favorite dad!")]
 		public async Task WalkingDad()
 		{
-			IGuildUser theDad = Context.Guild.GetUserAsync(SharedConstants.TheDad).Result;
+			IGuildUser theDad = Context.Guild.GetUserAsync(SharedConstants.TheDad, CacheMode.AllowDownload).Result;
 			string name = theDad.Nickname ?? theDad.Username;
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.WithTitle($"Time to check in on {name}!");

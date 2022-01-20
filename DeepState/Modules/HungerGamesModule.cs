@@ -149,7 +149,7 @@ Corpse Role Exists? {corpseRoleExists}");
 			List<HungerGamesTribute> tributes = _hgService.GetTributeList(Context.Guild.Id);
 			foreach (HungerGamesTribute tribute in tributes)
 			{
-				IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId).Result;
+				IGuildUser user = Context.Guild.GetUserAsync(tribute.DiscordUserId, CacheMode.AllowDownload).Result;
 				if (!user.RoleIds.Contains(tributeRole.Id) && tribute.IsAlive)
 				{
 					var obj = user.AddRoleAsync(tributeRole);
@@ -211,7 +211,7 @@ Corpse Role Exists? {corpseRoleExists}");
 			{
 				victimDiscordId = Context.Client.CurrentUser.Id;
 			}
-			victim = Context.Guild.GetUserAsync(victimDiscordId).Result;
+			victim = Context.Guild.GetUserAsync(victimDiscordId, CacheMode.AllowDownload).Result;
 			string victimName = DDBUtils.GetDisplayNameForUser(victim);
 			var pronounDict = Utils.GetUserPronouns(victim, Context.Guild);
 			List<HungerGamesTribute> tributes = _hgService.GetTributeList(Context.Guild.Id);
@@ -220,7 +220,38 @@ Corpse Role Exists? {corpseRoleExists}");
 			_ = Context.Channel.SendMessageAsync(embed: HungerGameUtilities.BuildTributeDeathEmbed(victim, goreyDetails, obituary, rand.Next(1, 12)));
 		}
 
+		[Command("1984"), Alias("avadakedavra")]
+		[RequireOwner()]
+		public async Task removeHGRoles()
+		{
+			
 
+			foreach (HungerGamesServerConfiguration config in _hgService.GetAllConfigurations())
+			{
+				IGuild guild = Context.Client.GetGuildAsync(config.DiscordGuildId).Result;
+				IRole tributeRole = guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
+				IRole corpseRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
+				foreach ( IGuildUser user in guild.GetUsersAsync().Result)
+				{
+					try
+					{
+						await user.RemoveRoleAsync(tributeRole, new RequestOptions { AuditLogReason = "Junk fucked up yanno? Gotta cover their back." });
+					}
+					catch
+					{
+						Console.WriteLine("They didn't have that role whoops");
+					}
+					try
+					{
+						await user.RemoveRoleAsync(corpseRole, new RequestOptions { AuditLogReason = "Junk fucked up yanno? Gotta cover their back." });
+					}
+					catch
+					{
+						Console.WriteLine("They didn't have that role whoops");
+					}
+				}
+			}
+		}
 		[Command("testRun")]
 		[RequireOwner()]
 		public async Task testRun()
@@ -246,6 +277,8 @@ Corpse Role Exists? {corpseRoleExists}");
 			}
 
 		}
+
+
 
 		[Command("announce"), Alias("anc")]
 		[RequireOwner()]

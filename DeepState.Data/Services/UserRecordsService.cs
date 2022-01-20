@@ -127,7 +127,7 @@ namespace DeepState.Data.Services
 			guildRecords = guildRecords.OrderBy(ur => ur.LibcraftCoinBalance).ToList();
 			while (user == null)
 			{
-				user = guild.GetUserAsync(guildRecords.Skip(skipCount).First().DiscordUserId).Result;
+				user = guild.GetUserAsync(guildRecords.Skip(skipCount).First().DiscordUserId, CacheMode.AllowDownload).Result;
 				skipCount++;
 			}
 
@@ -141,7 +141,7 @@ namespace DeepState.Data.Services
 			guildRecords = guildRecords.OrderByDescending(ur => ur.LibcraftCoinBalance).ToList();
 			while (user == null)
 			{
-				user = guild.GetUserAsync(guildRecords.Skip(skipCount).First().DiscordUserId).Result;
+				user = guild.GetUserAsync(guildRecords.Skip(skipCount).First().DiscordUserId, CacheMode.AllowDownload).Result;
 				skipCount++;
 			}
 

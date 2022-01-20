@@ -126,7 +126,7 @@ namespace DeepState.Utilities
 			int place = 1;
 			foreach (UserRecord record in userRecords)
 			{
-				IGuildUser user = guild.GetUserAsync(record.DiscordUserId).Result;
+				IGuildUser user = guild.GetUserAsync(record.DiscordUserId, CacheMode.AllowDownload).Result;
 				string userName = DDBUtils.GetDisplayNameForUser(user);
 
 				embed.AddField($"{place + ( currentPage * 10)}. {userName}", $"{record.LibcraftCoinBalance.ToString("F8")}");

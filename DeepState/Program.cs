@@ -27,7 +27,6 @@ using ORH = DartsDiscordBots.Handlers.OnReactHandlers;
 using FluentScheduler;
 using HungerGameConstants = DeepState.Data.Constants.HungerGameConstants;
 using Serilog;
-using DartsDiscordBots.Modules.Jackbox;
 using DartsDiscordBots.Modules.Jackbox.Interfaces;
 
 namespace DeepState
@@ -39,7 +38,10 @@ namespace DeepState
 		private readonly IServiceProvider _services;
 		private Program()
 		{			
-			_client = new DiscordSocketClient();
+			_client = new DiscordSocketClient(new DiscordSocketConfig()
+			{
+				GatewayIntents = GatewayIntents.All
+			});
 			_services = ConfigureServices();
 			ConfigureDatabases();
 			_commands = new CommandService();

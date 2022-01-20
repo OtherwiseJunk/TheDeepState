@@ -35,7 +35,7 @@ namespace DeepState.Handlers
 					await channel.SendMessageAsync($"{msg.Author.Mention} {SharedConstants.SelfReactResponses.GetRandom()}", messageReference: new MessageReference(msg.Id), allowedMentions: AllowedMentions.All);
 					if (msg.Author.Id == SharedConstants.TheCheatingUser)
 					{
-						await channel.SendMessageAsync($"WE GOT HIM! {channel.GetUserAsync(SharedConstants.ThePoliceUser).Result.Mention}");
+						await channel.SendMessageAsync($"WE GOT HIM! {channel.GetUserAsync(SharedConstants.ThePoliceUser, CacheMode.AllowDownload).Result.Mention}");
 					}
 				}
 			}

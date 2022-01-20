@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using static DeepState.Constants.SharedConstants;
 using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 using Utils = DeepState.Utilities.Utilities;
@@ -47,7 +48,7 @@ namespace DeepState.Utilities
 
 			foreach (HungerGamesTribute tribute in tributes)
 			{
-				IGuildUser user = guild.GetUserAsync(tribute.DiscordUserId).Result;
+				IGuildUser user = guild.GetUserAsync(tribute.DiscordUserId, CacheMode.AllowDownload).Result;
 				string tributeName = DDBUtils.GetDisplayNameForUser(user);
 
 				if (tribute.IsAlive)
@@ -64,16 +65,21 @@ namespace DeepState.Utilities
 			return embed.Build();
 		}
 
-		public static void DailyEvent(HungerGamesService hgService, UserRecordsService urService, IDiscordClient client)
+		public static async Task DailyEvent(HungerGamesService hgService, UserRecordsService urService, IDiscordClient client)
 		{
 			DateTime now = DateTime.Now;
+			IMessageChannel libcraftBotChannel = null;
 			foreach (HungerGamesServerConfiguration config in hgService.GetAllConfigurations())
 			{
 				Console.WriteLine($"Evaluating {config.DiscordGuildId}'s hunger Games....");
 				IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
 				IMessageChannel tributeAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.TributeAnnouncementChannelId).Result;
 				IMessageChannel corpseAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.CorpseAnnouncementChannelId).Result;
-				IMessageChannel libcraftBotChannel = (IMessageChannel)guild.GetChannelAsync(LCBotCommandsChannel);
+
+				if(guild.Id == LibcraftGuildId)
+				{
+					libcraftBotChannel = (IMessageChannel) await guild.GetChannelAsync(LCBotCommandsChannel);
+				}
 				IRole tributeRole = guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
 				IRole corpseRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
 				Console.WriteLine($"{guild.Name}'s configurations:");
@@ -95,7 +101,10 @@ namespace DeepState.Utilities
 					if (isFirstDayOfGames && moreThanOneLivingTributeRemains)
 					{
 						tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
-						libcraftBotChannel.SendMessageAsync("Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
+						if(libcraftBotChannel != null)
+						{
+							libcraftBotChannel.SendMessageAsync("Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
+						}						
 					}
 
 
@@ -182,7 +191,7 @@ namespace DeepState.Utilities
 			{
 				if (i != 0)
 				{
-					int sleepTime = rand.Next((60 * 1000 * 30), (60 * 1000 * 120));
+					int sleepTime = rand.Next((60 * 1000 * 1), (60 * 1000 * 5));
 					Console.WriteLine($"[HUNGERGAMES] Waiting {sleepTime} miliseconds before attempting to KILL AGAIN.");
 					Thread.Sleep(sleepTime);
 				}
@@ -197,7 +206,7 @@ namespace DeepState.Utilities
 					victim = tributes.Where(t => t.IsAlive).ToList().GetRandom();
 				}
 
-				IGuildUser victimUser = guild.GetUserAsync(victim.DiscordUserId).Result;
+				IGuildUser victimUser = guild.GetUserAsync(victim.DiscordUserId, CacheMode.AllowDownload).Result;
 				string victimName = DDBUtils.GetDisplayNameForUser(victimUser);
 
 				Dictionary<PronounConjugations, List<string>> pronouns = Utils.GetUserPronouns(victimUser, guild);
@@ -250,12 +259,12 @@ namespace DeepState.Utilities
 			Console.WriteLine($"Found {corpses.Count} corpses.");
 			HungerGamesTribute winner = tributes.Where(t => t.IsAlive).First();
 			Console.WriteLine("Identified Winner.");
-			IGuildUser winnerUser = guild.GetUserAsync(winner.DiscordUserId).Result;
+			IGuildUser winnerUser = guild.GetUserAsync(winner.DiscordUserId, CacheMode.AllowDownload).Result;
 			Console.WriteLine($"Found winning discord user {DDBUtils.GetDisplayNameForUser(winnerUser)}.");
 
 			foreach (HungerGamesTribute corpse in corpses)
 			{
-				IGuildUser victimUser = guild.GetUserAsync(corpse.DiscordUserId).Result;
+				IGuildUser victimUser = guild.GetUserAsync(corpse.DiscordUserId, CacheMode.AllowDownload).Result;
 				_ = announcementChannel.SendMessageAsync(embed: BuildTributeDeathEmbed(victimUser, corpse.DeathMessage, corpse.ObituaryMessage, corpse.District));
 				Thread.Sleep(15 * 1000);
 			}
@@ -290,7 +299,7 @@ namespace DeepState.Utilities
 				Thread.Sleep(12 * 60 * 60 * 1000);
 				foreach (HungerGamesTribute corpse in corpses)
 				{
-					IGuildUser victimUser = guild.GetUserAsync(corpse.DiscordUserId).Result;
+					IGuildUser victimUser = guild.GetUserAsync(corpse.DiscordUserId, CacheMode.AllowDownload).Result;
 					if (corpseRole != null && victimUser != null)
 					{
 						victimUser.RemoveRoleAsync(corpseRole);
@@ -304,16 +313,18 @@ namespace DeepState.Utilities
 		}
 		public static string GetCauseOfDeathDescription(ulong victimUserId, string victimName, IGuild guild, List<HungerGamesTribute> tributes, Dictionary<PronounConjugations, List<string>> victimPronounsByConjugation)
 		{
-			IGuildUser victim = guild.GetUserAsync(victimUserId).Result;
+			IGuildUser victim = guild.GetUserAsync(victimUserId, CacheMode.AllowDownload).Result;
 			List<HungerGamesTribute> usualSuspects = tributes.Where(t => t.DiscordUserId != victimUserId).ToList();
+			usualSuspects.Shuffle();
 			string goreyDetails = "";
+
 			switch (ProbableCauses.GetRandom())
 			{
 				case CauseOfDeathCategories.Tribute:
 					HungerGamesTribute murderer = usualSuspects.Where(t => t.IsAlive).ToList().GetRandom();
-					IGuildUser murdererUser = guild.GetUserAsync(murderer.DiscordUserId).Result;
-					goreyDetails = GetTributeKillDetails(murdererUser, victimPronounsByConjugation, victim);
-					if(murdererUser.Id == TheBotmaker && (victim.Id == TheCheatingUser || victim.Id == ThePoliceUser))
+					IGuildUser murdererUser = guild.GetUserAsync(murderer.DiscordUserId, CacheMode.AllowDownload).Result;
+					goreyDetails = GetTributeKillDetails(murdererUser, victimPronounsByConjugation, victim);					
+					if(murdererUser != null && (murdererUser.Id == TheBotmaker && (victim.Id == TheCheatingUser || victim.Id == ThePoliceUser)))
 					{
 						goreyDetails = "Junk shoved them in a fucking locker, like they said they would.";
 					}
@@ -323,14 +334,17 @@ namespace DeepState.Utilities
 					break;
 				case CauseOfDeathCategories.Environmental:
 					goreyDetails = GetEnvironmentalKillDetails(victimPronounsByConjugation, victim);
-					if (victim.Id == TheDad && Utils.PercentileCheck(1))
+					if(victim != null)
 					{
-						goreyDetails = "Died on some weird fucking hill, IDFK.";
-					}
-					if (victim.Id == TheCheeselessQuesadillaUser && Utils.PercentileCheck(80))
-					{
-						goreyDetails = "Poor Young Lucas was struck down in his prime by a Chipotle employee when they ordered a Quesadilla with no cheese.";
-					}
+						if (victim.Id == TheDad && Utils.PercentileCheck(1))
+						{
+							goreyDetails = "Died on some weird fucking hill, IDFK.";
+						}
+						if (victim.Id == TheCheeselessQuesadillaUser && Utils.PercentileCheck(80))
+						{
+							goreyDetails = "Poor Young Lucas was struck down in his prime by a Chipotle employee when they ordered a Quesadilla with no cheese.";
+						}
+					}					
 					break;
 			}
 			return goreyDetails;
@@ -339,7 +353,16 @@ namespace DeepState.Utilities
 		public static string GetTributeKillDetails(IGuildUser murderer, Dictionary<PronounConjugations, List<string>> victiomPronounsByConjugation, IGuildUser victim)
 		{
 			Random rand = Utils.CreateSeededRandom();
-			string murdererName = murderer.Nickname ?? murderer.Username;
+			string murdererName;
+			if (murderer == null)
+			{
+				murdererName = "Cornpop";
+			}
+			else
+			{
+				murdererName = murderer.Nickname ?? murderer.Username;
+			}
+			
 			string victimName = DDBUtils.GetDisplayNameForUser(victim);
 			List<string> tributeKillDetails = new List<string>
 			{
@@ -520,7 +543,7 @@ namespace DeepState.Utilities
 			{
 				avatarUrl = HungerGameConstants.AvatarURLs.GetRandom();
 			}
-			if(victim.GetGuildAvatarUrl() != null)
+			else if(victim.GetGuildAvatarUrl() != null)
 			{
 				avatarUrl = victim.GetGuildAvatarUrl();
 			}

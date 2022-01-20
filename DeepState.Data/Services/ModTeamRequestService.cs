@@ -138,8 +138,8 @@ namespace DeepState.Data.Services
 			}
 			foreach(ModTeamRequest request in requests)
 			{
-				IGuildUser requestingUser = guild.GetUserAsync(request.RequestingUserDiscordId).Result;
-				IGuildUser modTeamMemberUser = guild.GetUserAsync(request.modifyingModDiscordId).Result;
+				IGuildUser requestingUser = guild.GetUserAsync(request.RequestingUserDiscordId, CacheMode.AllowDownload).Result;
+				IGuildUser modTeamMemberUser = guild.GetUserAsync(request.modifyingModDiscordId, CacheMode.AllowDownload).Result;
 				embed.AddField($"{request.RequestId}.{DDBUtils.GetDisplayNameForUser(requestingUser)} - {request.Request}",
 					BuildStatusMessage(request, modTeamMemberUser));
 			}

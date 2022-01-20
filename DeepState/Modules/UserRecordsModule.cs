@@ -95,8 +95,8 @@ namespace DeepState.Modules
 			EmbedBuilder embedBuilder = new EmbedBuilder();
 			embedBuilder.Title = $"{Context.Guild.Name}'s Economic Statistics";
 			LibcoinEconomicStatistics stats = _UserRecordsService.CalculateEconomicStats(Context.Guild);
-			IGuildUser poorestUser = Context.Guild.GetUserAsync(stats.PoorestUser).Result;
-			IGuildUser richestUser = Context.Guild.GetUserAsync(stats.RichestUser).Result;
+			IGuildUser poorestUser = Context.Guild.GetUserAsync(stats.PoorestUser, CacheMode.AllowDownload).Result;
+			IGuildUser richestUser = Context.Guild.GetUserAsync(stats.RichestUser, CacheMode.AllowDownload).Result;
 			double richestUserBalance = _UserRecordsService.GetUserBalance(richestUser.Id, Context.Guild.Id);
 
 			embedBuilder.AddField("Total LibCoin Circulation", stats.TotalCirculation.ToString("F8"));
