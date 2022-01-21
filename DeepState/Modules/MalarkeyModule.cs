@@ -12,14 +12,23 @@ using DartsDiscordBots.Permissions;
 using DeepState.Utilities;
 using DartsDiscordBots.Utilities;
 using DartsDiscordBots.Services.Interfaces;
+using DeepState.Service;
+using System.IO;
+using SkiaSharp;
+using System.Threading;
 
 namespace DeepState.Modules
 {
 	public class MalarkeyModule : ModuleBase
 	{
+		ImagingService _imaging { get; set; }
+		public MalarkeyModule(ImagingService imaging)
+		{
+			_imaging = imaging;
+		}
 		[Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 })]
 		[Summary("Returns a message with a status of Sporf's Minecraft server")]
-		public async Task MinecraftStatus(string serverAddress=SporfbaseConstants.ServerAddress, ushort serverPort=SporfbaseConstants.ServerPort)
+		public async Task MinecraftStatus(string serverAddress = SporfbaseConstants.ServerAddress, ushort serverPort = SporfbaseConstants.ServerPort)
 		{
 			MineStat ms = new MineStat(serverAddress, serverPort);
 
@@ -29,7 +38,7 @@ namespace DeepState.Modules
 
 				eb.WithTitle($"{serverAddress} Status");
 				eb.AddField("Player Count:", $"{ms.CurrentPlayers}/{ms.MaximumPlayers}");
-				eb.AddField("MotD:", $"{ms.Motd}");				
+				eb.AddField("MotD:", $"{ms.Motd}");
 				await Context.Channel.SendMessageAsync("", false, eb.Build());
 			}
 			else
@@ -73,7 +82,7 @@ namespace DeepState.Modules
 
 		[Command("portal")]
 		[Summary("Opens a portal to another channel. Generally used for off-topic discussion in a channel.")]
-		public async Task OpenAPortal([Summary("A # link to the channel to open the portal to.")]ITextChannel portalTargetChannel)
+		public async Task OpenAPortal([Summary("A # link to the channel to open the portal to.")] ITextChannel portalTargetChannel)
 		{
 
 			string username = (Context.User as IGuildUser).Nickname ?? Context.User.Username;
@@ -90,6 +99,22 @@ namespace DeepState.Modules
 				msg.Content = "";
 				msg.Embed = PortalUtilities.BuildPortalEmbed(username, portalTargetChannel.Name, targetChannelMessage.GetJumpUrl(), false);
 			});
+		}
+
+		[Command("nft")]
+		[Summary("Generates an NFT for the user."), RequireChannel(new ulong[] { SharedConstants.LCBotCommandsChannel, SharedConstants.TestChannel })]
+		public async Task MakeNFT()
+		{
+			new Thread(async () =>
+			{
+				string guid = Guid.NewGuid().ToString();
+
+				SKBitmap bmp = _imaging.GenerateJuliaSetImage(2048, 1080).Result;
+
+				Stream stream = bmp.Encode(SKEncodedImageFormat.Png, 100).AsStream();
+				await Context.Channel.SendFileAsync(stream, $"guid.png", text: $"Here is your newly minted NFT, ID {Guid.NewGuid()}. Write it down or something, I'm not gonna track it.");
+			}).Start();
+
 		}
 	}
 }
