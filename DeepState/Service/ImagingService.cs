@@ -85,7 +85,7 @@ namespace DeepState.Service
 			}
 		}
 
-		public async Task<SKBitmap> GenerateJuliaSetImage(int width, int height)
+		public async Task<SKBitmap> GenerateJuliaSetImage(int width, int height, bool rainbowMode)
 		{
 			SKBitmap bitmap = new SKBitmap(width, height);
 			double zoom = (15 * _rand.NextDouble()) +1;
@@ -96,9 +96,23 @@ namespace DeepState.Service
 			double cY = 0.27015 + (0.001 * _rand.NextDouble());
 			double zx, zy, tmp;
 			int i;
-			SKColor[] colors = (from c in Enumerable.Range(0, 256)
-						  select new SKColor((byte)((c >> _rand.Next(1,10)) * 36), (byte)((c >> _rand.Next(1,10) & _rand.Next(1,8)) * 36), (byte)((c & _rand.Next(1,7)) * 85))).ToArray();
-			var calculatedPoints = Enumerable.Range(0, width * height).AsParallel().Select(xy =>
+			SKColor[] colors;
+
+			if (rainbowMode) {
+				colors = (from c in Enumerable.Range(0, 256)
+						  select new SKColor((byte)((c >> _rand.Next(10)) * 36), (byte)((c >> _rand.Next(10) &_rand.Next(8)) * 36), (byte)((c & _rand.Next(8)) * 85))).ToArray();
+			}
+			else
+			{
+				int red = _rand.Next(10);
+				int green1 = _rand.Next(10);
+				int green2 = _rand.Next(8);
+				int blue = _rand.Next(8);
+				colors = (from c in Enumerable.Range(0, 256)
+				   select new SKColor((byte)((c >> red) * 36), (byte)((c >> green1 & green2) * 36), (byte)((c & blue) * 85))).ToArray();
+			}
+
+				var calculatedPoints = Enumerable.Range(0, width * height).AsParallel().Select(xy =>
 			{
 				double zx, zy, tmp;
 				int x, y;

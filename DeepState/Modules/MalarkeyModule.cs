@@ -103,17 +103,26 @@ namespace DeepState.Modules
 
 		[Command("nft")]
 		[Summary("Generates an NFT for the user."), RequireChannel(new ulong[] { SharedConstants.LCBotCommandsChannel, SharedConstants.TestChannel })]
-		public async Task MakeNFT()
+		public async Task MakeNFT(string mode = "")
 		{
 			new Thread(async () =>
 			{
 				string guid = Guid.NewGuid().ToString();
-
-				SKBitmap bmp = _imaging.GenerateJuliaSetImage(1028, 720).Result;
-
+				SKBitmap bmp;
+				if (mode.ToLower() == "rainbow" || mode.ToLower() == "r")
+				{
+					bmp = _imaging.GenerateJuliaSetImage(1028, 720, true).Result;
+				}
+				else
+				{
+					bmp = _imaging.GenerateJuliaSetImage(1028, 720, false).Result;
+				}
 				Stream stream = bmp.Encode(SKEncodedImageFormat.Png, 100).AsStream();
 				await Context.Channel.SendFileAsync(stream, $"guid.png", text: $"Here is your newly minted NFT, ID {Guid.NewGuid()}. Write it down or something, I'm not gonna track it.");
-			}).Start();
+			})
+			{
+
+			}.Start();
 
 		}
 	}
