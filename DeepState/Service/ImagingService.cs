@@ -88,16 +88,16 @@ namespace DeepState.Service
 		public async Task<SKBitmap> GenerateJuliaSetImage(int width, int height)
 		{
 			SKBitmap bitmap = new SKBitmap(width, height);
-			double zoom = (20 * _rand.NextDouble()) +1;
+			double zoom = (15 * _rand.NextDouble()) +1;
 			int maxiter = 255;
-			double moveX = _rand.NextDouble();
-			int moveY = 0;
-			double cX = -0.7;
-			double cY = 0.27015;
+			double moveX = 0;
+			double moveY = 0;
+			double cX = -0.7 - (0.001 * _rand.NextDouble());
+			double cY = 0.27015 + (0.001 * _rand.NextDouble());
 			double zx, zy, tmp;
 			int i;
 			SKColor[] colors = (from c in Enumerable.Range(0, 256)
-						  select new SKColor((byte)((c >> _rand.Next(1,6)) * 36), (byte)((c >> 4 & _rand.Next(1,8)) * 36), (byte)((c & 7) * 85))).ToArray();
+						  select new SKColor((byte)((c >> _rand.Next(1,10)) * 36), (byte)((c >> _rand.Next(1,10) & _rand.Next(1,8)) * 36), (byte)((c & _rand.Next(1,7)) * 85))).ToArray();
 			var calculatedPoints = Enumerable.Range(0, width * height).AsParallel().Select(xy =>
 			{
 				double zx, zy, tmp;

@@ -109,7 +109,7 @@ namespace DeepState.Modules
 			{
 				string guid = Guid.NewGuid().ToString();
 
-				SKBitmap bmp = _imaging.GenerateJuliaSetImage(2048, 1080).Result;
+				SKBitmap bmp = _imaging.GenerateJuliaSetImage(1028, 720).Result;
 
 				Stream stream = bmp.Encode(SKEncodedImageFormat.Png, 100).AsStream();
 				await Context.Channel.SendFileAsync(stream, $"guid.png", text: $"Here is your newly minted NFT, ID {Guid.NewGuid()}. Write it down or something, I'm not gonna track it.");
