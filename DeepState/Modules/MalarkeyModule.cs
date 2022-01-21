@@ -118,7 +118,7 @@ namespace DeepState.Modules
 					bmp = _imaging.GenerateJuliaSetImage(1028, 720, false).Result;
 				}
 				Stream stream = bmp.Encode(SKEncodedImageFormat.Png, 100).AsStream();
-				await Context.Channel.SendFileAsync(stream, $"guid.png", text: $"Here is your newly minted NFT, ID {Guid.NewGuid()}. Write it down or something, I'm not gonna track it.");
+				await Context.Channel.SendFileAsync(stream, $"{guid}.png", text: $"Here is your newly minted NFT, ID {Guid.NewGuid()}. Write it down or something, I'm not gonna track it.");
 			})
 			{
 
