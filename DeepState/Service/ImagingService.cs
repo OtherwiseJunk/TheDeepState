@@ -100,15 +100,15 @@ namespace DeepState.Service
 
 			if (rainbowMode) {
 				colors = (from c in Enumerable.Range(0, 256)
-						  select new SKColor((byte)(((c >> _rand.Next(255)) * 36) % 256), (byte)(((c >> _rand.Next(255)) * 36) % 256), (byte)(((c & _rand.Next(255)) * 85) % 256))).ToArray();
+						  select new SKColor((byte)((c + _rand.Next(36,250)) % 256), (byte)((c + _rand.Next(36,250)) % 256), (byte)((c + _rand.Next(36,250)) % 256))).ToArray();
 			}
 			else
 			{
-				int red = _rand.Next(255);
-				int green = _rand.Next(255);				
-				int blue = _rand.Next(255);
+				int red = _rand.Next(36,250);
+				int green = _rand.Next(36,250);				
+				int blue = _rand.Next(36,250);
 				colors = (from c in Enumerable.Range(0, 256)
-				   select new SKColor((byte)(((c >> red) * 36) % 256), (byte)(((c >> green) * 36) % 256), (byte)(((c & blue) * 85) % 256) )).ToArray();
+				   select new SKColor((byte)(((c + red)) % 256), (byte)(((c + green)) % 256), (byte)(((c + blue)) % 256) )).ToArray();
 			}
 
 				var calculatedPoints = Enumerable.Range(0, width * height).AsParallel().Select(xy =>
