@@ -163,7 +163,7 @@ namespace DeepState.Utilities
 		private static string BuildLeadUpHype(DateTime timeOfGame, int numberOfTributes, double potSize)
 		{
 
-			StringBuilder sb = new StringBuilder($"Good Morning! We're counting down the time remaining until our glorious games begin <t:{((DateTimeOffset)timeOfGame).ToUnixTimeSeconds()}:R>{Environment.NewLine}!");
+			StringBuilder sb = new StringBuilder($"Good Morning! We're counting down the time remaining until our glorious games begin <t:{((DateTimeOffset)timeOfGame).ToUnixTimeSeconds()}:R>!{Environment.NewLine}");
 			if (numberOfTributes > 0)
 			{
 				sb.Append($"{Environment.NewLine}We have {numberOfTributes} Tributes ready to fight for the honor of their districts, all vying for the chance to take home the grand prize, {potSize.ToString("F8")} libcoin!{Environment.NewLine}");
