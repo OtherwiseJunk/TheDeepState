@@ -3,6 +3,7 @@ using DeepState.Constants;
 using DeepState.Data.Constants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
+using DeepState.Models;
 using Discord;
 using System;
 using System.Collections.Generic;
@@ -65,101 +66,90 @@ namespace DeepState.Utilities
 			return embed.Build();
 		}
 
+		public static HungerGamesGameState BuildGameStateFromConfig(HungerGamesServerConfiguration config, IDiscordClient client, HungerGamesService hgService)
+		{
+			HungerGamesGameState state = new HungerGamesGameState();
+			state.Guild = client.GetGuildAsync(config.DiscordGuildId).Result;
+			state.TributeChannel = (IMessageChannel)state.Guild.GetChannelAsync(config.TributeAnnouncementChannelId).Result;
+			state.CorpseChannel = (IMessageChannel)state.Guild.GetChannelAsync(config.CorpseAnnouncementChannelId).Result;
+			state.TributeRole = state.Guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
+			state.CorpseRole = state.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
+			state.Tributes = hgService.GetTributeList(config.DiscordGuildId);
+			state.CurrentStage = DetermineEventStage(DateTime.Now, state.Tributes);
+
+			return state;
+		}
+
 		public static async Task DailyEvent(HungerGamesService hgService, UserRecordsService urService, IDiscordClient client)
 		{
 			DateTime now = DateTime.Now;
+
 			IMessageChannel libcraftBotChannel = null;
 			foreach (HungerGamesServerConfiguration config in hgService.GetAllConfigurations())
 			{
-				Console.WriteLine($"Evaluating {config.DiscordGuildId}'s hunger Games....");
-				IGuild guild = client.GetGuildAsync(config.DiscordGuildId).Result;
-				IMessageChannel tributeAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.TributeAnnouncementChannelId).Result;
-				IMessageChannel corpseAnnouncementChannel = (IMessageChannel)guild.GetChannelAsync(config.CorpseAnnouncementChannelId).Result;
+				HungerGamesGameState state = BuildGameStateFromConfig(config, client, hgService);
 
-				if(guild.Id == LibcraftGuildId)
+				if (state.Guild.Id == LibcraftGuildId)
 				{
-					libcraftBotChannel = (IMessageChannel) await guild.GetChannelAsync(LCBotCommandsChannel);
+					libcraftBotChannel = (IMessageChannel)await state.Guild.GetChannelAsync(LCBotCommandsChannel);
 				}
-				IRole tributeRole = guild.Roles.First(r => r.Name.ToLower() == HungerGameConstants.TributeRoleName.ToLower());
-				IRole corpseRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
-				Console.WriteLine($"{guild.Name}'s configurations:");
-				Console.WriteLine($"Found tribute announcement channel? {tributeAnnouncementChannel != null} {Environment.NewLine} Found corpse announcment channel? {corpseAnnouncementChannel != null} {Environment.NewLine} Found Tribute Role? {tributeRole != null} {Environment.NewLine} Found Corpse Role? {corpseRole != null}");
 
-				List<HungerGamesTribute> tributes = hgService.GetTributeList(config.DiscordGuildId);
-
-				bool isFirstDayOfGames = (now.Day == 8 || now.Day == 22);
-				bool moreThanOneLivingTributeRemains = tributes.Where(t => t.IsAlive).Count() > 1;
-				bool isAHungerGamesWeek = ((now.Day >= 4 && now.Day <= 10) || (now.Day >= 14 && now.Day <= 20) || (now.Day >= 24 && now.Day <= 30));
-				bool isTheFirstHungerGamesWeekOfTheMonth = (now.Day >= 8 && now.Day <= 14);
-				bool isfirstRegistrationPeriod = now.Day < 4;
-				bool isSecondRegistrationPeroid = now.Day > 10 && now.Day < 14;
-				bool isThirdRegistrationPeriod = now.Day > 20 && now.Day < 24;
-
-				Console.WriteLine($"Is First Day? {isFirstDayOfGames} {Environment.NewLine} More than one tributes remain? {moreThanOneLivingTributeRemains} {Environment.NewLine} Is this the first hunger games registration period of the month? {isfirstRegistrationPeriod}");
 				new Thread(() =>
 				{
-					if (isFirstDayOfGames && moreThanOneLivingTributeRemains)
+					switch (state.CurrentStage)
 					{
-						tributeAnnouncementChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
-						if(libcraftBotChannel != null)
-						{
-							libcraftBotChannel.SendMessageAsync("Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
-						}						
+						case EventStage.FirstDayRegistrationPeriod:
+							if (libcraftBotChannel != null)
+							{
+								libcraftBotChannel.SendMessageAsync("Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
+							}
+							break;
+						case EventStage.RegistrationPeriod:
+							int numberOfTributes = state.Tributes.Where(t => t.IsAlive).ToList().Count;
+							double potSize = hgService.GetPrizePool(state.Guild.Id);
+							state.TributeChannel.SendMessageAsync(BuildLeadUpHype(4 - (now.Day % 10), numberOfTributes, potSize));
+							break;
+						case EventStage.FirstActiveGameDay:
+							state.TributeChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
+							RunGame(state, now, config, hgService, urService);
+							break;
+						case EventStage.ActiveGame:
+							RunGame(state, now, config, hgService, urService);
+							break;
 					}
-
-
-					if (isAHungerGamesWeek && moreThanOneLivingTributeRemains)
-					{
-						int daysRemaining;
-						if (now.Day >= 4 && now.Day <= 10)
-						{
-							daysRemaining = 10 - now.Day;
-						}
-						else if (now.Day >= 14 && now.Day <= 20)
-						{
-							daysRemaining = 20 - now.Day;
-						}
-						else
-						{
-							daysRemaining = 30 - now.Day;
-						}
-
-						RolltheDaysDeaths(config, daysRemaining, tributes, guild, tributeAnnouncementChannel, corpseAnnouncementChannel, hgService, tributeRole, corpseRole);
-
-						tributes = hgService.GetTributeList(config.DiscordGuildId);
-						bool doesOneLivingTributeRemain = tributes.Where(t => t.IsAlive).Count() == 1;
-
-						if (doesOneLivingTributeRemain)
-						{
-							IRole championRole = guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.ChampionRoleName.ToLower());
-							RunHungerGamesCleanup(guild, tributeAnnouncementChannel, tributeRole, corpseRole, championRole, tributes, hgService, urService);
-						}
-
-					}
-					else if (isfirstRegistrationPeriod || isSecondRegistrationPeroid || isThirdRegistrationPeriod)
-					{
-						int daysRemaining;
-						if (isfirstRegistrationPeriod)
-						{
-							daysRemaining = 4 - now.Day;
-						}
-						else if (isSecondRegistrationPeroid)
-						{
-							daysRemaining = 14 - now.Day;
-						}
-						else
-						{
-							daysRemaining = 24 - now.Day;
-						}
-						int numberOfTributes = tributes.Where(t => t.IsAlive).ToList().Count;
-						double potSize = hgService.GetPrizePool(guild.Id);
-
-						tributeAnnouncementChannel.SendMessageAsync(BuildLeadUpHype(daysRemaining, numberOfTributes, potSize));
-					}
-				})
-				{
-				}.Start();
+				}).Start();
 			}
+		}
+
+		private static void RunGame(HungerGamesGameState state, DateTime now, HungerGamesServerConfiguration config, HungerGamesService hgService, UserRecordsService urService)
+		{
+			int daysRemaining = CalculateDaysRemaining(now);
+			RolltheDaysDeaths(config, daysRemaining, state.Tributes, state.Guild, state.TributeChannel, state.CorpseChannel, hgService, state.TributeRole, state.CorpseRole);
+			state.Tributes = hgService.GetTributeList(config.DiscordGuildId);
+			bool doesOneLivingTributeRemain = state.Tributes.Where(t => t.IsAlive).Count() == 1;
+
+			if (doesOneLivingTributeRemain)
+			{
+				IRole championRole = state.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.ChampionRoleName.ToLower());
+				RunHungerGamesCleanup(state.Guild, state.TributeChannel, state.TributeRole, state.CorpseRole, championRole, state.Tributes, hgService, urService);
+			}
+		}
+
+		public static int CalculateDaysRemaining(DateTime time)
+		{
+			if(time.Day == 31 || time.Day == 10 || time.Day == 20 || time.Day == 30) return 0;			
+
+			int maxDays = 10;
+			if (time.Month == 2 && time.Day >= 20)
+			{
+				maxDays = 8;
+				if (DateTime.IsLeapYear(time.Year))
+				{
+					maxDays = 9;
+				}
+			}
+
+			return maxDays - (time.Day % 10);
 		}
 
 		private static string BuildLeadUpHype(int daysRemaining, int numberOfTributes, double potSize)
@@ -215,7 +205,7 @@ namespace DeepState.Utilities
 
 				Embed announcementEmbed = BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district);
 				IUserMessage msg = tributeAnnouncementChannel.SendMessageAsync(embed: announcementEmbed).Result;
-				msg.PinAsync();				
+				msg.PinAsync();
 				hgService.KillTribute(victim.DiscordUserId, guild.Id, goreyDetails, obituary, district);
 				tributes = hgService.GetTributeList(config.DiscordGuildId);
 				if (victimUser != null)
@@ -272,7 +262,7 @@ namespace DeepState.Utilities
 
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.WithTitle($"This Game's Champion: {winnerUser.Nickname ?? winnerUser.Username}");
-			builder.WithImageUrl(winnerUser.GetAvatarUrl());
+			builder.WithImageUrl(BotUtilities.GetAVatarForUser(winnerUser, HungerGameConstants.AvatarURLs.GetRandom()));
 			builder.AddField("District", rand.Next(1, 12));
 
 			_ = announcementChannel.SendMessageAsync("And now, your champion!", embed: builder.Build());
@@ -323,8 +313,8 @@ namespace DeepState.Utilities
 				case CauseOfDeathCategories.Tribute:
 					HungerGamesTribute murderer = usualSuspects.Where(t => t.IsAlive).ToList().GetRandom();
 					IGuildUser murdererUser = guild.GetUserAsync(murderer.DiscordUserId, CacheMode.AllowDownload).Result;
-					goreyDetails = GetTributeKillDetails(murdererUser, victimPronounsByConjugation, victim);					
-					if(murdererUser != null && (murdererUser.Id == TheBotmaker && (victim.Id == TheCheatingUser || victim.Id == ThePoliceUser)))
+					goreyDetails = GetTributeKillDetails(murdererUser, victimPronounsByConjugation, victim);
+					if (murdererUser != null && (murdererUser.Id == TheBotmaker && (victim.Id == TheCheatingUser || victim.Id == ThePoliceUser)))
 					{
 						goreyDetails = "Junk shoved them in a fucking locker, like they said they would.";
 					}
@@ -334,7 +324,7 @@ namespace DeepState.Utilities
 					break;
 				case CauseOfDeathCategories.Environmental:
 					goreyDetails = GetEnvironmentalKillDetails(victimPronounsByConjugation, victim);
-					if(victim != null)
+					if (victim != null)
 					{
 						if (victim.Id == TheDad && Utils.PercentileCheck(1))
 						{
@@ -344,7 +334,7 @@ namespace DeepState.Utilities
 						{
 							goreyDetails = "Poor Young Lucas was struck down in his prime by a Chipotle employee when they ordered a Quesadilla with no cheese.";
 						}
-					}					
+					}
 					break;
 			}
 			return goreyDetails;
@@ -362,7 +352,7 @@ namespace DeepState.Utilities
 			{
 				murdererName = murderer.Nickname ?? murderer.Username;
 			}
-			
+
 			string victimName = DDBUtils.GetDisplayNameForUser(victim);
 			List<string> tributeKillDetails = new List<string>
 			{
@@ -538,19 +528,11 @@ namespace DeepState.Utilities
 
 		public static Embed BuildTributeDeathEmbed(IGuildUser victim, string goreyDetails, string obituary, int district)
 		{
-			string avatarUrl = null;
-			if (victim == null || victim.GetAvatarUrl() == null)
-			{
-				avatarUrl = HungerGameConstants.AvatarURLs.GetRandom();
-			}
-			else if(victim.GetGuildAvatarUrl() != null)
-			{
-				avatarUrl = victim.GetGuildAvatarUrl();
-			}
+			string avatarUrl = BotUtilities.GetAVatarForUser(victim, HungerGameConstants.AvatarURLs.GetRandom());
 			EmbedBuilder embed = new EmbedBuilder();
 			string victimName = DDBUtils.GetDisplayNameForUser(victim);
 			embed.WithTitle($"Tribute {victimName} has fallen!");
-			embed.WithImageUrl(avatarUrl ?? victim.GetAvatarUrl());
+			embed.WithImageUrl(avatarUrl);
 			embed.WithColor(Color.DarkPurple);
 			embed.WithDescription(obituary);
 			embed.AddField("Cause of Death", goreyDetails);
@@ -563,19 +545,51 @@ namespace DeepState.Utilities
 			Random rand = Utils.CreateSeededRandom();
 			int numberOfMinimumVictims = (int)Math.Ceiling(((double)livingTributesRemaining / daysRemaining));
 
-			int numberOfVictims = rand.Next(numberOfMinimumVictims, numberOfMinimumVictims + 3);
+			int numberOfVictims = rand.Next(numberOfMinimumVictims, numberOfMinimumVictims + rand.Next(6));
 
 			if (numberOfVictims < 1)
 			{
 				numberOfVictims = 1;
 			}
 
-			while(numberOfVictims >= livingTributesRemaining)
+			while (numberOfVictims >= livingTributesRemaining)
 			{
 				numberOfVictims--;
 			}
 
 			return numberOfVictims;
 		}
+
+		public static EventStage DetermineEventStage(DateTime time, List<HungerGamesTribute> tributes)
+		{			
+			bool gameOngoing = tributes.Where(t => t.IsAlive).Count() > 1;
+			int period = time.Day % 10;
+			if( (period == 1) && (time.Day != 31))
+			{
+				return EventStage.FirstDayRegistrationPeriod;
+			}
+			else if ( (period > 1) && (period <= 3) )
+			{
+				return EventStage.RegistrationPeriod;
+			}
+			else if (period == 4 && gameOngoing)
+			{
+				return EventStage.FirstActiveGameDay;
+			}
+			else if ( (period > 3) || (time.Day == 31) || (period == 0) && gameOngoing )
+			{
+				return EventStage.ActiveGame;
+			}
+			return EventStage.CompletedGame;
+		}
+	}
+
+	public enum EventStage
+	{
+		FirstDayRegistrationPeriod,
+		RegistrationPeriod,
+		FirstActiveGameDay,
+		ActiveGame,
+		CompletedGame
 	}
 }
