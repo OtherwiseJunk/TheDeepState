@@ -88,7 +88,7 @@ namespace DeepState.Utilities
 			foreach (HungerGamesServerConfiguration config in hgService.GetAllConfigurations())
 			{
 				HungerGamesGameState state = BuildGameStateFromConfig(config, client, hgService);
-				Console.WriteLine($"Today is {now}, and the game has deterinned the event stage is {Enum.GetName(state.CurrentStage)}");
+				Console.WriteLine($"Today is {now}, and the game has deterinned the event stage for {state.Guild.Name} is {Enum.GetName(state.CurrentStage)}");
 
 				if (state.Guild.Id == LibcraftGuildId)
 				{
@@ -100,6 +100,7 @@ namespace DeepState.Utilities
 					switch (state.CurrentStage)
 					{
 						case EventStage.FirstDayRegistrationPeriod:
+							Console.WriteLine($"Firing First Day Registration Period for {state.Guild.Name}");
 							if (libcraftBotChannel != null)
 							{
 								libcraftBotChannel.SendMessageAsync("Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
@@ -107,15 +108,20 @@ namespace DeepState.Utilities
 							}
 							break;
 						case EventStage.RegistrationPeriod:
+							Console.WriteLine($"Firing Registration Period for {state.Guild.Name}");
 							int numberOfTributes = state.Tributes.Where(t => t.IsAlive).ToList().Count;
 							double potSize = hgService.GetPrizePool(state.Guild.Id);
-							state.TributeChannel.SendMessageAsync(BuildLeadUpHype(4 - (now.Day % 10), numberOfTributes, potSize));
+							int daysRemaining = 4 - (now.Day % 10);
+							DateTime timeOfGame = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + daysRemaining, 8, 0, 0);
+							state.TributeChannel.SendMessageAsync(BuildLeadUpHype(timeOfGame, numberOfTributes, potSize));
 							break;
 						case EventStage.FirstActiveGameDay:
+							Console.WriteLine($"Firing First Day Active Game Day for {state.Guild.Name}");
 							state.TributeChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
 							RunGame(state, now, config, hgService, urService);
 							break;
 						case EventStage.ActiveGame:
+							Console.WriteLine($"Firing Active Game Day for {state.Guild.Name}");
 							RunGame(state, now, config, hgService, urService);
 							break;
 					}
@@ -154,9 +160,10 @@ namespace DeepState.Utilities
 			return maxDays - (time.Day % 10);
 		}
 
-		private static string BuildLeadUpHype(int daysRemaining, int numberOfTributes, double potSize)
+		private static string BuildLeadUpHype(DateTime timeOfGame, int numberOfTributes, double potSize)
 		{
-			StringBuilder sb = new StringBuilder($"```Good Morning! There are {daysRemaining} days remaining until our glorious games begin!{Environment.NewLine}");
+
+			StringBuilder sb = new StringBuilder($"Good Morning! We're counting down the time remaining until our glorious games begin <t:{((DateTimeOffset)timeOfGame).ToUnixTimeSeconds()}:R>{Environment.NewLine}!");
 			if (numberOfTributes > 0)
 			{
 				sb.Append($"{Environment.NewLine}We have {numberOfTributes} Tributes ready to fight for the honor of their districts, all vying for the chance to take home the grand prize, {potSize.ToString("F8")} libcoin!{Environment.NewLine}");
@@ -165,7 +172,7 @@ namespace DeepState.Utilities
 			{
 				sb.Append($"{Environment.NewLine}However it looks like so far this server is filled with COWARDS and no on has volunteered as tribute.{Environment.NewLine}");
 			}
-			sb.Append($"{Environment.NewLine}If you're brave enough, `>hg reg` today to join the battle royale! For the low low price of {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoin! Winner takes home 100% of all entry fees!```");
+			sb.Append($"{Environment.NewLine}If you're brave enough, `>hg reg` today to join the battle royale! For the low low price of {HungerGameConstants.CostOfAdmission.ToString("F8")} libcoin! Winner takes home 100% of all entry fees!");
 
 			return sb.ToString();
 		}
