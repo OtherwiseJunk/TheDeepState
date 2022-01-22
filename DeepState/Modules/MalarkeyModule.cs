@@ -103,7 +103,7 @@ namespace DeepState.Modules
 
 		[Command("nft")]
 		[Summary("Generates an NFT for the user."), RequireChannel(new ulong[] { SharedConstants.LCBotCommandsChannel, SharedConstants.TestChannel })]
-		public async Task MakeNFT(string mode = "")
+		public async Task MakeNFT([Remainder] string mode = "")
 		{
 			new Thread(async () =>
 			{
