@@ -100,7 +100,7 @@ namespace DeepState.Service
 
 			if (rainbowMode) {
 				colors = (from c in Enumerable.Range(0, 256)
-						  select new SKColor((byte)((c + _rand.Next(36,250)) % 256), (byte)((c + _rand.Next(36,250)) % 256), (byte)((c + _rand.Next(36,250)) % 256))).ToArray();
+						  select new SKColor((byte)((c + _rand.Next(36,195)) % 256), (byte)((c + _rand.Next(36,195)) % 256), (byte)((c + _rand.Next(36,195)) % 256))).ToArray();
 			}
 			else
 			{
