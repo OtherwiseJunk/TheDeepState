@@ -88,6 +88,7 @@ namespace DeepState.Utilities
 			foreach (HungerGamesServerConfiguration config in hgService.GetAllConfigurations())
 			{
 				HungerGamesGameState state = BuildGameStateFromConfig(config, client, hgService);
+				Console.WriteLine($"Today is {now}, and the game has deterinned the event stage is {Enum.GetName(state.CurrentStage)}");
 
 				if (state.Guild.Id == LibcraftGuildId)
 				{
@@ -102,6 +103,7 @@ namespace DeepState.Utilities
 							if (libcraftBotChannel != null)
 							{
 								libcraftBotChannel.SendMessageAsync("Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
+								libcraftBotChannel = null;
 							}
 							break;
 						case EventStage.RegistrationPeriod:
