@@ -84,7 +84,6 @@ namespace DeepState.Service
 				}
 			}
 		}
-
 		public async Task<SKBitmap> GenerateJuliaSetImage(int width, int height, bool rainbowMode)
 		{
 			SKBitmap bitmap = new SKBitmap(width, height);

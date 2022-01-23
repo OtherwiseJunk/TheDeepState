@@ -107,7 +107,8 @@ namespace DeepState
 				.AddSingleton<OutOfContextService>()
 				.AddSingleton<HungerGamesService>()
 				.AddSingleton<UserRecordsService>()
-				.AddSingleton<ModTeamRequestService>()				
+				.AddSingleton<ModTeamRequestService>()
+				.AddSingleton<RPGService>()
 				.AddSingleton<ILogger>(log)
 				.AddDbContext<OOCDBContext>()
 				.AddDbContext<GuildUserRecordContext>()
@@ -116,7 +117,8 @@ namespace DeepState
 				.AddDbContextFactory<GuildUserRecordContext>()
 				.AddDbContextFactory<HungerGamesContext>()
 				.AddDbContextFactory<ModTeamRequestContext>()
-				.AddDbContextFactory<JackboxContext>();
+				.AddDbContextFactory<JackboxContext>()
+				.AddDbContextFactory<RPGContext>();
 
 			return map.BuildServiceProvider();
 		}
@@ -140,6 +142,7 @@ namespace DeepState
 			await _commands.AddModuleAsync<HungerGamesModule>(_services);
 			await _commands.AddModuleAsync<ModTeamRequestModule>(_services);
 			await _commands.AddModuleAsync<JackboxModule>(_services);
+			await _commands.AddModuleAsync<RPGModule>(_services);
 
 #if !DEBUG
 			
