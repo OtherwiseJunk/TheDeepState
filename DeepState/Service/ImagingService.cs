@@ -32,7 +32,7 @@ namespace DeepState.Service
 			string filename = $"{Guid.NewGuid()}.png";
 			AmazonS3Config s3ClientConfig = new AmazonS3Config()
 			{
-				ServiceURL = $"https://{DOUrl}",
+				ServiceURL = $"{DOUrl}",
 			};
 			using (AmazonS3Client client = new AmazonS3Client(DOPublicKey,DOSecretKey,s3ClientConfig))
 			{
