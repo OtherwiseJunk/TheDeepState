@@ -529,6 +529,7 @@ namespace DeepState.Utilities
 			if (victim != null && victim.Id == HungerGameConstants.TheRepublican)
 			{
 				string username = DDBUtils.GetDisplayNameForUser(victim);
+				if (rand.Next() % 2 == 0) return $"PresidentClinton fell from a high place. Classic. {obituaries.GetRandom()}";
 				return $"F in the chat for Famous Republican {username}.{Environment.NewLine}{obituaries.GetRandom()}";
 			}
 

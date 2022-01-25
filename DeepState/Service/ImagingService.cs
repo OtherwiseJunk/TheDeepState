@@ -30,11 +30,11 @@ namespace DeepState.Service
 		public string UploadImage(string folderName, Stream ImageStream)
 		{
 			string filename = $"{Guid.NewGuid()}.png";
-			AmazonS3Config s3ClientConfig = new AmazonS3Config
+			AmazonS3Config s3ClientConfig = new AmazonS3Config()
 			{
-				ServiceURL = DOUrl,
+				ServiceURL = $"https://{DOUrl}",
 			};
-			using(AmazonS3Client client = new AmazonS3Client(DOPublicKey,DOSecretKey,s3ClientConfig))
+			using (AmazonS3Client client = new AmazonS3Client(DOPublicKey,DOSecretKey,s3ClientConfig))
 			{
 				using (TransferUtility fileTransferUtility = new TransferUtility(client)){
 					try
