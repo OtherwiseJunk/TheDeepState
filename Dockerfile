@@ -29,6 +29,6 @@ COPY --from=publish /app/publish .
 RUN apt-get update
 RUN apt-get install -y libfreetype6
 RUN apt-get install -y libfontconfig1
-RUN apt-get install libc6-dev 
-RUN apt-get install libgdiplus
+RUN apt-get install -y libc6-dev 
+RUN apt-get install -y libgdiplus
 ENTRYPOINT ["dotnet", "DeepState.dll"]
