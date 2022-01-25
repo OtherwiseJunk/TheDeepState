@@ -163,7 +163,7 @@ namespace DeepState.Utilities
 		private static string BuildLeadUpHype(DateTime timeOfGame, int numberOfTributes, double potSize)
 		{
 
-			StringBuilder sb = new StringBuilder($"Good Morning! We're counting down the time remaining until our glorious games begin <t:{((DateTimeOffset)timeOfGame).ToUnixTimeSeconds()}:R>!{Environment.NewLine}");
+			StringBuilder sb = new StringBuilder($"Good Morning! We're counting down the time remaining until our glorious games begin <t:{((DateTimeOffset)timeOfGame.ToUniversalTime()).ToUnixTimeSeconds()}:R>!{Environment.NewLine}");
 			if (numberOfTributes > 0)
 			{
 				sb.Append($"{Environment.NewLine}We have {numberOfTributes} Tributes ready to fight for the honor of their districts, all vying for the chance to take home the grand prize, {potSize.ToString("F8")} libcoin!{Environment.NewLine}");
@@ -190,7 +190,7 @@ namespace DeepState.Utilities
 			{
 				if (i != 0)
 				{
-					int sleepTime = rand.Next((60 * 1000 * 1), (60 * 1000 * 5));
+					int sleepTime = rand.Next((60 * 1000 * 50), (60 * 1000 * 240));
 					Console.WriteLine($"[HUNGERGAMES] Waiting {sleepTime} miliseconds before attempting to KILL AGAIN.");
 					Thread.Sleep(sleepTime);
 				}
