@@ -37,21 +37,29 @@ namespace DeepState.Modules
 			Character character = _rpgService.GetCharacter((IGuildUser) Context.User);
 			if(character == null)
 			{
-				using (WebClient wc = new WebClient())
+				try
 				{
-					string guidId = Guid.NewGuid().ToString();
-					string svgFile = $"{guidId}.svg";
-					wc.DownloadFile($"https://avatars.dicebear.com/api/avataaars/{guidId}.svg", svgFile);
-					var svgDoc = SvgDocument.Open<SvgDocument>(svgFile, null);
-					Stream stream = new MemoryStream();
-					svgDoc.Draw().Save(stream,System.Drawing.Imaging.ImageFormat.Png);
-					
+					using (WebClient wc = new WebClient())
+					{
+						string guidId = Guid.NewGuid().ToString();
+						string svgFile = $"{guidId}.svg";
+						wc.DownloadFile($"https://avatars.dicebear.com/api/avataaars/{guidId}.svg", svgFile);
+						var svgDoc = SvgDocument.Open<SvgDocument>(svgFile, null);
+						Stream stream = new MemoryStream();
+						svgDoc.Draw().Save(stream, System.Drawing.Imaging.ImageFormat.Png);
 
-					string avatarUrl = _imagingService.UploadImage(RPGConstants.AvatarFolder, stream);
-					character = _rpgService.CreateNewCharacter((IGuildUser)Context.User, avatarUrl);
-					_userService.Deduct(Context.User.Id, Context.Guild.Id, RPGConstants.NewCharacterCost);
-					await Context.Channel.SendMessageAsync($"Ok I rolled you up a new character! {RPGConstants.NewCharacterCost} Libcoin has been deducted from your account.", embed: _rpgService.BuildCharacterEmbed(character));
-				}					
+
+						string avatarUrl = _imagingService.UploadImage(RPGConstants.AvatarFolder, stream);
+						character = _rpgService.CreateNewCharacter((IGuildUser)Context.User, avatarUrl);
+						_userService.Deduct(Context.User.Id, Context.Guild.Id, RPGConstants.NewCharacterCost);
+						await Context.Channel.SendMessageAsync($"Ok I rolled you up a new character! {RPGConstants.NewCharacterCost} Libcoin has been deducted from your account.", embed: _rpgService.BuildCharacterEmbed(character));
+					}
+				}
+				catch(Exception ex)
+				{
+					Console.WriteLine("Shit broke");
+					Console.WriteLine(ex.Message);
+				}				
 			}
 			else
 			{
