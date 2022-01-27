@@ -13,8 +13,8 @@ namespace DeepState.Data.Services
 {
 	public class UserRecordsService
 	{
-		public const double SMALLEST_PAYOUT = 0.00001000;
-		public const double LARGEST_PAYOUT = 0.00100000;
+		public const double SMALLEST_PAYOUT = 0.00100000;
+		public const double LARGEST_PAYOUT = 0.10000000;
 		IDbContextFactory<GuildUserRecordContext> _contextFactory { get; set; }
 		public UserRecordsService(IDbContextFactory<GuildUserRecordContext> contextFactory)
 		{

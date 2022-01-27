@@ -27,7 +27,7 @@ namespace DeepState.Utilities
 		public static async Task LibcraftCoinCheck(UserRecordsService service)
 		{
 			Random rand = Utils.CreateSeededRandom();
-			int nextDuration = rand.Next(60000, 240000);
+			int nextDuration = rand.Next(120000, 480000);
 			lock (ActivityDictionaryLock)
 			{
 				foreach (ulong guildId in LCCListOfActiveUsersByGuild.Keys)
