@@ -101,6 +101,12 @@ namespace DeepState.Modules
 			});
 		}
 
+		[Command("imfromarizona")]
+		public async Task ImFromArizona()
+		{
+			Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/701194133074608198/936088371485364255/video0.mov");
+		}
+
 		[Command("nft")]
 		[Summary("Generates an NFT for the user."), RequireChannel(new ulong[] { SharedConstants.LCBotCommandsChannel, SharedConstants.TestChannel })]
 		public async Task MakeNFT([Remainder] string mode = "")
