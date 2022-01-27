@@ -169,13 +169,17 @@ namespace DeepState.Modules
 		[RequireLibcoinBalance(0.00000001)]
 		[Command("give")]
 		[Summary("Gives the pinged user the specified amount of libcoin from your balance. Negative values will be absolute-valued")]
-		public async Task UserGive([Summary("An @ ping of the user you're granting cash")] SocketGuildUser receivingUser, [Summary("The amount to take from the user.")] double amount)
+		public async Task UserGive([Summary("An @ ping of the user you're granting cash")] SocketGuildUser receivingUser, [Summary("The amount to take from the user.")] double amount, string transactionType)
 		{
 			amount = Math.Abs(amount);
+			if (transactionType == "d" || transactionType == "dartoshi" || transactionType == "dartoshis")
+			{
+				amount = 0.00000001 * amount;
+			}
 			ulong senderId = Context.Message.Author.Id;
 			ulong guildId = Context.Guild.Id;
 			double senderBalance = _UserRecordsService.GetUserBalance(senderId, guildId);
-			if(amount <= senderBalance)
+			if (amount <= senderBalance)
 			{
 				_UserRecordsService.Deduct(senderId, guildId, amount);
 				_UserRecordsService.Grant(receivingUser.Id, guildId, amount);
