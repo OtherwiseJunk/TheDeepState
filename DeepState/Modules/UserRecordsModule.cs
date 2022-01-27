@@ -77,7 +77,8 @@ namespace DeepState.Modules
 			}
 			else
 			{
-				new Thread(() => {
+				new Thread(async () => {
+					await Context.Guild.DownloadUsersAsync();
 					Embed embed = LibcoinUtilities.BuildLeaderboardEmbed(balances, currentPage, Context.Guild);
 					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
 					msg.AddReactionAsync(new Emoji("⬅️"));
