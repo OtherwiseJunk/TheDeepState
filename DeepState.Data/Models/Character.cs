@@ -19,6 +19,7 @@ namespace DeepState.Data.Models
 		public int Mobility { get; set; }
 		public int Fortitude { get; set; }
 		public int Hitpoints { get; set; }
+		public int MaximumHitpoints { get; set; }
 		public int Gold { get; set; }
 		public int XP { get; set; }		
 		public string AvatarUrl { get; set; }
@@ -37,7 +38,8 @@ namespace DeepState.Data.Models
 			Mobility = stats[1];
 			Fortitude = stats[2];
 			Level = 1;
-			Hitpoints = new Dice(9).Roll() + Fortitude;
+			MaximumHitpoints = new Dice(9).Roll() + Fortitude;
+			Hitpoints = MaximumHitpoints;
 			XP = 0;
 			Gold = 0;
 		}

@@ -34,6 +34,7 @@ namespace DeepState.Data.Services
 		{
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.ImageUrl = character.AvatarUrl;
+			builder.ThumbnailUrl = "https://d338t8kmirgyke.cloudfront.net/icons/icon_pngs/000/005/780/original/swords.png";
 			builder.AddField("Name", character.Name);
 			builder.AddField("Level", character.Level);
 			builder.AddField("Power", character.Power);
@@ -41,6 +42,8 @@ namespace DeepState.Data.Services
 			builder.AddField("Fortitude", character.Fortitude);
 			builder.AddField("Gold", character.Gold);
 			builder.AddField("XP", character.XP);
+			builder.AddField("Hitpoints", $"{character.Hitpoints}/{character.MaximumHitpoints}");
+
 
 			return builder.Build();
 		}
