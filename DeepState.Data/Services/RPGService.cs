@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DartsDiscordBots.Utilities;
 
 namespace DeepState.Data.Services
 {
@@ -30,11 +31,34 @@ namespace DeepState.Data.Services
 			}
 		}
 
+		public List<Character> GetPVPCharacters()
+		{
+			using (RPGContext context = new RPGContext())
+			{
+				return context.Characters.AsQueryable().Where(c => c.PvPFlagged).ToList();
+			}
+		}
+
+		public void ToggleCharacterPvPFlag(IGuildUser user)
+		{
+			using (RPGContext context = new RPGContext())
+			{
+				Character character = context.Characters.FirstOrDefault(c => c.DiscordUserId == user.Id);
+				character.PvPFlagged = !character.PvPFlagged;
+
+				context.SaveChanges();
+			}
+		}
+
 		public Embed BuildCharacterEmbed(Character character)
 		{
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.ImageUrl = character.AvatarUrl;
 			builder.ThumbnailUrl = "https://d338t8kmirgyke.cloudfront.net/icons/icon_pngs/000/005/780/original/swords.png";
+			if (character.PvPFlagged)
+			{
+				builder.ThumbnailUrl = "https://spng.pngfind.com/pngs/s/273-2730354_this-free-icons-png-design-of-flaming-sword.png";
+			}			
 			builder.AddField("Name", character.Name);
 			builder.AddField("Level", character.Level);
 			builder.AddField("Power", character.Power);
@@ -44,6 +68,17 @@ namespace DeepState.Data.Services
 			builder.AddField("XP", character.XP);
 			builder.AddField("Hitpoints", $"{character.Hitpoints}/{character.MaximumHitpoints}");
 
+			return builder.Build();
+		}
+
+		public Embed BuildPvPListEmbed(List<Character> characters)
+		{
+			EmbedBuilder builder = new EmbedBuilder();
+			builder.Title = "People who aren't $&#!ing cowards";
+			foreach(Character character in characters.Where(c => c.PvPFlagged))
+			{				
+				builder.AddField(character.Name, $"Level {character.Level} character");
+			}
 
 			return builder.Build();
 		}

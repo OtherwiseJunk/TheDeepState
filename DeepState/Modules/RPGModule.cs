@@ -34,8 +34,8 @@ namespace DeepState.Modules
 		[RequireLibcoinBalance(RPGConstants.NewCharacterCost)]
 		public async Task GenerateNewCharacter()
 		{
-			Character character = _rpgService.GetCharacter((IGuildUser) Context.User);
-			if(character == null)
+			Character character = _rpgService.GetCharacter((IGuildUser)Context.User);
+			if (character == null)
 			{
 				try
 				{
@@ -55,11 +55,11 @@ namespace DeepState.Modules
 						await Context.Channel.SendMessageAsync($"Ok I rolled you up a new character! {RPGConstants.NewCharacterCost} Libcoin has been deducted from your account.", embed: _rpgService.BuildCharacterEmbed(character));
 					}
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					Console.WriteLine("Shit broke");
 					Console.WriteLine(ex.Message);
-				}				
+				}
 			}
 			else
 			{
@@ -79,6 +79,34 @@ namespace DeepState.Modules
 			{
 				await Context.Channel.SendMessageAsync(embed: _rpgService.BuildCharacterEmbed(character));
 			}
+		}
+
+		[Command("pvp")]
+		public async Task TogglePvPStatus()
+		{
+			_rpgService.ToggleCharacterPvPFlag((IGuildUser) Context.User);
+			Character character = _rpgService.GetCharacter((IGuildUser)Context.User);
+			if (character.PvPFlagged)
+			{
+				await Context.Channel.SendMessageAsync($"Ok, I'll let everyone know {character.Name} is ready to rumble!");
+			}
+			else
+			{
+				await Context.Channel.SendMessageAsync($"Ok, I'll let everyone know {character.Name} is character of peace. For now.");
+			}
+		}
+
+		[Command("pvplist"), Alias("saturdaynight","goodfites","fightclub","flist")]
+		public async Task ShowPVPEnabledFighters()
+		{
+			List<Character> pvpCharacters = _rpgService.GetPVPCharacters();
+			await Context.Channel.SendMessageAsync(embed: _rpgService.BuildPvPListEmbed(pvpCharacters));
+		}
+
+		[Command("challenge"), Alias("fight","chal", "fite")]
+		public async Task ChallengeCharacter()
+		{
+
 		}
 	}
 }

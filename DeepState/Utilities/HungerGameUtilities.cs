@@ -271,7 +271,7 @@ namespace DeepState.Utilities
 
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.WithTitle($"This Game's Champion: {winnerUser.Nickname ?? winnerUser.Username}");
-			builder.WithImageUrl(BotUtilities.GetAVatarForUser(winnerUser, HungerGameConstants.AvatarURLs.GetRandom()));
+			builder.WithImageUrl(BotUtilities.GetAvatarForUser(winnerUser, HungerGameConstants.AvatarURLs.GetRandom()));
 			builder.AddField("District", rand.Next(1, 12));
 
 			_ = announcementChannel.SendMessageAsync("And now, your champion!", embed: builder.Build());
@@ -538,7 +538,7 @@ namespace DeepState.Utilities
 
 		public static Embed BuildTributeDeathEmbed(IGuildUser victim, string goreyDetails, string obituary, int district)
 		{
-			string avatarUrl = BotUtilities.GetAVatarForUser(victim, HungerGameConstants.AvatarURLs.GetRandom());
+			string avatarUrl = BotUtilities.GetAvatarForUser(victim, HungerGameConstants.AvatarURLs.GetRandom());
 			EmbedBuilder embed = new EmbedBuilder();
 			string victimName = DDBUtils.GetDisplayNameForUser(victim);
 			embed.WithTitle($"Tribute {victimName} has fallen!");

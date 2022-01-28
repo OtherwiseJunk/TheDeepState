@@ -19,10 +19,11 @@ namespace DeepState.Data.Models
 		public int Mobility { get; set; }
 		public int Fortitude { get; set; }
 		public int Hitpoints { get; set; }
-		public int MaximumHitpoints { get; set; }
+		public int MaximumHitpoints { get; set; }		
 		public int Gold { get; set; }
-		public int XP { get; set; }		
+		public int XP { get; set; }
 		public string AvatarUrl { get; set; }
+		public bool PvPFlagged { get; set; }
 
 		public Character()
 		{
@@ -42,6 +43,7 @@ namespace DeepState.Data.Models
 			Hitpoints = MaximumHitpoints;
 			XP = 0;
 			Gold = 0;
+			PvPFlagged = false;
 		}
 
 		public void LevelUp()
