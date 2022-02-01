@@ -199,6 +199,7 @@ namespace DeepState.Data.Services
 
 		private double CalculateGiniCoefficient(List<double> balances)
 		{
+			balances = balances.OrderByDescending(b => b).ToList();
 			double height = 0;
 			double area = 0;
 			double fair_area = 0;

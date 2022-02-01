@@ -36,6 +36,7 @@ namespace DeepState.Constants
 		public const ulong RequestsChannelId = 858490606145634354;
 		public const ulong LCBotCommandsChannel = 718986327642734654;
 		public const ulong TestChannel = 176357319687405569;
+		public const ulong LCShitpostChannelId = 855227586212134922;
 		#endregion
 
 		#region Channel Lists

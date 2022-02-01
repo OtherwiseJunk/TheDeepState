@@ -19,7 +19,7 @@ using DeepState.Data.Constants;
 
 namespace DeepState.Modules
 {
-	[Group("hungergames"), Alias("hg")]
+	[Group("hungergames"), Alias("hg", "hungry")]
 	public class HungerGamesModule : ModuleBase
 	{
 		public HungerGamesService _hgService { get; set; }
@@ -33,7 +33,7 @@ namespace DeepState.Modules
 			_messenger = messenger;
 		}
 
-		[Command("register"), Alias("reg")]
+		[Command("register"), Alias("reg", "greg")]
 		[RequireLibcoinBalance(HGC.CostOfAdmission)]
 		[RequireDayOfMonthRange(1, 3, Group = SharedConstants.HungerGamesRegistrationDateGroup), RequireDayOfMonthRange(11, 13, Group = SharedConstants.HungerGamesRegistrationDateGroup), RequireDayOfMonthRange(21, 23, Group = SharedConstants.HungerGamesRegistrationDateGroup)]
 		public async Task RegisterHungerGameTribute()
@@ -43,6 +43,10 @@ namespace DeepState.Modules
 				if (Context.Channel.Id == SharedConstants.LCBotCommandsChannel)
 				{
 					await RegisterTribute();
+				}
+				if(Context.Channel.Id == SharedConstants.LCShitpostChannelId)
+				{
+					await Context.Channel.SendMessageAsync("This user was attempting to use the command where it's not allowed. Everyone Laugh.", messageReference: Context.Message.Reference);
 				}
 				else
 				{
