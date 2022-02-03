@@ -19,7 +19,7 @@ using DeepState.Data.Constants;
 
 namespace DeepState.Modules
 {
-	[Group("hungergames"), Alias("hg", "hungry")]
+	[Group("hungergames"), Alias("hg", "hungry", "hunger")]
 	public class HungerGamesModule : ModuleBase
 	{
 		public HungerGamesService _hgService { get; set; }
