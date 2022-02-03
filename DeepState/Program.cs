@@ -161,8 +161,8 @@ namespace DeepState
 				//We don't want to process messages from bots. Screw bots, all my homies hate bots.
 				return;
 			}
-
-			new Thread(() => { LibcoinUtilities.LibcraftCoinMessageHandler(messageParam); }).Start();
+			UserRecordsService urservice = _services.GetService<UserRecordsService>();
+			new Thread(async () => { LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
 
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
 			{

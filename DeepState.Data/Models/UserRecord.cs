@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace DeepState.Data.Models
@@ -12,5 +13,6 @@ namespace DeepState.Data.Models
 		public double LibcraftCoinBalance { get; set; }
 		public int TableFlipCount { get; set; }
 		public bool TimeOut { get; set; }
+		public DateTime LastTimePosted { get; set; }
 	}
 }

@@ -43,7 +43,7 @@ namespace DeepState.Utilities
 			Thread.Sleep(nextDuration);
 			new Thread(() => LibcraftCoinCheck(service)).Start();
 		}
-		public static async Task LibcraftCoinMessageHandler(SocketMessage msg)
+		public static async Task LibcraftCoinMessageHandler(SocketMessage msg, UserRecordsService service)
 		{
 			ulong messageUserId = msg.Author.Id;
 			ulong messageGuildId = ((IGuildChannel)msg.Channel).GuildId;
@@ -62,6 +62,7 @@ namespace DeepState.Utilities
 					LCCListOfActiveUsersByGuild[messageGuildId] = new List<ulong> { messageUserId };
 				}
 			}
+			service.UpdateUserRecordActivity(messageUserId, messageGuildId);
 		}
 
 		public static async Task LibcoinReactHandler(SocketReaction reaction, ISocketMessageChannel channel, IMessage msg) {

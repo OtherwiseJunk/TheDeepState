@@ -4,14 +4,16 @@ using DeepState.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DeepState.Data.Migrations
 {
     [DbContext(typeof(GuildUserRecordContext))]
-    partial class GuildUserRecordContextModelSnapshot : ModelSnapshot
+    [Migration("20220203232326_AddUserRecordLastActive")]
+    partial class AddUserRecordLastActive
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -76,6 +76,19 @@ namespace DeepState.Data.Services
 			}
 		}
 
+		public void UpdateUserRecordActivity(ulong userId, ulong guildId)
+		{
+			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
+			{
+				if(UserRecordExists(userId, guildId))
+				{
+					UserRecord user = context.UserRecords.AsQueryable().First(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId);
+					user.LastTimePosted = DateTime.Now;
+					context.SaveChanges();
+				}
+			}
+		}
+
 		public double GetUserBalance(ulong userId, ulong guildId)
 		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
