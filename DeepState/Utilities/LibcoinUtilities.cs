@@ -152,7 +152,7 @@ namespace DeepState.Utilities
 				IGuildUser user = guild.GetUserAsync(record.DiscordUserId, CacheMode.AllowDownload).Result;
 				string userName = DDBUtils.GetDisplayNameForUser(user);
 
-				embed.AddField($"{place + (currentPage * 10)}. {userName}",$"Last Activity: {record.LastTimePosted} ET");
+				embed.AddField($"{place + (currentPage * 10)}. {userName}",$"Last Activity: <t:{((DateTimeOffset)record.LastTimePosted.ToUniversalTime()).ToUnixTimeSeconds()}:R>");
 				place++;
 			}
 			embed.WithFooter($"{currentPage}");
