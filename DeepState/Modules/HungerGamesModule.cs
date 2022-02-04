@@ -44,7 +44,7 @@ namespace DeepState.Modules
 				{
 					await RegisterTribute();
 				}
-				if(Context.Channel.Id == SharedConstants.LCShitpostChannelId)
+				else if(Context.Channel.Id == SharedConstants.LCShitpostChannelId)
 				{
 					await Context.Channel.SendMessageAsync("This user was attempting to use the command where it's not allowed. Everyone Laugh.", messageReference: Context.Message.Reference);
 				}
