@@ -47,6 +47,13 @@ namespace DeepState.Modules
 			}
 		}
 
+		[Command("notthistime")]
+		[Summary("Not This Time. It's Fiction.")]
+		public async Task NotThisTime()
+		{
+			await Context.Channel.SendMessageAsync($"{SharedConstants.JonathanFrakesThatsNotTrue.GetRandom()}");
+		}
+
 		[Command("weekend")]
 		[Summary("It's The Weekend, Ladies and Gentleman!")]
 		public async Task TheWeekend()

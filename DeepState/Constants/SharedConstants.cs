@@ -74,6 +74,32 @@ namespace DeepState.Constants
 		#endregion
 
 		#region String Lists
+
+		public static List<string> JonathanFrakesThatsNotTrue = new List<string>
+		{
+			"https://c.tenor.com/EMcrFOZAnswAAAAC/beyond-belief-jonathan-frakes.gif",
+			"https://c.tenor.com/GdzJAhvk9JgAAAAC/no-jonathan-frakes.gif",
+			"https://c.tenor.com/bQT4sSN0KFUAAAAC/beyond-belief-jonathan-frakes.gif",
+			"https://c.tenor.com/nrVNaZJaCrkAAAAC/beyond-belief-jonathan-frakes.gif",
+			"https://c.tenor.com/EMcrFOZAnswAAAAC/beyond-belief-jonathan-frakes.gif",
+			"https://c.tenor.com/GdzJAhvk9JgAAAAC/no-jonathan-frakes.gif",
+			"https://c.tenor.com/bQT4sSN0KFUAAAAC/beyond-belief-jonathan-frakes.gif",
+			"https://c.tenor.com/nrVNaZJaCrkAAAAC/beyond-belief-jonathan-frakes.gif",
+			"https://64.media.tumblr.com/30da3f51d5895c32415ef8358509498a/51eae155c32bac69-56/s500x750/0b13325749d330f3f0ecc1232e544b7568971a19.gifv",
+			"https://c.tenor.com/BeGiUvvMqtwAAAAC/beyond-belief-jonathan-frakes.gif",
+			"https://thumbs.gfycat.com/ElectricPessimisticBull-size_restricted.gif",
+			"https://thumbs.gfycat.com/HelpfulTidyBaleenwhale-max-1mb.gif",
+			"https://64.media.tumblr.com/30da3f51d5895c32415ef8358509498a/51eae155c32bac69-56/s500x750/0b13325749d330f3f0ecc1232e544b7568971a19.gifv",
+			"https://c.tenor.com/BeGiUvvMqtwAAAAC/beyond-belief-jonathan-frakes.gif",
+			"https://thumbs.gfycat.com/ElectricPessimisticBull-size_restricted.gif",
+			"https://thumbs.gfycat.com/HelpfulTidyBaleenwhale-max-1mb.gif",
+			"https://c.tenor.com/JzRolGfSnGAAAAAC/riker-frakes.gif",
+			"https://preview.redd.it/1orbrmelz9s21.jpg?auto=webp&s=cab6beac53a7a8ccd8b13df8099b27a6aae01c3b",
+			"https://c.tenor.com/qtEFTzvo7l8AAAAM/beyond-belief-jonathan-frakes.gif",
+			"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhnSdy3r99Fac92MgpzhDvY0GdzOVFOJW-_A&usqp=CAU",
+			"https://media.tenor.com/images/3d21bb8ab5ef6209c7ff8cbf85fcfa90/tenor.gif"
+		};
+
 		public static List<string> SelfReactResponses = new List<string>
 		{
 			"BOOHOO CRACKER! No one cares about what emotes you think we should react with.",
