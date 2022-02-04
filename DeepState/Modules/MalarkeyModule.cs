@@ -107,6 +107,12 @@ namespace DeepState.Modules
 			Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/701194133074608198/936088371485364255/video0.mov");
 		}
 
+		[Command("antoncheckin"), Alias("anton")]
+		public async Task AntonCheckIn()
+		{
+			Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/701194133074608198/939019260754272296/LiveAntonReaction.png");
+		}
+
 		[Command("nft")]
 		[Summary("Generates an NFT for the user."), RequireChannel(new ulong[] { SharedConstants.LCBotCommandsChannel, SharedConstants.TestChannel })]
 		public async Task MakeNFT([Remainder] string mode = "")
