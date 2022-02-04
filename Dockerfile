@@ -32,5 +32,5 @@ RUN apt-get install -y libfontconfig1
 RUN apt-get install -y libc6-dev 
 RUN apt-get install -y libgdiplus
 RUN apt-get install -y systemd
-RUN timedatectl set-timezone America/
+RUN /etc/init.d/timedatectl set-timezone America/New_York
 ENTRYPOINT ["dotnet", "DeepState.dll"]
