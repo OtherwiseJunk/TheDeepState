@@ -12,5 +12,6 @@ namespace DeepState.Constants
 		public static string OpenRequestEmbedTitle { get; set; } = "Open Mod Team Requests";
 		public static string ClosedRequestEmbedTitle { get; set; } = "Closed Mod Team Requests";
 		public static string LibcoinBalancesEmbedTitle { get; set; } = "Libcoin Balance Leaderboard";
+		public static string LibcoinActiveUserListTitle { get; set; } = "Active User List";
 	}
 }

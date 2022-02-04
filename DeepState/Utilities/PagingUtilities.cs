@@ -11,6 +11,23 @@ namespace DeepState.Utilities
 {
 	public static class PagingUtilities
 	{
+		public static Embed ActiveUsersPaginingCallback(IMessage msg, IServiceProvider serviceProvider, int currentPage, bool incrementPage)
+		{
+			UserRecordsService service = ((UserRecordsService)serviceProvider.GetService(typeof(UserRecordsService)));
+			IChannel channel = msg.Channel;
+			IGuild guild = ((IGuildChannel)channel).Guild;
+			List<UserRecord> requests;
+			if (incrementPage)
+			{
+				requests = service.GetPagedActiveUserRecords(guild.Id, out currentPage, ++currentPage);
+			}
+			else
+			{
+				requests = service.GetPagedActiveUserRecords(guild.Id, out currentPage, --currentPage);
+			}
+
+			return LibcoinUtilities.BuildActiveUserEmbed(requests, currentPage, guild);
+		}
 		public static Embed TributeEmbedPagingCallback(IMessage msg, IServiceProvider serviceProvider, int currentPage, bool incrementPage)
 		{
 			HungerGamesService service = ((HungerGamesService)serviceProvider.GetService(typeof(HungerGamesService)));

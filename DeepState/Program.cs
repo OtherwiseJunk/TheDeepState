@@ -194,6 +194,7 @@ namespace DeepState
 			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.OpenRequestEmbedTitle, PagingUtilities.OpenRequestsPagingCallback, _services); }).Start();
 			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.ClosedRequestEmbedTitle, PagingUtilities.ClosedRequestsPagingCallback, _services); }).Start();
 			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.LibcoinBalancesEmbedTitle, PagingUtilities.LibcoinLeaderboardPagingCallback, _services); }).Start();
+			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.LibcoinActiveUserListTitle, PagingUtilities.ActiveUsersPaginingCallback, _services); }).Start();
 			new Thread(() => { _ = LibcoinUtilities.LibcoinReactHandler(reaction, msg.Channel as ISocketMessageChannel, msg); }).Start();
 
 			if (SharedConstants.VotingEmotes.Contains(reaction.Emote.Name) || msg.Author.IsBot)

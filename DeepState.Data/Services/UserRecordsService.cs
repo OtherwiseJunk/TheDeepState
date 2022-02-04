@@ -66,7 +66,6 @@ namespace DeepState.Data.Services
 				context.SaveChanges();
 			}
 		}
-
 		public List<UserRecord> GetPagedGuildBalances(ulong guildId, out int successfulPage, int page = 0)
 		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
@@ -75,12 +74,11 @@ namespace DeepState.Data.Services
 				return PagingUtilities.GetPagedList<UserRecord>(guildBalances, out successfulPage, page);
 			}
 		}
-
 		public void UpdateUserRecordActivity(ulong userId, ulong guildId)
 		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
-				if(UserRecordExists(userId, guildId))
+				if (UserRecordExists(userId, guildId))
 				{
 					UserRecord user = context.UserRecords.AsQueryable().First(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId);
 					user.LastTimePosted = DateTime.Now;
@@ -88,7 +86,6 @@ namespace DeepState.Data.Services
 				}
 			}
 		}
-
 		public double GetUserBalance(ulong userId, ulong guildId)
 		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
@@ -103,14 +100,28 @@ namespace DeepState.Data.Services
 			double roll = (rand.NextDouble() + 0.01) * LARGEST_PAYOUT;
 			return Math.Round(roll >= SMALLEST_PAYOUT ? roll : SMALLEST_PAYOUT, 8);
 		}
-
+		public List<UserRecord> GetPagedActiveUserRecords(ulong guildId, out int succesfulPage, int page = 0)
+		{
+			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
+			{
+				DateTime defaultDate = new DateTime(0001, 1, 1, 0, 0, 0);
+				List<UserRecord> activeUsers = new List<UserRecord>();
+				foreach (UserRecord record in context.UserRecords.AsQueryable().Where(ur => ur.DiscordGuildId == guildId))
+				{
+					if(record.LastTimePosted != defaultDate && DateTime.Now.Subtract(record.LastTimePosted).TotalDays <= 14)
+					{
+						activeUsers.Add(record);
+					}
+				}
+				return PagingUtilities.GetPagedList<UserRecord>(activeUsers, out succesfulPage, page);
+			}	
+		}
 		public List<UserRecord> GetGuildUserRecords(ulong guildId){
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
 				return context.UserRecords.AsQueryable().Where(ur => ur.DiscordGuildId == guildId).ToList();
 			}
 		}
-
 		public LibcoinEconomicStatistics CalculateEconomicStats(IGuild guild)
 		{
 			ulong guildId = guild.Id;
@@ -132,7 +143,6 @@ namespace DeepState.Data.Services
 				GiniCoefficient = giniCoeffiecient
 			};
 		}
-
 		public ulong FindPoorestActiveUserId(IGuild guild, List<UserRecord> guildRecords)
 		{
 			IGuildUser user = null;
@@ -146,7 +156,6 @@ namespace DeepState.Data.Services
 
 			return user.Id;
 		}
-
 		public ulong FindRichestActiveUserId(IGuild guild, List<UserRecord> guildRecords)
 		{
 			IGuildUser user = null;
@@ -160,7 +169,6 @@ namespace DeepState.Data.Services
 
 			return user.Id;
 		}
-
 		public void Grant(ulong userId, ulong guildId, double amount)
 		{
 			Console.WriteLine($"Attempting to grant {amount.ToString("F8")} libcoin to user {userId} from guild {guildId}");
@@ -186,7 +194,6 @@ namespace DeepState.Data.Services
 				context.SaveChanges();
 			}
 		}
-
 		public bool Deduct(ulong userId, ulong guildId, double amount)
 		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
@@ -209,7 +216,6 @@ namespace DeepState.Data.Services
 				return false;
 			}
 		}
-
 		private double CalculateGiniCoefficient(List<double> balances)
 		{
 			balances = balances.OrderByDescending(b => b).ToList();

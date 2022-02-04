@@ -137,5 +137,26 @@ namespace DeepState.Utilities
 
 			return embed.Build();
 		}
+
+		internal static Embed BuildActiveUserEmbed(List<UserRecord> activeRecords, int currentPage, IGuild guild)
+		{
+			activeRecords = activeRecords.OrderByDescending(ur => ur.LastTimePosted).ToList();
+
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.Title = PagedEmbedConstants.LibcoinActiveUserListTitle;
+
+			int place = 1;
+			foreach (UserRecord record in activeRecords)
+			{
+				IGuildUser user = guild.GetUserAsync(record.DiscordUserId, CacheMode.AllowDownload).Result;
+				string userName = DDBUtils.GetDisplayNameForUser(user);
+
+				embed.AddField($"{place + (currentPage * 10)}. {userName}",$"Last Activity: {TimeZoneInfo.ConvertTimeFromUtc(record.LastTimePosted, TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"))} ET");
+				place++;
+			}
+			embed.WithFooter($"{currentPage}");
+
+			return embed.Build();
+		}
 	}
 }

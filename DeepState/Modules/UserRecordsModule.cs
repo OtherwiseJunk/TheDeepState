@@ -63,7 +63,7 @@ namespace DeepState.Modules
 			await Context.Channel.SendMessageAsync("https://dart.s-ul.eu/vKP4k4so");
 		}
 
-		[Command("leaderboard"),Alias("lb")]
+		[Command("leaderboard"), Alias("lb")]
 
 		[Summary("Returns the LibCoin balances for this guild.")]
 		public async Task GetGuildLibcoinLeaderboard()
@@ -77,9 +77,34 @@ namespace DeepState.Modules
 			}
 			else
 			{
-				new Thread(async () => {
+				new Thread(async () =>
+				{
 					await Context.Guild.DownloadUsersAsync();
 					Embed embed = LibcoinUtilities.BuildLeaderboardEmbed(balances, currentPage, Context.Guild);
+					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
+					msg.AddReactionAsync(new Emoji("⬅️"));
+					msg.AddReactionAsync(new Emoji("➡️"));
+				}).Start();
+			}
+		}
+
+		[Command("active")]
+		[Summary("Returns a list of all active users")]
+		public async Task GetActiveUsers()
+		{
+			int currentPage;
+			List<UserRecord> balances = _UserRecordsService.GetPagedActiveUserRecords(Context.Guild.Id, out currentPage);
+
+			if (balances.Count == 0)
+			{
+				_ = Context.Channel.SendMessageAsync("No one here has a balance. You're quick.");
+			}
+			else
+			{
+				new Thread(async () =>
+				{
+					await Context.Guild.DownloadUsersAsync();
+					Embed embed = LibcoinUtilities.BuildActiveUserEmbed(balances, currentPage, Context.Guild);
 					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
 					msg.AddReactionAsync(new Emoji("⬅️"));
 					msg.AddReactionAsync(new Emoji("➡️"));
