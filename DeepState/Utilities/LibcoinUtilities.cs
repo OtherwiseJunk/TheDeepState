@@ -141,15 +141,12 @@ namespace DeepState.Utilities
 
 		internal static Embed BuildActiveUserEmbed(List<UserRecord> activeRecords, int currentPage, IGuild guild)
 		{
-			TimeZoneInfo easternStandardTime;
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				easternStandardTime = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
-			}
-			if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+			TimeZoneInfo easternStandardTime = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"); 
+			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			{
 				easternStandardTime = TimeZoneInfo.FindSystemTimeZoneById("America/New_York");
 			}
+				
 
 			activeRecords = activeRecords.OrderByDescending(ur => ur.LastTimePosted).ToList();
 
