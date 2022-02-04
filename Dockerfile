@@ -31,6 +31,6 @@ RUN apt-get install -y libfreetype6
 RUN apt-get install -y libfontconfig1
 RUN apt-get install -y libc6-dev 
 RUN apt-get install -y libgdiplus
-RUN RUN apt-get install -y tzdata
-ENV TZ America/New_York
+RUN apt-get install -y systemd
+RUN timedatectl set-timezone America/
 ENTRYPOINT ["dotnet", "DeepState.dll"]
