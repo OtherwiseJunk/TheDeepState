@@ -31,6 +31,6 @@ RUN apt-get install -y libfreetype6
 RUN apt-get install -y libfontconfig1
 RUN apt-get install -y libc6-dev 
 RUN apt-get install -y libgdiplus
-RUN apt-get install -y systemd
-RUN /etc/init.d/timedatectl set-timezone America/New_York
+RUN rm /etc/localtime
+RUN ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
 ENTRYPOINT ["dotnet", "DeepState.dll"]
