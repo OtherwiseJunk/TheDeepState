@@ -31,5 +31,6 @@ RUN apt-get install -y libfreetype6
 RUN apt-get install -y libfontconfig1
 RUN apt-get install -y libc6-dev 
 RUN apt-get install -y libgdiplus
-RUN timedatectl set-timezone America/New_York
+RUN RUN apk add --no-cache tzdata
+ENV TZ America/New_York
 ENTRYPOINT ["dotnet", "DeepState.dll"]
