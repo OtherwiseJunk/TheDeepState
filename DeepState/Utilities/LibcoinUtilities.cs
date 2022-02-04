@@ -141,13 +141,6 @@ namespace DeepState.Utilities
 
 		internal static Embed BuildActiveUserEmbed(List<UserRecord> activeRecords, int currentPage, IGuild guild)
 		{
-			TimeZoneInfo easternStandardTime = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time"); 
-			if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-			{
-				easternStandardTime = TimeZoneInfo.FindSystemTimeZoneById("America/New_York");
-			}
-				
-
 			activeRecords = activeRecords.OrderByDescending(ur => ur.LastTimePosted).ToList();
 
 			EmbedBuilder embed = new EmbedBuilder();
@@ -159,7 +152,7 @@ namespace DeepState.Utilities
 				IGuildUser user = guild.GetUserAsync(record.DiscordUserId, CacheMode.AllowDownload).Result;
 				string userName = DDBUtils.GetDisplayNameForUser(user);
 
-				embed.AddField($"{place + (currentPage * 10)}. {userName}",$"Last Activity: {TimeZoneInfo.ConvertTimeFromUtc(record.LastTimePosted, easternStandardTime)} ET");
+				embed.AddField($"{place + (currentPage * 10)}. {userName}",$"Last Activity: {record.LastTimePosted} ET");
 				place++;
 			}
 			embed.WithFooter($"{currentPage}");
