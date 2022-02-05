@@ -106,9 +106,18 @@ namespace DeepState.Service
 			const float YMinVal = -1.0f;
 			const float YMaxVal = 1.0f;
 			const int iterations = 255;
-			int offsetX = _rand.Next(width /2);
-			int offsetY = _rand.Next(height / 2);
-			double zoom = (2 * _rand.NextDouble()) + 1;
+			int offsetX = _rand.Next(width/2);
+			int offsetY = _rand.Next(width / 8);
+			if (_rand.Next(2) % 2 == 0)
+			{
+				offsetX *= -1;
+			}
+			if (_rand.Next(2) % 2 == 0)
+			{
+				offsetY *= -1;
+			}
+			double zoom = (offsetX < 150 && offsetX > 9) ? 100 : 2;
+			zoom *= _rand.NextDouble();
 
 			Parallel.For(0, width, x =>
 			{
