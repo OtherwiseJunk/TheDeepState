@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Amazon.S3;
 using Amazon.S3.Transfer;
 using Microsoft.Extensions.Logging;
-
 using System.Linq;
 using SkiaSharp;
+using System.Numerics;
 
 namespace DeepState.Service
 {
@@ -84,7 +84,63 @@ namespace DeepState.Service
 				}
 			}
 		}
-		public async Task<SKBitmap> GenerateJuliaSetImage(int width, int height, bool rainbowMode)
+		public SKColor[] BuildStandardPallette()
+		{
+			int red = _rand.Next(36, 250);
+			int green = _rand.Next(36, 250);
+			int blue = _rand.Next(36, 250);
+			return (from c in Enumerable.Range(0, 256)
+					  select new SKColor((byte)(((c + red)) % 256), (byte)(((c + green)) % 256), (byte)(((c + blue)) % 256))).ToArray();
+		}
+		public SKColor[] BuildRainbowPallette()
+		{
+			return (from c in Enumerable.Range(0, 256)
+			 select new SKColor((byte)((c + _rand.Next(36, 195)) % 256), (byte)((c + _rand.Next(36, 195)) % 256), (byte)((c + _rand.Next(36, 195)) % 256))).ToArray();
+		}
+		public async Task<SKBitmap> GenerateMandlebrotSet(int width, int height, SKColor[] colors)
+		{
+			SKBitmap bitmap = new SKBitmap(width, height);
+
+			const float XMinVal = -2.0f;
+			const float XMaxVal = 1.0f;
+			const float YMinVal = -1.0f;
+			const float YMaxVal = 1.0f;
+			const int iterations = 255;
+			int offsetX = _rand.Next(width /2);
+			int offsetY = _rand.Next(height / 2);
+			double zoom = (2 * _rand.NextDouble()) + 1;
+
+			Parallel.For(0, width, x =>
+			{
+				for (var y = 0; y < height; y++)
+				{
+					double rel = (XMinVal + ((XMaxVal - XMinVal) / width) * (x + offsetX * zoom)) / zoom;
+					double ima = (YMinVal + ((YMaxVal - YMinVal) / height) * (y + offsetY * zoom)) / zoom;
+					var complexC = new Complex(rel, ima);
+					var complexZ = new Complex(0, 0);
+					var iteration = 0;
+					while (iteration < iterations && Complex.Abs(complexZ) <= 2)
+					{
+						var complexNew = Complex.Pow(complexZ, 2);
+						complexNew = Complex.Add(complexNew, complexC);
+						complexZ = complexNew;
+						iteration++;
+					}
+
+					if (iteration < iterations)
+					{
+						float smoothVal = (float)(iteration + 1 - Math.Log(Math
+											.Log(Complex.Abs(complexZ))) / Math.Log(2));
+						float h = 0.95f + 2.0f * smoothVal;
+						bitmap.SetPixel(x, y, colors[iteration]);
+					}
+					else bitmap.SetPixel(x, y, colors[iteration % 255]);
+				}
+			});
+
+			return bitmap;
+		}
+		public async Task<SKBitmap> GenerateJuliaSetImage(int width, int height, SKColor[] colors)
 		{
 			SKBitmap bitmap = new SKBitmap(width, height);
 			double zoom = (15 * _rand.NextDouble()) +1;
@@ -95,21 +151,6 @@ namespace DeepState.Service
 			double cY = 0.27015 + (0.001 * _rand.NextDouble());
 			double zx, zy, tmp;
 			int i;
-			SKColor[] colors;
-
-			if (rainbowMode) {
-				colors = (from c in Enumerable.Range(0, 256)
-						  select new SKColor((byte)((c + _rand.Next(36,195)) % 256), (byte)((c + _rand.Next(36,195)) % 256), (byte)((c + _rand.Next(36,195)) % 256))).ToArray();
-			}
-			else
-			{
-				int red = _rand.Next(36,250);
-				int green = _rand.Next(36,250);				
-				int blue = _rand.Next(36,250);
-				colors = (from c in Enumerable.Range(0, 256)
-				   select new SKColor((byte)(((c + red)) % 256), (byte)(((c + green)) % 256), (byte)(((c + blue)) % 256) )).ToArray();
-			}
-
 				var calculatedPoints = Enumerable.Range(0, width * height).AsParallel().Select(xy =>
 			{
 				double zx, zy, tmp;

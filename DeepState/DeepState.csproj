@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aardvark.Base" Version="5.1.25" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.7.7" />
     <PackageReference Include="DDB" Version="2.2.1" />
     <PackageReference Include="Discord.Net" Version="3.2.0" />
