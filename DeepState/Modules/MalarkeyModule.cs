@@ -130,11 +130,19 @@ namespace DeepState.Modules
 				SKBitmap bmp;
 				if (mode.ToLower() == "rainbow" || mode.ToLower() == "r")
 				{
-					bmp = _imaging.GenerateJuliaSetImage(1028, 720, true).Result;
+					bmp = _imaging.GenerateJuliaSetImage(1028, 720, _imaging.BuildRainbowPallette()).Result;
+				}
+				else if (mode.ToLower() == "mandlebrot" || mode.ToLower() == "m")
+				{
+					bmp = _imaging.GenerateMandlebrotSet(1028, 720, _imaging.BuildStandardPallette()).Result;
+				}
+				else if (mode.ToLower() == "mandlebrotrandom" || mode.ToLower() == "mr")
+				{
+					bmp = _imaging.GenerateMandlebrotSet(1028, 720, _imaging.BuildRainbowPallette()).Result;
 				}
 				else
 				{
-					bmp = _imaging.GenerateJuliaSetImage(1028, 720, false).Result;
+					bmp = _imaging.GenerateJuliaSetImage(1028, 720, _imaging.BuildStandardPallette()).Result;
 				}
 				Stream stream = bmp.Encode(SKEncodedImageFormat.Png, 100).AsStream();
 				await Context.Channel.SendFileAsync(stream, $"{guid}.png", text: $"Here is your newly minted NFT, ID {Guid.NewGuid()}. Write it down or something, I'm not gonna track it.");
