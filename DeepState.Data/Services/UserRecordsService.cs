@@ -113,7 +113,7 @@ namespace DeepState.Data.Services
 						activeUsers.Add(record);
 					}
 				}
-				return PagingUtilities.GetPagedList<UserRecord>(activeUsers, out succesfulPage, page);
+				return PagingUtilities.GetPagedList<UserRecord>(activeUsers.OrderByDescending(ur => ur.LastTimePosted).ToList(), out succesfulPage, page);
 			}	
 		}
 		public List<UserRecord> GetGuildUserRecords(ulong guildId){
