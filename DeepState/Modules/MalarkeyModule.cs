@@ -19,6 +19,7 @@ using System.Threading;
 using System.Net.Http;
 using DeepState.Models;
 using Newtonsoft.Json;
+using System.Globalization;
 
 namespace DeepState.Modules
 {
@@ -129,6 +130,7 @@ namespace DeepState.Modules
 		{
 			using (HttpClient client = new HttpClient())
 			{
+				Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 				NationalDebtData nationalDebtData = JsonConvert.DeserializeObject<NationalDebtData>(client.GetAsync("https://www.treasurydirect.gov/NP_WS/debt/current?format=json").Result.Content.ReadAsStringAsync().Result);
 				EmbedBuilder embed = new EmbedBuilder();
 				embed.Title = "U.S. National Debt Statistics";
@@ -153,11 +155,11 @@ namespace DeepState.Modules
 				{
 					bmp = _imaging.GenerateJuliaSetImage(1028, 720, _imaging.BuildRainbowPallette()).Result;
 				}
-				else if (mode.ToLower() == "mandlebrot" || mode.ToLower() == "m")
+				else if (mode.ToLower() == "mandelbrot" || mode.ToLower() == "m")
 				{
 					bmp = _imaging.GenerateMandlebrotSet(1028, 720, _imaging.BuildStandardPallette()).Result;
 				}
-				else if (mode.ToLower() == "mandlebrotrandom" || mode.ToLower() == "mr")
+				else if (mode.ToLower() == "mandelbrotrandom" || mode.ToLower() == "mr")
 				{
 					bmp = _imaging.GenerateMandlebrotSet(1028, 720, _imaging.BuildRainbowPallette()).Result;
 				}
