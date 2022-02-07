@@ -16,6 +16,9 @@ using DeepState.Service;
 using System.IO;
 using SkiaSharp;
 using System.Threading;
+using System.Net.Http;
+using DeepState.Models;
+using Newtonsoft.Json;
 
 namespace DeepState.Modules
 {
@@ -120,8 +123,26 @@ namespace DeepState.Modules
 			Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/701194133074608198/939019260754272296/LiveAntonReaction.png");
 		}
 
+		[Command("nationaldebt"), Alias("debt","nd")]
+		[Summary("Query the official .gov API to get the current national debt.")]
+		public async Task GetNationalDebt()
+		{
+			using (HttpClient client = new HttpClient())
+			{
+				NationalDebtData nationalDebtObject = JsonConvert.DeserializeObject<NationalDebtData>(client.GetAsync("").Result.Content.ReadAsStringAsync().Result);
+				EmbedBuilder embed = new EmbedBuilder();
+				embed.Title = "U.S. National Debt Statistics";
+				embed.AddField("Effective Date", nationalDebtObject.effectiveDate);
+				embed.AddField("Total Debt", nationalDebtObject.totalDebt.ToString("{0:C}"));
+				embed.AddField("Public Debt", nationalDebtObject.publicDebt.ToString("{0:C}"));
+				embed.AddField("Government Holdings", nationalDebtObject.governmentHoldings.ToString("{0:C}"));
+
+				await Context.Channel.SendMessageAsync(embed: embed.Build());
+			}
+		}
+
 		[Command("nft")]
-		[Summary("Generates an NFT for the user."), RequireChannel(new ulong[] { SharedConstants.LCBotCommandsChannel, SharedConstants.TestChannel })]
+		[Summary("Generates an NFT for the user.")]
 		public async Task MakeNFT([Remainder] string mode = "")
 		{
 			new Thread(async () =>
