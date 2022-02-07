@@ -129,13 +129,13 @@ namespace DeepState.Modules
 		{
 			using (HttpClient client = new HttpClient())
 			{
-				NationalDebtData nationalDebtObject = JsonConvert.DeserializeObject<NationalDebtData>(client.GetAsync("").Result.Content.ReadAsStringAsync().Result);
+				NationalDebtData nationalDebtData = JsonConvert.DeserializeObject<NationalDebtData>(client.GetAsync("https://www.treasurydirect.gov/NP_WS/debt/current?format=json").Result.Content.ReadAsStringAsync().Result);
 				EmbedBuilder embed = new EmbedBuilder();
 				embed.Title = "U.S. National Debt Statistics";
-				embed.AddField("Effective Date", nationalDebtObject.effectiveDate);
-				embed.AddField("Total Debt", nationalDebtObject.totalDebt.ToString("{0:C}"));
-				embed.AddField("Public Debt", nationalDebtObject.publicDebt.ToString("{0:C}"));
-				embed.AddField("Government Holdings", nationalDebtObject.governmentHoldings.ToString("{0:C}"));
+				embed.AddField("Effective Date", nationalDebtData.effectiveDate);
+				embed.AddField("Total Debt", nationalDebtData.totalDebt.ToString("C"));
+				embed.AddField("Public Debt", nationalDebtData.publicDebt.ToString("C"));
+				embed.AddField("Government Holdings", nationalDebtData.governmentHoldings.ToString("C"));
 
 				await Context.Channel.SendMessageAsync(embed: embed.Build());
 			}
