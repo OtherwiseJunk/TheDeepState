@@ -33,7 +33,7 @@ namespace DeepState.Modules
 
 		[Command("newchar"), Alias("nc")]
 		[RequireLibcoinBalance(RPGConstants.NewCharacterCost)]
-		public async Task GenerateNewCharacter()
+		public async Task GenerateNewCharacter(string flags = "")
 		{
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.User);
 			if (character == null)
@@ -54,6 +54,11 @@ namespace DeepState.Modules
 						character = _rpgService.CreateNewCharacter((IGuildUser)Context.User, avatarUrl);
 						_userService.Deduct(Context.User.Id, Context.Guild.Id, RPGConstants.NewCharacterCost);
 						await Context.Channel.SendMessageAsync($"Ok I rolled you up a new character! {RPGConstants.NewCharacterCost} Libcoin has been deducted from your account.", embed: _rpgService.BuildCharacterEmbed(character));
+						if(flags == "f" || flags == "fite")
+						{
+							await Context.Channel.SendMessageAsync("I've also flagged them for PvP!");
+							_rpgService.ToggleCharacterPvPFlag((IGuildUser) Context.Message.Author);
+						}
 					}
 				}
 				catch (Exception ex)
