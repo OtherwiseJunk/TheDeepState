@@ -13,10 +13,6 @@ namespace DeepState.Data.Services
 	public class RPGService
 	{
 		UserRecordsService _userRecords { get; set; }
-		public RPGService(UserRecordsService userRecords)
-		{
-			_userRecords = userRecords;
-		}
 		public Character CreateNewCharacter(IGuildUser user, string avatarUrl)
 		{
 			using (RPGContext context = new RPGContext())

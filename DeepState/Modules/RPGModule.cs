@@ -24,13 +24,11 @@ namespace DeepState.Modules
 		public RPGService _rpgService { get; set; }
 		public UserRecordsService _userService { get; set; }
 		public ImagingService _imagingService { get; set; }
-		public Random _rand { get; set; }
 		public RPGModule(RPGService rpgService, UserRecordsService userService, ImagingService imagingService)
 		{
 			_rpgService = rpgService;
 			_userService = userService;
 			_imagingService = imagingService;
-			_rand = new Random(Guid.NewGuid().GetHashCode());
 		}
 
 		[Command("newchar"), Alias("nc")]
@@ -135,18 +133,18 @@ namespace DeepState.Modules
 			int attackerMiss = 0;
 			int attackerDmg = 0;
 			int defenderDmg = 0;
+			Dice d9 = new Dice(9);
+			Dice d4 = new Dice(4);
 
 			while (attacker.Hitpoints > 0 && defender.Hitpoints > 0)
 			{
 				if (attackersTurn)
 				{
-					// this rolls a d9.
-					int attack = _rand.Next(10) + attacker.Power;
-					int defense = _rand.Next(10) + defender.Mobility;
+					int attack = d9.Roll() + attacker.Power;
+					int defense = d9.Roll() + defender.Mobility;
 					if (attack > defense)
 					{
-						// this rolls a d4.
-						defender.Hitpoints -= (attacker.Power + _rand.Next(5));
+						defender.Hitpoints -= (attacker.Power + d4.Roll());
 						attackerHit++;
 					}
 					else
@@ -156,11 +154,11 @@ namespace DeepState.Modules
 				}
 				else
 				{
-					int attack = _rand.Next(10) + defender.Power;
-					int defense = _rand.Next(10) + attacker.Mobility;
+					int attack = d9.Roll() + defender.Power;
+					int defense = d9.Roll() + attacker.Mobility;
 					if (attack > defense)
 					{
-						attacker.Hitpoints -= (defender.Power + _rand.Next(5));
+						attacker.Hitpoints -= (defender.Power + d4.Roll());
 						attackerHit++;
 					}
 					else

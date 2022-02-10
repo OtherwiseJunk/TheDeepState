@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="DDB" Version="2.2.1" />
-    <PackageReference Include="Discord.Net.Core" Version="3.2.0" />
+    <PackageReference Include="Discord.Net.Core" Version="3.3.0" />
     <PackageReference Include="MathNet.Numerics" Version="4.15.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.11">
