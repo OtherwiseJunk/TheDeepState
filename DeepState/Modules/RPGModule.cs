@@ -2,6 +2,7 @@
 using DeepState.Data.Constants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
+using DeepState.Models;
 using DeepState.Modules.Preconditions;
 using DeepState.Service;
 using Discord;
@@ -115,11 +116,11 @@ namespace DeepState.Modules
 		{
 			Character attacker = _rpgService.GetCharacter((IGuildUser) Context.Message.Author);
 			Character defender = _rpgService.GetFighter(target);
-			if(defender == null)
+			if (defender == null)
 			{
 				await Context.Channel.SendMessageAsync($"I don't see anyone named {target} in the PvP list. Sorry.");
 			}
-			else if(attacker == null)
+			else if (attacker == null)
 			{
 				await Context.Channel.SendMessageAsync("I don't think you have a character, friend.");
 			}
@@ -127,81 +128,30 @@ namespace DeepState.Modules
 			{
 				await Context.Channel.SendMessageAsync("I know you're excited, but you have to be PvP flagged before you can punch people yanno?!");
 			}
-			else if(attacker.Name == defender.Name && attacker.DiscordUserId == defender.DiscordUserId)
+			else if (attacker.Name == defender.Name && attacker.DiscordUserId == defender.DiscordUserId)
 			{
 				await Context.Channel.SendMessageAsync("You can't fight yourself, get out of here.");
 			}
 			else
 			{
-				await Context.Channel.SendMessageAsync(embed: Fight(attacker, defender));
-			}
-		}
-		
-		public Embed Fight(Character attacker, Character defender)
-		{
-			EmbedBuilder embed = new EmbedBuilder();
-			bool attackersTurn = true;
-			int defenderHit = 0;
-			int defenderMiss = 0;
-			int attackerHit = 0;
-			int attackerMiss = 0;
-			int attackerDmg = 0;
-			int defenderDmg = 0;
-			Dice d9 = new Dice(9);
-			Dice d4 = new Dice(4);
+				EmbedBuilder embed = new EmbedBuilder();
+				CombatStats stats = _rpgService.Fight(attacker, defender);
 
-			while (attacker.Hitpoints > 0 && defender.Hitpoints > 0)
-			{
-				if (attackersTurn)
+				string attackerStatus = attacker.Hitpoints > 0 ? $"{attacker.Hitpoints} HP remaining" : "Cadaverific";
+				string defenderStatus = defender.Hitpoints > 0 ? $"{defender.Hitpoints} HP remaining" : "Cadaverific";
+				if (attacker.Hitpoints <= 0)
 				{
-					int attack = d9.Roll() + attacker.Power;
-					int defense = d9.Roll() + defender.Mobility;
-					if (attack > defense)
-					{
-						int dmg = (attacker.Power + d4.Roll());
-						defender.Hitpoints -= dmg;
-						attackerDmg += dmg;
-						attackerHit++;
-					}
-					else
-					{
-						attackerMiss++;
-					}
+					KillCharacter(attacker, defender, true, embed);
 				}
 				else
 				{
-					int attack = d9.Roll() + defender.Power;
-					int defense = d9.Roll() + attacker.Mobility;
-					if (attack > defense)
-					{
-						int dmg = (defender.Power + d4.Roll());
-						attacker.Hitpoints -= dmg;
-						defenderDmg += dmg;
-						defenderHit++;
-					}
-					else
-					{
-						defenderMiss++;
-					}
+					KillCharacter(defender, attacker, false, embed);
 				}
+				embed.AddField($"{attacker.Name} Combat Stats", $"{stats.AttackerHits} Hits. {stats.AttackerMisses} Misses. {stats.AttackerDmg} Damage done.{Environment.NewLine}Status: {attackerStatus}");
+				embed.AddField($"{defender.Name} Combat Stats", $"{stats.DefenderHits} Hits. {stats.DefenderMisses} Misses. {stats.DefenderDmg} Damage done.{Environment.NewLine}Status: {defenderStatus}");
 
-				attackersTurn = !attackersTurn;
+				await Context.Channel.SendMessageAsync(embed: embed.Build());
 			}
-			string attackerStatus = attacker.Hitpoints > 0 ? $"{defender.Hitpoints} HP remaining" : "Cadaverific";
-			string defenderStatus = defender.Hitpoints > 0 ? $"{defender.Hitpoints} HP remaining" : "Cadaverific";
-			if (attacker.Hitpoints <= 0)
-			{
-				KillCharacter(attacker, defender, true, embed);
-			}
-			else
-			{
-				KillCharacter(defender, attacker, false, embed);
-			}
-			embed.AddField($"{attacker.Name} Combat Stats", $"{attackerHit} Hits. {attackerMiss} Misses. {attackerDmg} Damage done.{Environment.NewLine}Status: {attackerStatus}");
-			embed.AddField($"{defender.Name} Combat Stats", $"{defenderHit} Hits. {defenderMiss} Misses. {defenderDmg} Damage done.{Environment.NewLine}Status: {defenderStatus}");
-
-
-			return embed.Build();
 		}
 
 		public EmbedBuilder KillCharacter(Character corpse, Character murderer, bool wasCorpseAttacker, EmbedBuilder embed)

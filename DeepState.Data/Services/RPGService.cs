@@ -1,12 +1,11 @@
-﻿using DeepState.Data.Context;
+﻿using DartsDiscordBots.Utilities;
+using DeepState.Data.Context;
 using DeepState.Data.Models;
+using DeepState.Models;
 using Discord;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DartsDiscordBots.Utilities;
 
 namespace DeepState.Data.Services
 {
@@ -64,6 +63,64 @@ namespace DeepState.Data.Services
 		public Character GetFighter(string characterName)
 		{
 			return GetPVPCharacters().FirstOrDefault(c => c.Name.ToLower() == characterName.ToLower());
+		}
+
+		public CombatStats Fight(Character attacker, Character defender)
+		{
+			Dice d9 = new(9);
+			CombatStats stats = new CombatStats(d9.Roll() + attacker.Mobility, d9.Roll() + defender.Mobility);
+			while (attacker.Hitpoints > 0 && defender.Hitpoints > 0)
+			{
+				if (stats.AttackersTurn)
+				{
+					stats = SingleAttack(stats, attacker, defender, true);
+				}
+				else
+				{
+					stats = SingleAttack(stats, defender, attacker, false);
+				}
+				stats.AttackersTurn = !stats.AttackersTurn;
+			}
+
+			return stats;
+		}
+
+		public CombatStats SingleAttack(CombatStats stats, Character attacker, Character defender, bool attackerInitiatedCombat)
+		{
+			Dice d9 = new(9);
+			Dice d4 = new(4);
+
+			int attack = d9.Roll() + attacker.Power;
+			int defense = d9.Roll() + defender.Mobility;
+			if (attack > defense)
+			{
+				int dmg = attacker.Power + d4.Roll();
+				defender.Hitpoints -= dmg;
+				if (attackerInitiatedCombat)
+				{
+					stats.AttackerDmg += dmg;
+					stats.AttackerHits++;
+				}
+				else
+				{
+					stats.DefenderDmg += dmg;
+					stats.DefenderHits++;
+				}
+			}
+			else
+			{
+				if (attackerInitiatedCombat)
+				{
+					stats.AttackerMisses++;
+				}
+				else
+				{
+					stats.DefenderMisses++;
+				}
+			}
+
+
+			return stats;
 		}
 
 		public Embed BuildCharacterEmbed(Character character)
