@@ -149,7 +149,9 @@ namespace DeepState.Modules
 					int defense = d9.Roll() + defender.Mobility;
 					if (attack > defense)
 					{
-						defender.Hitpoints -= (attacker.Power + d4.Roll());
+						int dmg = (attacker.Power + d4.Roll());
+						defender.Hitpoints -= dmg;
+						attackerDmg += dmg;
 						attackerHit++;
 					}
 					else
@@ -163,12 +165,14 @@ namespace DeepState.Modules
 					int defense = d9.Roll() + attacker.Mobility;
 					if (attack > defense)
 					{
-						attacker.Hitpoints -= (defender.Power + d4.Roll());
-						attackerHit++;
+						int dmg = (defender.Power + d4.Roll());
+						attacker.Hitpoints -= dmg;
+						defenderDmg += dmg;
+						defenderHit++;
 					}
 					else
 					{
-						attackerMiss++;
+						defenderMiss++;
 					}
 				}
 
