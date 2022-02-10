@@ -133,7 +133,7 @@ namespace DeepState.Modules
 				Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
 				NationalDebtData nationalDebtData = JsonConvert.DeserializeObject<NationalDebtData>(client.GetAsync("https://www.treasurydirect.gov/NP_WS/debt/current?format=json").Result.Content.ReadAsStringAsync().Result);
 				EmbedBuilder embed = new EmbedBuilder();
-				embed.Title = "U.S. National Debt Statistics";
+				embed.Title = "Good Morning Senator, here's some bullshit";
 				embed.AddField("Effective Date", nationalDebtData.effectiveDate);
 				embed.AddField("Total Debt", nationalDebtData.totalDebt.ToString("C"));
 				embed.AddField("Public Debt", nationalDebtData.publicDebt.ToString("C"));

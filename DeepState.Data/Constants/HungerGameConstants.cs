@@ -7,7 +7,7 @@ namespace DeepState.Data.Constants
 	public static class HungerGameConstants
 	{
 		public const ulong TheRepublican = 735391839280169040;
-		public const double CostOfAdmission = 0.01;
+		public const double CostOfAdmission = 1;
 		public static string HungerGameTributesEmbedTitle { get; set; } = "⛈️ **T H U N D E R D O M E TRIBUTES** ⛈️";
 		public static string RandomTributeWeaponKill { get; set; } = "TributeWeaponKill";
 		public static string RandomTributeWeaponKillFormat { get; set; } = "{0} killed {1} with {2}";
