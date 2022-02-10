@@ -37,6 +37,7 @@ namespace DeepState.Modules
 		[Summary("Generate a new character. Costs some libcoin. You can add a 'fite' or 'f' flag to flag the character for PvP from creation.")]
 		public async Task GenerateNewCharacter(string flags = "")
 		{
+			MessageReference msgReference = new MessageReference(Context.Message.Id);
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.User);
 			if (character == null)
 			{
@@ -57,11 +58,11 @@ namespace DeepState.Modules
 						_userService.Deduct(Context.User.Id, Context.Guild.Id, RPGConstants.NewCharacterCost);
 						if (flags == "f" || flags == "fite")
 						{
-							await Context.Channel.SendMessageAsync("Today your character woke up and chose _violence_.");
+							await Context.Channel.SendMessageAsync("Today your character woke up and chose _violence_.", messageReference: msgReference);
 							_rpgService.ToggleCharacterPvPFlag((IGuildUser)Context.Message.Author);
 							character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
 						}
-						await Context.Channel.SendMessageAsync($"Ok I rolled you up a new character! {RPGConstants.NewCharacterCost} Libcoin has been deducted from your account.", embed: _rpgService.BuildCharacterEmbed(character));
+						await Context.Channel.SendMessageAsync($"Ok I rolled you up a new character! {RPGConstants.NewCharacterCost} Libcoin has been deducted from your account.", embed: _rpgService.BuildCharacterEmbed(character), messageReference: msgReference);
 					}
 				}
 				catch (Exception ex)
@@ -72,7 +73,7 @@ namespace DeepState.Modules
 			}
 			else
 			{
-				await Context.Channel.SendMessageAsync("Looks like you already have a character.", embed: _rpgService.BuildCharacterEmbed(character));
+				await Context.Channel.SendMessageAsync("Looks like you already have a character.", embed: _rpgService.BuildCharacterEmbed(character), messageReference: msgReference);
 			}
 		}
 
@@ -80,14 +81,15 @@ namespace DeepState.Modules
 		[Summary("View your current character, if you have one.")]
 		public async Task RetrieveCharacter()
 		{
+			MessageReference msgReference = new MessageReference(Context.Message.Id);
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.User);
 			if (character == null)
 			{
-				await Context.Channel.SendMessageAsync($"Sorry friend, you haven't rolled up a character yet. It costs {RPGConstants.NewCharacterCost} Libcoin but it's worth it!");
+				await Context.Channel.SendMessageAsync($"Sorry friend, you haven't rolled up a character yet. It costs {RPGConstants.NewCharacterCost} Libcoin but it's worth it!", messageReference: msgReference);
 			}
 			else
 			{
-				await Context.Channel.SendMessageAsync(embed: _rpgService.BuildCharacterEmbed(character));
+				await Context.Channel.SendMessageAsync(embed: _rpgService.BuildCharacterEmbed(character), messageReference: msgReference);
 			}
 		}
 
@@ -95,15 +97,16 @@ namespace DeepState.Modules
 		[Summary("Toggle whether or not your character is down to PvP. You can view them in the >rpg pvplist list, and PvP flagged characters will have flaming swords when retireved with >rpg char.")]
 		public async Task TogglePvPStatus()
 		{
+			MessageReference msgReference = new MessageReference(Context.Message.Id);
 			_rpgService.ToggleCharacterPvPFlag((IGuildUser) Context.User);
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.User);
 			if (character.PvPFlagged)
 			{
-				await Context.Channel.SendMessageAsync($"Ok, I'll let everyone know {character.Name} is ready to rumble!");
+				await Context.Channel.SendMessageAsync($"Ok, I'll let everyone know {character.Name} is ready to rumble!", messageReference: msgReference);
 			}
 			else
 			{
-				await Context.Channel.SendMessageAsync($"Ok, I'll let everyone know {character.Name} is character of peace. For now.");
+				await Context.Channel.SendMessageAsync($"Ok, I'll let everyone know {character.Name} is character of peace. For now.", messageReference: msgReference);
 			}
 		}
 
@@ -111,14 +114,16 @@ namespace DeepState.Modules
 		[Summary("View a list of characters down to punch people to death. Or maybe get punched to death, yanno.")]
 		public async Task ShowPVPEnabledFighters()
 		{
+			MessageReference msgReference = new MessageReference(Context.Message.Id);
 			List<Character> pvpCharacters = _rpgService.GetPVPCharacters();
-			await Context.Channel.SendMessageAsync(embed: _rpgService.BuildPvPListEmbed(pvpCharacters));
+			await Context.Channel.SendMessageAsync(embed: _rpgService.BuildPvPListEmbed(pvpCharacters), messageReference: msgReference);
 		}
 
 		[Command("challenge"), Alias("fight","chal", "fite")]
 		[Summary("Fight someone who is PvP flagged. You have to be PvP flagged too.")]
 		public async Task ChallengeCharacter([Remainder, Summary("The name of the character you want to fight. They might be PvP Flagged")]string target="")
 		{
+			MessageReference msgReference = new MessageReference(Context.Message.Id);
 			Character attacker = _rpgService.GetCharacter((IGuildUser) Context.Message.Author);
 			Character defender;
 			if (target == "")
@@ -134,19 +139,19 @@ namespace DeepState.Modules
 
 			if (defender == null)
 			{
-				await Context.Channel.SendMessageAsync($"I don't see anyone named {target} in the PvP list. Sorry.");
+				await Context.Channel.SendMessageAsync($"I don't see anyone named {target} in the PvP list. Sorry.", messageReference: msgReference);
 			}
 			else if (attacker == null)
 			{
-				await Context.Channel.SendMessageAsync("I don't think you have a character, friend.");
+				await Context.Channel.SendMessageAsync("I don't think you have a character, friend.", messageReference: msgReference);
 			}
 			else if (!attacker.PvPFlagged)
 			{
-				await Context.Channel.SendMessageAsync("I know you're excited, but you have to be PvP flagged before you can punch people yanno?!");
+				await Context.Channel.SendMessageAsync("I know you're excited, but you have to be PvP flagged before you can punch people yanno?!", messageReference: msgReference);
 			}
 			else if (attacker.Name == defender.Name && attacker.DiscordUserId == defender.DiscordUserId)
 			{
-				await Context.Channel.SendMessageAsync("You can't fight yourself, get out of here.");
+				await Context.Channel.SendMessageAsync("You can't fight yourself, get out of here.", messageReference: msgReference);
 			}
 			else
 			{
@@ -166,7 +171,7 @@ namespace DeepState.Modules
 				embed.AddField($"{attacker.Name} Combat Stats", $"{stats.AttackerHits} Hits. {stats.AttackerMisses} Misses. {stats.AttackerDmg} Damage done.{Environment.NewLine}Status: {attackerStatus}");
 				embed.AddField($"{defender.Name} Combat Stats", $"{stats.DefenderHits} Hits. {stats.DefenderMisses} Misses. {stats.DefenderDmg} Damage done.{Environment.NewLine}Status: {defenderStatus}");
 
-				await Context.Channel.SendMessageAsync(embed: embed.Build());
+				await Context.Channel.SendMessageAsync(embed: embed.Build(), messageReference: msgReference);
 			}
 		}
 
