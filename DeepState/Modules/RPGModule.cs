@@ -105,7 +105,8 @@ namespace DeepState.Modules
 		}
 
 		[Command("challenge"), Alias("fight","chal", "fite")]
-		public async Task ChallengeCharacter(string target)
+		[Summary("Fight someone who is PvP flagged. You have to be PvP flagged too.")]
+		public async Task ChallengeCharacter([Remainder, Summary("The name of the character you want to fight. They might be PvP Flagged")]string target)
 		{
 			Character attacker = _rpgService.GetCharacter((IGuildUser) Context.Message.Author);
 			Character defender = _rpgService.GetFighter(target);
@@ -116,6 +117,10 @@ namespace DeepState.Modules
 			else if(attacker == null)
 			{
 				await Context.Channel.SendMessageAsync("I don't think you have a character, friend.");
+			}
+			else if (!attacker.PvPFlagged)
+			{
+				await Context.Channel.SendMessageAsync("I know you're excited, but you have to be PvP flagged before you can punch people yanno?!");
 			}
 			else
 			{

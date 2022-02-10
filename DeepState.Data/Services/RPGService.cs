@@ -63,7 +63,7 @@ namespace DeepState.Data.Services
 
 		public Character GetFighter(string characterName)
 		{
-			return GetPVPCharacters().FirstOrDefault(c => c.Name.ToLower() == characterName);
+			return GetPVPCharacters().FirstOrDefault(c => c.Name.ToLower() == characterName.ToLower());
 		}
 
 		public Embed BuildCharacterEmbed(Character character)
