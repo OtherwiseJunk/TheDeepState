@@ -34,6 +34,7 @@ namespace DeepState.Modules
 
 		[Command("newchar"), Alias("nc")]
 		[RequireLibcoinBalance(RPGConstants.NewCharacterCost)]
+		[Summary("Generate a new character. Costs some libcoin. You can add a 'fite' or 'f' flag to flag the character for PvP from creation.")]
 		public async Task GenerateNewCharacter(string flags = "")
 		{
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.User);
@@ -76,6 +77,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("char"), Alias("c")]
+		[Summary("View your current character, if you have one.")]
 		public async Task RetrieveCharacter()
 		{
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.User);
@@ -90,6 +92,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("pvp")]
+		[Summary("Toggle whether or not your character is down to PvP. You can view them in the >rpg pvplist list, and PvP flagged characters will have flaming swords when retireved with >rpg char.")]
 		public async Task TogglePvPStatus()
 		{
 			_rpgService.ToggleCharacterPvPFlag((IGuildUser) Context.User);
@@ -105,6 +108,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("pvplist"), Alias("saturdaynight","goodfites","fightclub","flist", "fc", "fl")]
+		[Summary("View a list of characters down to punch people to death. Or maybe get punched to death, yanno.")]
 		public async Task ShowPVPEnabledFighters()
 		{
 			List<Character> pvpCharacters = _rpgService.GetPVPCharacters();
@@ -113,10 +117,21 @@ namespace DeepState.Modules
 
 		[Command("challenge"), Alias("fight","chal", "fite")]
 		[Summary("Fight someone who is PvP flagged. You have to be PvP flagged too.")]
-		public async Task ChallengeCharacter([Remainder, Summary("The name of the character you want to fight. They might be PvP Flagged")]string target)
+		public async Task ChallengeCharacter([Remainder, Summary("The name of the character you want to fight. They might be PvP Flagged")]string target="")
 		{
 			Character attacker = _rpgService.GetCharacter((IGuildUser) Context.Message.Author);
-			Character defender = _rpgService.GetFighter(target);
+			Character defender;
+			if (target == "")
+			{
+				List<Character> pvpers = _rpgService.GetPVPCharacters().Where(c => c.DiscordUserId != Context.Message.Author.Id).ToList();
+				pvpers.Shuffle();
+				defender = pvpers.First();
+			}
+			else
+			{
+				defender = _rpgService.GetFighter(target);
+			}
+
 			if (defender == null)
 			{
 				await Context.Channel.SendMessageAsync($"I don't see anyone named {target} in the PvP list. Sorry.");
