@@ -1,4 +1,5 @@
-﻿using DeepState.Data.Constants;
+﻿using DartsDiscordBots.Utilities;
+using DeepState.Data.Constants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
 using DeepState.Modules.Preconditions;
@@ -23,11 +24,15 @@ namespace DeepState.Modules
 		public RPGService _rpgService { get; set; }
 		public UserRecordsService _userService { get; set; }
 		public ImagingService _imagingService { get; set; }
+		public Dice d9 { get; set; }
+		public Dice d4 { get; set; }
 		public RPGModule(RPGService rpgService, UserRecordsService userService, ImagingService imagingService)
 		{
 			_rpgService = rpgService;
 			_userService = userService;
 			_imagingService = imagingService;
+			d9 = new Dice(9);
+			d4 = new Dice(4);
 		}
 
 		[Command("newchar"), Alias("nc")]
@@ -104,9 +109,109 @@ namespace DeepState.Modules
 		}
 
 		[Command("challenge"), Alias("fight","chal", "fite")]
-		public async Task ChallengeCharacter()
+		public async Task ChallengeCharacter(string target)
 		{
-
+			Character attacker = _rpgService.GetCharacter((IGuildUser) Context.Message.Author);
+			Character defender = _rpgService.GetFighter(target);
+			if(defender == null)
+			{
+				await Context.Channel.SendMessageAsync($"I don't see anyone named {target} in the PvP list. Sorry.");
+			}
+			else if(attacker == null)
+			{
+				await Context.Channel.SendMessageAsync("I don't think you have a character, friend.");
+			}
+			else
+			{
+				await Context.Channel.SendMessageAsync(embed: Fight(attacker, defender));
+			}
 		}
+		
+		public Embed Fight(Character attacker, Character defender)
+		{
+			EmbedBuilder embed = new EmbedBuilder();
+			bool attackersTurn = true;
+			int defenderHit = 0;
+			int defenderMiss = 0;
+			int attackerHit = 0;
+			int attackerMiss = 0;
+			int attackerDmg = 0;
+			int defenderDmg = 0;
+
+			while (attacker.Hitpoints > 0 && defender.Hitpoints > 0)
+			{
+				if (attackersTurn)
+				{
+					int attack = d9.Roll() + attacker.Power;
+					int defense = d9.Roll() + defender.Mobility;
+					if (attack > defense)
+					{
+						defender.Hitpoints -= (attacker.Power + d4.Roll());
+						attackerHit++;
+					}
+					else
+					{
+						attackerMiss++;
+					}
+				}
+				else
+				{
+					int attack = d9.Roll() + defender.Power;
+					int defense = d9.Roll() + attacker.Mobility;
+					if (attack > defense)
+					{
+						attacker.Hitpoints -= (defender.Power + d4.Roll());
+						attackerHit++;
+					}
+					else
+					{
+						attackerMiss++;
+					}
+				}
+
+				attackersTurn = !attackersTurn;
+			}
+			string attackerStatus = attacker.Hitpoints > 0 ? $"{defender.Hitpoints} HP remaining" : "Cadaverific";
+			string defenderStatus = defender.Hitpoints > 0 ? $"{defender.Hitpoints} HP remaining" : "Cadaverific";
+			if (attacker.Hitpoints <= 0)
+			{
+				KillCharacter(attacker, defender, true, embed);
+			}
+			else
+			{
+				KillCharacter(defender, attacker, false, embed);
+			}
+			embed.AddField($"{attacker.Name} Combat Stats", $"{attackerHit} Hits. {attackerMiss} Misses. {attackerDmg} Damage done.{Environment.NewLine}Status: {attackerStatus}");
+			embed.AddField($"{defender.Name} Combat Stats", $"{defenderHit} Hits. {defenderMiss} Misses. {defenderDmg} Damage done.{Environment.NewLine}Status: {defenderStatus}");
+
+
+			return embed.Build();
+		}
+
+		public EmbedBuilder KillCharacter(Character corpse, Character murderer, bool wasCorpseAttacker, EmbedBuilder embed)
+		{
+			int corpseGold = corpse.Gold;
+			int libcoinPayout = corpseGold * 15;
+
+			if (wasCorpseAttacker)
+			{
+				embed.Title = $"{corpse.Name} fucked around and found out. F's in the chat.";
+			}
+			else
+			{
+				embed.Title = $"{corpse.Name} got got.";
+			}
+			embed.ImageUrl = murderer.AvatarUrl;
+			embed.ThumbnailUrl = corpse.AvatarUrl;
+
+			if (libcoinPayout > 0)
+			{
+				Context.Channel.SendMessageAsync($"{corpse.Name} had {corpseGold} in their pocket, so I've issued a {libcoinPayout} Libcoin payout.");
+			}
+			_rpgService.KillCharacter(corpse);
+
+			return embed;
+		}
+
 	}
 }

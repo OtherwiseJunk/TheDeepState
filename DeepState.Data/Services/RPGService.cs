@@ -12,6 +12,11 @@ namespace DeepState.Data.Services
 {
 	public class RPGService
 	{
+		UserRecordsService _userRecords { get; set; }
+		public RPGService(UserRecordsService userRecords)
+		{
+			_userRecords = userRecords;
+		}
 		public Character CreateNewCharacter(IGuildUser user, string avatarUrl)
 		{
 			using (RPGContext context = new RPGContext())
@@ -48,6 +53,21 @@ namespace DeepState.Data.Services
 
 				context.SaveChanges();
 			}
+		}
+
+		public void KillCharacter(Character corpse)
+		{
+			using (RPGContext context = new RPGContext())
+			{
+				context.Characters.Remove(corpse);
+				context.SaveChanges();
+
+			}
+		}
+
+		public Character GetFighter(string characterName)
+		{
+			return GetPVPCharacters().FirstOrDefault(c => c.Name.ToLower() == characterName);
 		}
 
 		public Embed BuildCharacterEmbed(Character character)
