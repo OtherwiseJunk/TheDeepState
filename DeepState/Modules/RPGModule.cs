@@ -58,6 +58,7 @@ namespace DeepState.Modules
 						{
 							await Context.Channel.SendMessageAsync("Today your character woke up and chose _violence_.");
 							_rpgService.ToggleCharacterPvPFlag((IGuildUser)Context.Message.Author);
+							character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
 						}
 						await Context.Channel.SendMessageAsync($"Ok I rolled you up a new character! {RPGConstants.NewCharacterCost} Libcoin has been deducted from your account.", embed: _rpgService.BuildCharacterEmbed(character));
 					}
