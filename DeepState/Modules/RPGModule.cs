@@ -122,6 +122,10 @@ namespace DeepState.Modules
 			{
 				await Context.Channel.SendMessageAsync("I know you're excited, but you have to be PvP flagged before you can punch people yanno?!");
 			}
+			else if(attacker.Name == defender.Name && attacker.DiscordUserId == defender.DiscordUserId)
+			{
+				await Context.Channel.SendMessageAsync("You can't fight yourself, get out of here.");
+			}
 			else
 			{
 				await Context.Channel.SendMessageAsync(embed: Fight(attacker, defender));
