@@ -190,6 +190,7 @@ namespace DeepState.Data.Services
 			builder.AddField("Gold", character.Gold);
 			builder.AddField("XP", character.XP);
 			builder.AddField("Hitpoints", $"{character.Hitpoints}/{character.MaximumHitpoints}");
+			builder.AddField("Down To Punch?", character.PvPFlagged ? "Hell Yeah" : "Hell No");
 
 			return builder.Build();
 		}
