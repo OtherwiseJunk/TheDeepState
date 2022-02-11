@@ -217,17 +217,19 @@ namespace DeepState.Modules
 
 			return embed;
 		}
-		public void SendObituary(Character corpse, Character murderer)
+		public void SendObituary(Character corpse, Character murderer, IGuild murderLocation)
 		{
-			List<RPGConfiguration> configs = _rpgService.GetRPGConfigurations();
+			List<RPGConfiguration> configs = _rpgService.GetConfigurations();
 			foreach(RPGConfiguration config in configs)
 			{
 				IGuild guild = Context.Client.GetGuildAsync(config.DiscordGuildId).Result;
-				ITextChannel channel = (ITextChannel) guild.GetChannelAsync(config.ObituaryChannelId);
+				string deathMessage = config.DiscordGuildId == murderLocation.Id ? $"{corpse.Name} was killed by {murderer.Name} in THIS VERY SERVER!" : $"{corpse.Name} was killed by {murderer.Name} in a strange unknowable land.";
+				ITextChannel channel = (ITextChannel) guild.GetChannelAsync(config.ObituaryChannelId).Result;
 				EmbedBuilder embed = new EmbedBuilder();
 				embed.Title = RPGConstants.ObituaryTitles.GetRandom();
 				embed.ThumbnailUrl = murderer.AvatarUrl;
 				embed.ImageUrl = corpse.AvatarUrl;
+				embed.AddField("A murder most foul", deathMessage);
 				channel.SendMessageAsync(embed: embed.Build());
 			}
 		}

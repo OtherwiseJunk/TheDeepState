@@ -82,7 +82,8 @@ namespace DeepState.Utilities
 		public static async Task LibcoinReactionChecker(UserRecordsService service)
 		{
 			Random rand = Utils.CreateSeededRandom();
-			int nextDuration = rand.Next((7 * 60 * 1000), rand.Next(14 * 60 * 1000));
+			int minimumWaittime = (7 * 60 * 1000);
+			int nextDuration = rand.Next(minimumWaittime, minimumWaittime * 2);
 			List<ulong> handledKeys = new List<ulong>();
 
 			lock (ReactionDictionaryLock)

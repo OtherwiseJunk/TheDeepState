@@ -12,10 +12,15 @@ namespace DeepState.Data.Services
 {
 	public class RPGService
 	{
-		UserRecordsService _userRecords { get; set; }
+		IDbContextFactory<RPGContext> _contextFactory { get; set; }
+
+		public RPGService(IDbContextFactory<RPGContext> contextFactory)
+		{
+			_contextFactory = contextFactory;
+		}
 		public Character CreateNewCharacter(IGuildUser user, string avatarUrl)
 		{
-			using (RPGContext context = new RPGContext())
+			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
 				Character newCharacter = new Character(user.Id, avatarUrl);
 				context.Characters.Add(newCharacter);
@@ -24,17 +29,18 @@ namespace DeepState.Data.Services
 			}
 		}
 
-		public List<RPGConfiguration> GetRPGConfigurations()
+		public List<RPGConfiguration> GetConfigurations()
 		{
-			using(RPGContext context = new RPGContext())
+			using(RPGContext context = _contextFactory.CreateDbContext())
 			{
 				return context.RPGConfigs.ToList();
+				
 			}
 		}
 
 		public RPGConfiguration GetGuildConfiguration(ulong guildId)
 		{
-			using(RPGContext context = new RPGContext())
+			using(RPGContext context = _contextFactory.CreateDbContext())
 			{
 				return context.RPGConfigs.FirstOrDefault(config => config.DiscordGuildId == guildId);
 			}
@@ -42,7 +48,7 @@ namespace DeepState.Data.Services
 
 		public void CreateRPGConfiguration(RPGConfiguration config)
 		{
-			using (RPGContext context = new RPGContext())
+			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
 				context.RPGConfigs.Add(config);
 				context.SaveChanges();
@@ -51,7 +57,7 @@ namespace DeepState.Data.Services
 
 		public void UpdateRPGConfiguration(RPGConfiguration config)
 		{
-			using (RPGContext context = new RPGContext())
+			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
 				context.Entry(config).State = EntityState.Modified;
 				context.SaveChanges();
@@ -74,7 +80,7 @@ namespace DeepState.Data.Services
 
 		public Character GetCharacter(IGuildUser user)
 		{
-			using (RPGContext context = new RPGContext())
+			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
 				return context.Characters.FirstOrDefault(c => c.DiscordUserId == user.Id);
 			}
@@ -82,7 +88,7 @@ namespace DeepState.Data.Services
 
 		public List<Character> GetPVPCharacters()
 		{
-			using (RPGContext context = new RPGContext())
+			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
 				return context.Characters.AsQueryable().Where(c => c.PvPFlagged).ToList();
 			}
@@ -90,7 +96,7 @@ namespace DeepState.Data.Services
 
 		public void ToggleCharacterPvPFlag(IGuildUser user)
 		{
-			using (RPGContext context = new RPGContext())
+			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
 				Character character = context.Characters.FirstOrDefault(c => c.DiscordUserId == user.Id);
 				character.PvPFlagged = !character.PvPFlagged;
@@ -101,7 +107,7 @@ namespace DeepState.Data.Services
 
 		public void KillCharacter(Character corpse)
 		{
-			using (RPGContext context = new RPGContext())
+			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
 				context.Characters.Remove(corpse);
 				context.SaveChanges();
