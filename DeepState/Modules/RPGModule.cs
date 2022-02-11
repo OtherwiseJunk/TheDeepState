@@ -32,6 +32,23 @@ namespace DeepState.Modules
 			_imagingService = imagingService;
 		}
 
+		[Group("config")]
+		[RequireOwner(Group = "AllowedUsers"), RequireUserPermission(GuildPermission.ManageMessages, Group = "AllowedUsers")]
+		public class Configuration : ModuleBase
+		{
+			public RPGService _rpgService { get; set; }
+			public Configuration(RPGService rpgService)
+			{
+				_rpgService = rpgService;
+			}
+				[Command("obituary"), Alias("obit")]
+			public async Task ConfigureObituariesChannel()
+			{
+				_rpgService.SetRPGObituaryChannel(Context.Guild.Id, Context.Channel.Id);
+				await Context.Message.AddReactionAsync(Emoji.Parse("👍"));
+			}
+		}
+
 		[Command("newchar"), Alias("nc")]
 		[RequireLibcoinBalance(RPGConstants.NewCharacterCost)]
 		[Summary("Generate a new character. Costs some libcoin. You can add a 'fite' or 'f' flag to flag the character for PvP from creation.")]
@@ -195,10 +212,26 @@ namespace DeepState.Modules
 			{
 				Context.Channel.SendMessageAsync($"{corpse.Name} had {corpseGold} in their pocket, so I've issued a {libcoinPayout} Libcoin payout.");
 			}
+			SendObituary(corpse, murderer);
 			_rpgService.KillCharacter(corpse);
 
 			return embed;
 		}
-
+		public void SendObituary(Character corpse, Character murderer)
+		{
+			List<RPGConfiguration> configs = _rpgService.GetRPGConfigurations();
+			foreach(RPGConfiguration config in configs)
+			{
+				IGuild guild = Context.Client.GetGuildAsync(config.DiscordGuildId).Result;
+				ITextChannel channel = (ITextChannel) guild.GetChannelAsync(config.ObituaryChannelId);
+				EmbedBuilder embed = new EmbedBuilder();
+				embed.Title = RPGConstants.ObituaryTitles.GetRandom();
+				embed.ThumbnailUrl = murderer.AvatarUrl;
+				embed.ImageUrl = corpse.AvatarUrl;
+				channel.SendMessageAsync(embed: embed.Build());
+			}
+		}
 	}
+
+	
 }

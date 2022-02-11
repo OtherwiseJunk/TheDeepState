@@ -15,5 +15,6 @@ namespace DeepState.Data.Context
 			optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("DATABASE"));
 		}
 		public DbSet<Character> Characters { get; set; }
+		public DbSet<RPGConfiguration> RPGConfigs { get; set; }
 	}
 }

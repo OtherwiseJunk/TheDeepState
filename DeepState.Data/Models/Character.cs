@@ -23,6 +23,7 @@ namespace DeepState.Data.Models
 		public int Gold { get; set; }
 		public int XP { get; set; }
 		public string AvatarUrl { get; set; }
+		public int PlayersMurdered { get; set; }
 		public bool PvPFlagged { get; set; }
 
 		public Character()
@@ -43,6 +44,7 @@ namespace DeepState.Data.Models
 			Hitpoints = MaximumHitpoints;
 			XP = 0;
 			Gold = 0;
+			PlayersMurdered = 0;
 			PvPFlagged = false;
 		}
 

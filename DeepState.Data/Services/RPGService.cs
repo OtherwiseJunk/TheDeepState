@@ -3,6 +3,7 @@ using DeepState.Data.Context;
 using DeepState.Data.Models;
 using DeepState.Models;
 using Discord;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,54 @@ namespace DeepState.Data.Services
 				context.Characters.Add(newCharacter);
 				context.SaveChanges();
 				return newCharacter;
+			}
+		}
+
+		public List<RPGConfiguration> GetRPGConfigurations()
+		{
+			using(RPGContext context = new RPGContext())
+			{
+				return context.RPGConfigs.ToList();
+			}
+		}
+
+		public RPGConfiguration GetGuildConfiguration(ulong guildId)
+		{
+			using(RPGContext context = new RPGContext())
+			{
+				return context.RPGConfigs.FirstOrDefault(config => config.DiscordGuildId == guildId);
+			}
+		}
+
+		public void CreateRPGConfiguration(RPGConfiguration config)
+		{
+			using (RPGContext context = new RPGContext())
+			{
+				context.RPGConfigs.Add(config);
+				context.SaveChanges();
+			}
+		}
+
+		public void UpdateRPGConfiguration(RPGConfiguration config)
+		{
+			using (RPGContext context = new RPGContext())
+			{
+				context.Entry(config).State = EntityState.Modified;
+				context.SaveChanges();
+			}
+		}
+
+		public void SetRPGObituaryChannel(ulong guildId, ulong channelId)
+		{
+			RPGConfiguration config = GetGuildConfiguration(guildId);
+			if(config == null)
+			{
+				CreateRPGConfiguration(new RPGConfiguration { DiscordGuildId = guildId, ObituaryChannelId = channelId });
+			}
+			else
+			{
+				config.ObituaryChannelId = channelId;
+				UpdateRPGConfiguration(config);
 			}
 		}
 

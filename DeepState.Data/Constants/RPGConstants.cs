@@ -97,6 +97,22 @@ namespace DeepState.Data.Constants
 			"Confused",
 			"Depraved"
 		};
+		public static List<string> ObituaryTitles = new List<string>
+		{
+			"Look what the cat dragged in",
+			"Hey kids you wanna see a dead body?",
+			"F's in the chat for this one",
+			"new corpse who this",
+			"Fuck they owed me like 20 Libcoin too...",
+			"They will be missed. I assume.",
+			"They will be missed. Probably.",
+			"They will be missed. Right?",
+			"They won't be missed.",
+			"Ok who wants to tell their kids",
+			"Taken too soon",
+			"Taken too late",
+			"RIP Bozo. Rest in piss you won't be missed."
+		};
 		public static List<int[]> StartingStatArrays = new List<int[]>
 		{
 			new int[]{ 1, 2, 3 },
