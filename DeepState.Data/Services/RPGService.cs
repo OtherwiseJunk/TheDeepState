@@ -181,12 +181,7 @@ namespace DeepState.Data.Services
 		public Embed BuildCharacterEmbed(Character character)
 		{
 			EmbedBuilder builder = new EmbedBuilder();
-			builder.ImageUrl = character.AvatarUrl;
-			builder.ThumbnailUrl = "https://d338t8kmirgyke.cloudfront.net/icons/icon_pngs/000/005/780/original/swords.png";
-			if (character.PvPFlagged)
-			{
-				builder.ThumbnailUrl = "https://spng.pngfind.com/pngs/s/273-2730354_this-free-icons-png-design-of-flaming-sword.png";
-			}			
+			builder.ThumbnailUrl = character.AvatarUrl;		
 			builder.AddField("Name", character.Name);
 			builder.AddField("Level", character.Level);
 			builder.AddField("Power", character.Power);
