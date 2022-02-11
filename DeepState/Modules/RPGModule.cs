@@ -212,7 +212,7 @@ namespace DeepState.Modules
 			{
 				Context.Channel.SendMessageAsync($"{corpse.Name} had {corpseGold} in their pocket, so I've issued a {libcoinPayout} Libcoin payout.");
 			}
-			SendObituary(corpse, murderer);
+			SendObituary(corpse, murderer, Context.Guild);
 			_rpgService.KillCharacter(corpse);
 
 			return embed;
