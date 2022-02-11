@@ -177,13 +177,14 @@ namespace DeepState.Modules
 
 				string attackerStatus = attacker.Hitpoints > 0 ? $"{attacker.Hitpoints} HP remaining" : "Cadaverific";
 				string defenderStatus = defender.Hitpoints > 0 ? $"{defender.Hitpoints} HP remaining" : "Cadaverific";
+				string victorMessage;
 				if (attacker.Hitpoints <= 0)
 				{
-					KillCharacter(attacker, defender, true, embed);
+					WrapUpCombat(defender, attacker, embed);
 				}
 				else
 				{
-					KillCharacter(defender, attacker, false, embed);
+					WrapUpCombat(attacker, defender, embed);
 				}
 				embed.AddField($"{attacker.Name} Combat Stats", $"{stats.AttackerHits} Hits. {stats.AttackerMisses} Misses. {stats.AttackerDmg} Damage done.{Environment.NewLine}Status: {attackerStatus}");
 				embed.AddField($"{defender.Name} Combat Stats", $"{stats.DefenderHits} Hits. {stats.DefenderMisses} Misses. {stats.DefenderDmg} Damage done.{Environment.NewLine}Status: {defenderStatus}");
@@ -192,10 +193,50 @@ namespace DeepState.Modules
 			}
 		}
 
+		public void WrapUpCombat(Character winner, Character loser, EmbedBuilder embed)
+		{
+			winner.PlayersMurdered++;
+			int goldLooted = LootCharacter(winner, loser);
+			winner.Gold += goldLooted;
+			int xpGained = CalculateXPGain(winner, loser);
+			winner.XP += xpGained;
+			string resultMessage = $"For slaying {loser.Name}, {loser.Name} got {goldLooted} gold and {xpGained} XP";
+			if (winner.XP >= 10 * winner.Level)
+			{
+				winner.XP -= 10 * winner.Level;
+				winner.LevelUp();
+				resultMessage += $"{Environment.NewLine}Level up!";
+			}
+			embed.AddField("Result", resultMessage);
+			_rpgService.UpdateCharacter(winner);
+			KillCharacter(loser, winner, true, embed);
+		}
+		public int CalculateXPGain(Character murderer, Character corpse)
+		{
+			int levelDifferenceMultiplier = (Math.Abs(murderer.Level - corpse.Level) * 2) + 1;
+			Random rand = new Random(Guid.NewGuid().GetHashCode());
+			return levelDifferenceMultiplier * rand.Next(3);
+		}
+		public int LootCharacter(Character looter, Character corpse)
+		{
+			int goldLooted;
+			Random random = new Random(Guid.NewGuid().GetHashCode());
+			if(corpse.Gold == 0)
+			{
+				goldLooted = random.Next(4);
+			}
+			else
+			{
+				goldLooted = random.Next(corpse.Gold);
+			}
+
+			return goldLooted;
+		}
+
 		public EmbedBuilder KillCharacter(Character corpse, Character murderer, bool wasCorpseAttacker, EmbedBuilder embed)
 		{
 			int corpseGold = corpse.Gold;
-			int libcoinPayout = corpseGold * 15;
+			int libcoinPayout = corpseGold * 2;
 
 			if (wasCorpseAttacker)
 			{

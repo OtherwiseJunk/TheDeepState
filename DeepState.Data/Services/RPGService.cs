@@ -199,6 +199,14 @@ namespace DeepState.Data.Services
 			return builder.Build();
 		}
 
+		public void UpdateCharacter(Character character)
+		{
+			using(RPGContext context = _contextFactory.CreateDbContext())
+			{
+				context.Entry(character).State = EntityState.Modified;
+				context.SaveChanges();
+			}
+		}
 		public Embed BuildPvPListEmbed(List<Character> characters)
 		{
 			EmbedBuilder builder = new EmbedBuilder();

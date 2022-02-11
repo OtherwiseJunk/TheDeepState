@@ -8,7 +8,7 @@ namespace DeepState.Data.Constants
 {
 	public class RPGConstants
 	{
-		public const double NewCharacterCost =0.01;
+		public const double NewCharacterCost = 1.00;
 		public const string AvatarFolder = "RPGAvatars";
 		public static List<string> Names = new List<string>
 		{
