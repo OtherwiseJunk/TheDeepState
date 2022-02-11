@@ -246,8 +246,7 @@ namespace DeepState.Modules
 			{
 				embed.Title = $"{corpse.Name} got got.";
 			}
-			embed.ImageUrl = murderer.AvatarUrl;
-			embed.ThumbnailUrl = corpse.AvatarUrl;
+			embed.ThumbnailUrl = murderer.AvatarUrl;
 
 			if (libcoinPayout > 0)
 			{
