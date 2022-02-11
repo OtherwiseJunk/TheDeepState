@@ -180,11 +180,11 @@ namespace DeepState.Modules
 				string victorMessage;
 				if (attacker.Hitpoints <= 0)
 				{
-					WrapUpCombat(defender, attacker, embed);
+					WrapUpCombat(defender, attacker, true, Context.Guild.Id, embed);
 				}
 				else
 				{
-					WrapUpCombat(attacker, defender, embed);
+					WrapUpCombat(attacker, defender, false, Context.Guild.Id, embed);
 				}
 				embed.AddField($"{attacker.Name} Combat Stats", $"{stats.AttackerHits} Hits. {stats.AttackerMisses} Misses. {stats.AttackerDmg} Damage done.{Environment.NewLine}Status: {attackerStatus}");
 				embed.AddField($"{defender.Name} Combat Stats", $"{stats.DefenderHits} Hits. {stats.DefenderMisses} Misses. {stats.DefenderDmg} Damage done.{Environment.NewLine}Status: {defenderStatus}");
@@ -193,14 +193,14 @@ namespace DeepState.Modules
 			}
 		}
 
-		public void WrapUpCombat(Character winner, Character loser, EmbedBuilder embed)
+		public void WrapUpCombat(Character winner, Character loser, bool wasCorpseAttacker, ulong guildId, EmbedBuilder embed)
 		{
 			winner.PlayersMurdered++;
-			int goldLooted = LootCharacter(winner, loser);
+			int goldLooted = LootCharacter(loser);
 			winner.Gold += goldLooted;
 			int xpGained = CalculateXPGain(winner, loser);
 			winner.XP += xpGained;
-			string resultMessage = $"For slaying {loser.Name}, {loser.Name} got {goldLooted} gold and {xpGained} XP";
+			string resultMessage = $"For slaying {loser.Name}, {winner.Name} got {goldLooted} gold and {xpGained} XP";
 			if (winner.XP >= 10 * winner.Level)
 			{
 				winner.XP -= 10 * winner.Level;
@@ -209,7 +209,7 @@ namespace DeepState.Modules
 			}
 			embed.AddField("Result", resultMessage);
 			_rpgService.UpdateCharacter(winner);
-			KillCharacter(loser, winner, true, embed);
+			KillCharacter(loser, winner, wasCorpseAttacker, guildId, embed);
 		}
 		public int CalculateXPGain(Character murderer, Character corpse)
 		{
@@ -217,7 +217,7 @@ namespace DeepState.Modules
 			Random rand = new Random(Guid.NewGuid().GetHashCode());
 			return levelDifferenceMultiplier * rand.Next(3);
 		}
-		public int LootCharacter(Character looter, Character corpse)
+		public int LootCharacter(Character corpse)
 		{
 			int goldLooted;
 			Random random = new Random(Guid.NewGuid().GetHashCode());
@@ -233,7 +233,7 @@ namespace DeepState.Modules
 			return goldLooted;
 		}
 
-		public EmbedBuilder KillCharacter(Character corpse, Character murderer, bool wasCorpseAttacker, EmbedBuilder embed)
+		public EmbedBuilder KillCharacter(Character corpse, Character murderer, bool wasCorpseAttacker, ulong guildIdForPayout, EmbedBuilder embed)
 		{
 			int corpseGold = corpse.Gold;
 			int libcoinPayout = corpseGold * 2;
@@ -252,6 +252,7 @@ namespace DeepState.Modules
 			if (libcoinPayout > 0)
 			{
 				Context.Channel.SendMessageAsync($"{corpse.Name} had {corpseGold} in their pocket, so I've issued a {libcoinPayout} Libcoin payout.");
+				_userService.Grant(corpse.DiscordUserId, guildIdForPayout, libcoinPayout);
 			}
 			SendObituary(corpse, murderer, Context.Guild);
 			_rpgService.KillCharacter(corpse);
