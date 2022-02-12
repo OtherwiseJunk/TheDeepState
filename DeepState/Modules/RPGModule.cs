@@ -215,19 +215,19 @@ namespace DeepState.Modules
 		{
 			int levelDifferenceMultiplier = (Math.Abs(murderer.Level - corpse.Level) * 2) + 1;
 			Random rand = new Random(Guid.NewGuid().GetHashCode());
-			return levelDifferenceMultiplier * rand.Next(3);
+			return levelDifferenceMultiplier * rand.Next(1,5);
 		}
 		public int LootCharacter(Character corpse)
 		{
 			int goldLooted;
 			Random random = new Random(Guid.NewGuid().GetHashCode());
-			if(corpse.Gold == 0)
+			if(corpse.Gold <= 1)
 			{
-				goldLooted = random.Next(4);
+				goldLooted = random.Next(1, 4);
 			}
 			else
 			{
-				goldLooted = random.Next(corpse.Gold);
+				goldLooted = random.Next(1, corpse.Gold);
 			}
 
 			return goldLooted;

@@ -7,7 +7,7 @@
         "DOSECRET": "W9lgTu9+PewCj6U8EojryLYNdd0GsnVK+KY3s1NfXis",
         "DOBUCKET": "cacheblasters",
         "DATABASE": "Server=134.122.123.207;Database=DEEPSTATE;User Id=sa;Password=ASecureP4ssw0rd!",
-        "DOURL": "nyc3.digitaloceanspaces.com"
+        "DOURL": "https://nyc3.digitaloceanspaces.com"
       }
     },
     "Docker": {
