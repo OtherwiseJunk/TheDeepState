@@ -4,10 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DeepState.Data.Models
+namespace DeepState.Data.Models.RPGModels
 {
 	public class EquipableItem : Item
 	{
+		public int ItemID { get; set; }
+		public string Name { get; set; }
+		public string Description { get; set; }
+		public int Price { get; set; }
 		EquipmentSlot Slot { get; set; }
 	}
 

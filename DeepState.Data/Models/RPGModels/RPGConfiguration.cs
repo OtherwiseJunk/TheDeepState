@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DeepState.Data.Models
+namespace DeepState.Data.Models.RPGModels
 {
 	public class RPGConfiguration
 	{

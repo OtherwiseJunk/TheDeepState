@@ -1,10 +1,8 @@
 ﻿using DartsDiscordBots.Utilities;
 using DeepState.Data.Context;
-using DeepState.Data.Models;
-using DeepState.Models;
+using DeepState.Data.Models.RPGModels;
 using Discord;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,29 +16,20 @@ namespace DeepState.Data.Services
 		{
 			_contextFactory = contextFactory;
 		}
-		public Character CreateNewCharacter(IGuildUser user, string avatarUrl)
+
+		#region Configuration
+		public List<RPGConfiguration> GetConfigurations()
 		{
 			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
-				Character newCharacter = new Character(user.Id, avatarUrl);
-				context.Characters.Add(newCharacter);
-				context.SaveChanges();
-				return newCharacter;
-			}
-		}
-
-		public List<RPGConfiguration> GetConfigurations()
-		{
-			using(RPGContext context = _contextFactory.CreateDbContext())
-			{
 				return context.RPGConfigs.ToList();
-				
+
 			}
 		}
 
 		public RPGConfiguration GetGuildConfiguration(ulong guildId)
 		{
-			using(RPGContext context = _contextFactory.CreateDbContext())
+			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
 				return context.RPGConfigs.FirstOrDefault(config => config.DiscordGuildId == guildId);
 			}
@@ -67,7 +56,7 @@ namespace DeepState.Data.Services
 		public void SetRPGObituaryChannel(ulong guildId, ulong channelId)
 		{
 			RPGConfiguration config = GetGuildConfiguration(guildId);
-			if(config == null)
+			if (config == null)
 			{
 				CreateRPGConfiguration(new RPGConfiguration { DiscordGuildId = guildId, ObituaryChannelId = channelId });
 			}
@@ -78,22 +67,42 @@ namespace DeepState.Data.Services
 			}
 		}
 
-		public Character GetCharacter(IGuildUser user)
-		{
-			using (RPGContext context = _contextFactory.CreateDbContext())
-			{
-				return context.Characters.FirstOrDefault(c => c.DiscordUserId == user.Id);
-			}
-		}
+		#endregion
 
+		#region Get
+		public Item GetItem(Character character, int itemId)
+		{
+			return character.Items.FirstOrDefault(i => i.ItemID == itemId);
+		}
 		public List<Character> GetPVPCharacters()
 		{
 			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
-				return context.Characters.AsQueryable().Where(c => c.PvPFlagged).ToList();
+				return context.Characters.Include(c => c.Items).AsQueryable().Where(c => c.PvPFlagged).ToList();
 			}
 		}
-
+		public Character GetCharacter(IGuildUser user)
+		{
+			using (RPGContext context = _contextFactory.CreateDbContext())
+			{
+				return context.Characters.Include(c => c.Items).FirstOrDefault(c => c.DiscordUserId == user.Id);
+			}
+		}
+		public Character GetFighter(string characterName)
+		{
+			return GetPVPCharacters().FirstOrDefault(c => c.Name.ToLower() == characterName.ToLower());
+		}
+		#endregion
+		public Character CreateNewCharacter(IGuildUser user, string avatarUrl)
+		{
+			using (RPGContext context = _contextFactory.CreateDbContext())
+			{
+				Character newCharacter = new Character(user.Id, avatarUrl);
+				context.Characters.Add(newCharacter);
+				context.SaveChanges();
+				return newCharacter;
+			}
+		}
 		public void ToggleCharacterPvPFlag(IGuildUser user)
 		{
 			using (RPGContext context = _contextFactory.CreateDbContext())
@@ -104,7 +113,6 @@ namespace DeepState.Data.Services
 				context.SaveChanges();
 			}
 		}
-
 		public void KillCharacter(Character corpse)
 		{
 			using (RPGContext context = _contextFactory.CreateDbContext())
@@ -114,12 +122,6 @@ namespace DeepState.Data.Services
 
 			}
 		}
-
-		public Character GetFighter(string characterName)
-		{
-			return GetPVPCharacters().FirstOrDefault(c => c.Name.ToLower() == characterName.ToLower());
-		}
-
 		public CombatStats Fight(Character attacker, Character defender)
 		{
 			Dice d9 = new(9);
@@ -139,7 +141,19 @@ namespace DeepState.Data.Services
 
 			return stats;
 		}
-
+		public void UseItem(Character character, ConsumableItem item, ITextChannel channel)
+		{
+			item.Use(character, channel);
+			if(item.Uses <= 0)
+			{
+				character.Items.Remove(item);
+			}
+			UpdateCharacter(character);
+		}
+		public bool IsItemConsumable(Item item)
+		{
+			return item as ConsumableItem != null;
+		}
 		public CombatStats SingleAttack(CombatStats stats, Character attacker, Character defender, bool attackerInitiatedCombat)
 		{
 			Dice d9 = new(9);
@@ -177,11 +191,20 @@ namespace DeepState.Data.Services
 
 			return stats;
 		}
+		public void UpdateCharacter(Character character)
+		{
+			using (RPGContext context = _contextFactory.CreateDbContext())
+			{
+				context.Entry(character).State = EntityState.Modified;
+				context.SaveChanges();
+			}
+		}
 
+		#region Embed Builders
 		public Embed BuildCharacterEmbed(Character character)
 		{
 			EmbedBuilder builder = new EmbedBuilder();
-			builder.ThumbnailUrl = character.AvatarUrl;		
+			builder.ThumbnailUrl = character.AvatarUrl;
 			builder.AddField("Name", character.Name);
 			builder.AddField("Level", character.Level);
 			builder.AddField("Power", character.Power);
@@ -194,25 +217,18 @@ namespace DeepState.Data.Services
 
 			return builder.Build();
 		}
-
-		public void UpdateCharacter(Character character)
-		{
-			using(RPGContext context = _contextFactory.CreateDbContext())
-			{
-				context.Entry(character).State = EntityState.Modified;
-				context.SaveChanges();
-			}
-		}
 		public Embed BuildPvPListEmbed(List<Character> characters)
 		{
 			EmbedBuilder builder = new EmbedBuilder();
 			builder.Title = "People who aren't $&#!ing cowards";
-			foreach(Character character in characters.Where(c => c.PvPFlagged))
-			{				
+			foreach (Character character in characters.Where(c => c.PvPFlagged))
+			{
 				builder.AddField(character.Name, $"Level {character.Level} character");
 			}
 
 			return builder.Build();
 		}
+		#endregion
+
 	}
 }

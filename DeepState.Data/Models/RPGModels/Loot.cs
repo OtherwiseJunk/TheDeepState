@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace DeepState.Data.Models.RPGModels
 {
-	public class Item
+	public class Loot
 	{
-		public int ItemID { get; set; }
-		public string Name { get; set; }
-		public string Description { get; set; }
-		public int Price { get; set; }
+		public Loot()
+		{
+			items = new();
+		}
+		public int Gold;
+		public List<Item> items;
 	}
 }

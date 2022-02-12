@@ -1,20 +1,17 @@
 ﻿using DartsDiscordBots.Utilities;
 using DeepState.Data.Constants;
-using DeepState.Data.Models;
+using DeepState.Data.Models.RPGModels;
 using DeepState.Data.Services;
-using DeepState.Models;
 using DeepState.Modules.Preconditions;
 using DeepState.Service;
 using Discord;
 using Discord.Commands;
-using SkiaSharp;
 using Svg;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DeepState.Modules
@@ -41,7 +38,7 @@ namespace DeepState.Modules
 			{
 				_rpgService = rpgService;
 			}
-				[Command("obituary"), Alias("obit")]
+			[Command("obituary"), Alias("obit")]
 			public async Task ConfigureObituariesChannel()
 			{
 				_rpgService.SetRPGObituaryChannel(Context.Guild.Id, Context.Channel.Id);
@@ -115,7 +112,7 @@ namespace DeepState.Modules
 		public async Task TogglePvPStatus()
 		{
 			MessageReference msgReference = new MessageReference(Context.Message.Id);
-			_rpgService.ToggleCharacterPvPFlag((IGuildUser) Context.User);
+			_rpgService.ToggleCharacterPvPFlag((IGuildUser)Context.User);
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.User);
 			if (character.PvPFlagged)
 			{
@@ -127,7 +124,7 @@ namespace DeepState.Modules
 			}
 		}
 
-		[Command("pvplist"), Alias("saturdaynight","goodfites","fightclub","flist", "fc", "fl")]
+		[Command("pvplist"), Alias("saturdaynight", "goodfites", "fightclub", "flist", "fc", "fl")]
 		[Summary("View a list of characters down to punch people to death. Or maybe get punched to death, yanno.")]
 		public async Task ShowPVPEnabledFighters()
 		{
@@ -136,12 +133,12 @@ namespace DeepState.Modules
 			await Context.Channel.SendMessageAsync(embed: _rpgService.BuildPvPListEmbed(pvpCharacters), messageReference: msgReference);
 		}
 
-		[Command("challenge"), Alias("fight","chal", "fite")]
+		[Command("challenge"), Alias("fight", "chal", "fite")]
 		[Summary("Fight someone who is PvP flagged. You have to be PvP flagged too.")]
-		public async Task ChallengeCharacter([Remainder, Summary("The name of the character you want to fight. They might be PvP Flagged")]string target="")
+		public async Task ChallengeCharacter([Remainder, Summary("The name of the character you want to fight. They might be PvP Flagged")] string target = "")
 		{
 			MessageReference msgReference = new MessageReference(Context.Message.Id);
-			Character attacker = _rpgService.GetCharacter((IGuildUser) Context.Message.Author);
+			Character attacker = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
 			Character defender;
 			if (target == "")
 			{
@@ -193,14 +190,76 @@ namespace DeepState.Modules
 			}
 		}
 
+		[Command("items"), Alias("i")]
+		public async Task GetCharacterItems(){
+			Character character = _rpgService.GetCharacter((IGuildUser) Context.Message.Author);
+			MessageReference msgReference = new MessageReference(Context.Message.Id);
+			if (character == null)
+			{
+				await Context.Channel.SendMessageAsync("You don't have a character, so they don't have items you see.", messageReference: msgReference);
+				return;
+			}
+
+			if(character.Items.Count > 0)
+			{
+				EmbedBuilder embed = new();
+				embed.WithTitle($"{character.Name}'s Items");
+				foreach(Item item in character.Items)
+				{
+					embed.AddField($"{item.ItemID}. {item.Name}", item.Description);
+				}
+			}
+			else
+			{
+				await Context.Channel.SendMessageAsync("Ok that's easy. You have none.");
+			}
+		}
+
+		[Command("use"), Alias("u")]
+		public async Task UseItem([Summary("The id of the item to get, from >pvp items list.")]int itemId)
+		{
+			MessageReference msgReference = new MessageReference(Context.Message.Id);
+			Character character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
+			if (character == null)
+			{
+				await Context.Channel.SendMessageAsync("You don't have a character, so they don't have items you see.", messageReference: msgReference);
+				return;
+			}
+
+			Item item = _rpgService.GetItem(character, itemId);
+			if(item == null)
+			{
+				await Context.Channel.SendMessageAsync($"Sorry, I didn't see item {itemId} in your list.", messageReference: msgReference);
+				return;
+			}
+
+			if (_rpgService.IsItemConsumable(item))
+			{
+				_rpgService.UseItem(character, (ConsumableItem) item, (ITextChannel) Context.Channel);
+			}
+			else
+			{
+				await Context.Channel.SendMessageAsync($"Sorry, {item.Name} is not a consumable item. Maybe you need to `>rpg equip` it?", messageReference: msgReference);
+			}
+		}
+
 		public void WrapUpCombat(Character winner, Character loser, bool wasCorpseAttacker, ulong guildId, EmbedBuilder embed)
 		{
 			winner.PlayersMurdered++;
-			int goldLooted = LootCharacter(loser);
-			winner.Gold += goldLooted;
+			Loot loot = LootCharacter(loser);
+			winner.Gold += loot.Gold;
 			int xpGained = CalculateXPGain(winner, loser);
 			winner.XP += xpGained;
-			string resultMessage = $"For slaying {loser.Name}, {winner.Name} got {goldLooted} gold and {xpGained} XP";
+			string resultMessage;
+			if (loot.items.Count > 0)
+			{
+				winner.Items.AddRange(loot.items);
+				resultMessage = $"For slaying {loser.Name}, {winner.Name} got {loot.Gold} gold and {xpGained} XP. They also found {loot.items.Count} items!";
+			}
+			else
+			{
+				resultMessage = $"For slaying {loser.Name}, {winner.Name} got {loot.Gold} gold and {xpGained} XP";
+			}
 			if (winner.XP >= 10 * winner.Level)
 			{
 				winner.XP -= 10 * winner.Level;
@@ -217,20 +276,38 @@ namespace DeepState.Modules
 			Random rand = new Random(Guid.NewGuid().GetHashCode());
 			return levelDifferenceMultiplier * rand.Next(1,5);
 		}
-		public int LootCharacter(Character corpse)
+		public Loot LootCharacter(Character corpse)
 		{
-			int goldLooted;
+			Loot loot = new();
 			Random random = new Random(Guid.NewGuid().GetHashCode());
 			if(corpse.Gold <= 1)
 			{
-				goldLooted = random.Next(1, 4);
+				loot.Gold = random.Next(1, 4);
 			}
 			else
 			{
-				goldLooted = random.Next(1, corpse.Gold);
+				loot.Gold = random.Next(1, corpse.Gold);
 			}
 
-			return goldLooted;
+			if(corpse.Items.Count > 0)
+			{
+				foreach(Item item in corpse.Items)
+				{
+					if (new Dice(10).Roll() > 2)
+					{
+						loot.items.Add(item);
+					}
+				}	
+			}
+			else
+			{
+				if(new Dice(10).Roll() > 8)
+				{
+					loot.items.Add(RPGConstants.StrangeMeat);
+				}
+			}
+
+			return loot;
 		}
 
 		public EmbedBuilder KillCharacter(Character corpse, Character murderer, bool wasCorpseAttacker, ulong guildIdForPayout, EmbedBuilder embed)

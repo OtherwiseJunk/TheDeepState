@@ -1,9 +1,6 @@
-﻿using DeepState.Data.Models;
-using System;
+﻿using DeepState.Data.Models.RPGModels;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace DeepState.Data.Constants
 {
@@ -194,21 +191,23 @@ namespace DeepState.Data.Constants
 		};
 
 		#region Items
-		public static Item StrangeMeat = new HealingPotion
+		public static Item StrangeMeat = new HealingItem
 		{
 			Name = "Strange Meat",
 			Description = "Heals a character for 1 or 2 points of health. Smells a bit... Human-y.",
 			Uses = 1,
 			HealingDiceSize = 2,
-			Price = 0
+			Price = 0,
+			ConsumeMessage = "{0} fears no strange meat! They gobble it down and heals for {1} hitpoints! Could use more seasoning."
 		};
-		public static Item SmallHealingPotion = new HealingPotion
+		public static Item SmallHealingPotion = new HealingItem
 		{
 			Name = "Small Healing Potion",
 			Description = "Heals a character for 1 to 6 points of health. Smells and tastes awful, but you can't argue with the results..",
 			Uses = 1,
 			HealingDiceSize = 6,
-			Price = 2
+			Price = 2,
+			ConsumeMessage = "{0} quaffs the bitter potion and heals for {1} hitpoints!"
 		};
 		#endregion
 	}
