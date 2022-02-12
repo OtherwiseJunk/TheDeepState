@@ -25,6 +25,7 @@ namespace DeepState.Data.Models
 		public string AvatarUrl { get; set; }
 		public int PlayersMurdered { get; set; }
 		public bool PvPFlagged { get; set; }
+		public List<Item> Items { get; set; }
 
 		public Character()
 		{
@@ -54,6 +55,9 @@ namespace DeepState.Data.Models
 			Power += levelUpStats[0];
 			Mobility += levelUpStats[1];
 			Fortitude += levelUpStats[2];
+			int newHitpoints = new Dice(9).Roll() + Fortitude;
+			MaximumHitpoints += newHitpoints;
+			Hitpoints += newHitpoints;
 			Level++;
 			XP = 0;
 		}

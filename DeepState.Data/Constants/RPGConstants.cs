@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DeepState.Data.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -191,5 +192,24 @@ namespace DeepState.Data.Constants
 			new int[]{ 0, 0, 2 },
 			new int[]{ 2, 0, 0 },
 		};
+
+		#region Items
+		public static Item StrangeMeat = new HealingPotion
+		{
+			Name = "Strange Meat",
+			Description = "Heals a character for 1 or 2 points of health. Smells a bit... Human-y.",
+			Uses = 1,
+			HealingDiceSize = 2,
+			Price = 0
+		};
+		public static Item SmallHealingPotion = new HealingPotion
+		{
+			Name = "Small Healing Potion",
+			Description = "Heals a character for 1 to 6 points of health. Smells and tastes awful, but you can't argue with the results..",
+			Uses = 1,
+			HealingDiceSize = 6,
+			Price = 2
+		};
+		#endregion
 	}
 }
