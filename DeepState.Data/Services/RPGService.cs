@@ -200,6 +200,18 @@ namespace DeepState.Data.Services
 			}
 		}
 
+		public void LongRest()
+		{
+			using (RPGContext context = _contextFactory.CreateDbContext())
+			{
+				foreach(Character character in context.Characters)
+				{
+					character.Hitpoints = character.MaximumHitpoints;
+					UpdateCharacter(character);
+				}
+			}
+		}
+
 		#region Embed Builders
 		public Embed BuildCharacterEmbed(Character character)
 		{

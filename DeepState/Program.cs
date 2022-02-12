@@ -51,6 +51,7 @@ namespace DeepState
 			JobManager.Initialize();
 			//We want this to run at 8 AM ET, but it looks like the host is GMT, so we need to set this to 12
 			JobManager.AddJob(() => HungerGameUtilities.DailyEvent((HungerGamesService)_services.GetService(typeof(HungerGamesService)), (UserRecordsService)_services.GetService(typeof(UserRecordsService)), _client), s => s.ToRunEvery(1).Days().At(8, 0));
+			JobManager.AddJob(() => ((RPGService)_services.GetService(typeof(RPGService))).LongRest(), s => s.ToRunEvery(1).Days().At(8, 0));
 		}
 		public static void Main(string[] args)
 	=> new Program().MainAsync().GetAwaiter().GetResult();
