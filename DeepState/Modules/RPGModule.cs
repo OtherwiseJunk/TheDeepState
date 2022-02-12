@@ -191,6 +191,7 @@ namespace DeepState.Modules
 		}
 
 		[Command("items"), Alias("i")]
+		[Summary("List all your character's items")]
 		public async Task GetCharacterItems(){
 			Character character = _rpgService.GetCharacter((IGuildUser) Context.Message.Author);
 			MessageReference msgReference = new MessageReference(Context.Message.Id);
@@ -216,7 +217,8 @@ namespace DeepState.Modules
 		}
 
 		[Command("use"), Alias("u")]
-		public async Task UseItem([Summary("The id of the item to get, from >pvp items list.")]int itemId)
+		[Summary("Consume an item, if possible. itemID value can be retireved from the `>pvp items` list.")]
+		public async Task UseItem([Summary("The id of the item to get, from `>pvp items` list.")]int itemId)
 		{
 			MessageReference msgReference = new MessageReference(Context.Message.Id);
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
