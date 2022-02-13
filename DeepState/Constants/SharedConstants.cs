@@ -58,8 +58,7 @@ namespace DeepState.Constants
 		#region User Id Lists
 		public static List<ulong> KnownSocks = new List<ulong>
 		{
-			883895808238432346,
-			880239307607130223
+			883895808238432346			
 		};
 		#endregion
 
