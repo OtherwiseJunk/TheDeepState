@@ -72,6 +72,13 @@ namespace DeepState.Modules
 			await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/855227586212134922/937769372406132756/RPReplay_Final1643652007.mov");
 		}
 
+		[Command("2spicy"), Alias("tummytroubles")]
+		[Summary("Anton has a weak stomache.")]
+		public async Task TummyTroubles()
+		{
+			await Context.Channel.SendMessageAsync("https://media.discordapp.net/attachments/701194133074608198/923110430732324914/album_2021-12-22_00-08-55.gif");
+		}
+
 		[Command("walkingdad"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 })]
 		[Summary("Check in on the server's favorite dad!")]
 		public async Task WalkingDad()
