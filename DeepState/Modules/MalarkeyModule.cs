@@ -65,7 +65,7 @@ namespace DeepState.Modules
 			await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/745024703365644320/840383340790939658/theweekend.mp4");
 		}
 
-		[Command("stupidsonofabitch"),Alias("ssoab")]
+		[Command("stupidsonofabitch"),Alias("ssoab","sob","ssob")]
 		[Summary("You're a stupid son of a bitch.")]
 		public async Task StupidSonOfABitch()
 		{
