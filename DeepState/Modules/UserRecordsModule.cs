@@ -136,6 +136,30 @@ namespace DeepState.Modules
 
 			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
 		}
+		[Command("statsa")]
+		[Summary("Returns economic stats for the active guild users")]
+		public async Task GetGuildEconoicStats()
+		{
+			NumberFormatInfo nfi = new CultureInfo("en-US", false).NumberFormat;
+			nfi.PercentDecimalDigits = 2;
+			EmbedBuilder embedBuilder = new EmbedBuilder();
+			embedBuilder.Title = $"{Context.Guild.Name}'s Economic Statistics";
+			LibcoinEconomicStatistics stats = _UserRecordsService.CalculateActiveEconomicStats(Context.Guild);
+			IGuildUser poorestUser = Context.Guild.GetUserAsync(stats.PoorestUser, CacheMode.AllowDownload).Result;
+			IGuildUser richestUser = Context.Guild.GetUserAsync(stats.RichestUser, CacheMode.AllowDownload).Result;
+			double richestUserBalance = _UserRecordsService.GetUserBalance(richestUser.Id, Context.Guild.Id);
+
+			embedBuilder.AddField("Total LibCoin Circulation", stats.TotalCirculation.ToString("F8"));
+			embedBuilder.AddField("Mean LibCoin Balance", stats.MeanBalance.ToString("F8"));
+			embedBuilder.AddField("Median LibCoin Balance", stats.MedianBalance.ToString("F8"));
+			embedBuilder.AddField("Richest Active User", $"{DDBUtils.GetDisplayNameForUser(richestUser)} - {(richestUserBalance / stats.TotalCirculation).ToString("P", nfi)} of libcoin.");
+			//Poor user might represent a significant smaller slice of the economy, so we're going DEEPER
+			nfi.PercentDecimalDigits = 20;
+			embedBuilder.AddField("Poorest Active User", DDBUtils.GetDisplayNameForUser(poorestUser));
+			embedBuilder.AddField("GINI Coefficient", stats.GiniCoefficient.ToString("0.###"));
+
+			_ = Context.Channel.SendMessageAsync(embed: embedBuilder.Build());
+		}
 
 		[Command("grant")]
 		[Summary("Conjures up the specified amount of libcoin and gives it to the specified user ID")]

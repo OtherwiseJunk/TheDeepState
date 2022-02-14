@@ -108,15 +108,33 @@ namespace DeepState.Data.Services
 				List<UserRecord> activeUsers = new List<UserRecord>();
 				foreach (UserRecord record in context.UserRecords.AsQueryable().Where(ur => ur.DiscordGuildId == guildId))
 				{
-					if(record.LastTimePosted != defaultDate && DateTime.Now.Subtract(record.LastTimePosted).TotalDays <= 14)
+					if (record.LastTimePosted != defaultDate && DateTime.Now.Subtract(record.LastTimePosted).TotalDays <= 14)
 					{
 						activeUsers.Add(record);
 					}
 				}
 				return PagingUtilities.GetPagedList<UserRecord>(activeUsers.OrderByDescending(ur => ur.LastTimePosted).ToList(), out succesfulPage, page);
-			}	
+			}
 		}
-		public List<UserRecord> GetGuildUserRecords(ulong guildId){
+		public List<UserRecord> GetActiveUserRecords(ulong guildId)
+		{
+			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
+			{
+				DateTime defaultDate = new DateTime(0001, 1, 1, 0, 0, 0);
+				List<UserRecord> activeUsers = new List<UserRecord>();
+				foreach (UserRecord record in context.UserRecords.AsQueryable().Where(ur => ur.DiscordGuildId == guildId))
+				{
+					if (record.LastTimePosted != defaultDate && DateTime.Now.Subtract(record.LastTimePosted).TotalDays <= 14)
+					{
+						activeUsers.Add(record);
+					}
+				}
+				return activeUsers;
+			}
+		}
+
+		public List<UserRecord> GetGuildUserRecords(ulong guildId)
+		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
 				return context.UserRecords.AsQueryable().Where(ur => ur.DiscordGuildId == guildId).ToList();
@@ -126,6 +144,27 @@ namespace DeepState.Data.Services
 		{
 			ulong guildId = guild.Id;
 			List<UserRecord> guildRecords = GetGuildUserRecords(guildId);
+			double totalCirculation = CalculateTotalCirculation(guildRecords);
+			double meanBalance = guildRecords.Average(ur => ur.LibcraftCoinBalance);
+			double medianBalance = guildRecords.Select(ur => ur.LibcraftCoinBalance).Median();
+			ulong poorestUser = FindPoorestActiveUserId(guild, guildRecords);
+			ulong richestUser = FindRichestActiveUserId(guild, guildRecords);
+			double giniCoeffiecient = CalculateGiniCoefficient(guildRecords.Select(ur => ur.LibcraftCoinBalance).ToList());
+
+			return new LibcoinEconomicStatistics
+			{
+				TotalCirculation = totalCirculation,
+				MeanBalance = meanBalance,
+				MedianBalance = medianBalance,
+				PoorestUser = poorestUser,
+				RichestUser = richestUser,
+				GiniCoefficient = giniCoeffiecient
+			};
+		}
+		public LibcoinEconomicStatistics CalculateActiveEconomicStats(IGuild guild)
+		{
+			ulong guildId = guild.Id;
+			List<UserRecord> guildRecords = GetActiveUserRecords(guildId);
 			double totalCirculation = CalculateTotalCirculation(guildRecords);
 			double meanBalance = guildRecords.Average(ur => ur.LibcraftCoinBalance);
 			double medianBalance = guildRecords.Select(ur => ur.LibcraftCoinBalance).Median();
@@ -201,7 +240,7 @@ namespace DeepState.Data.Services
 				UserRecord user = context.UserRecords.FirstOrDefault(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId);
 				if (user != null)
 				{
-					if(user.LibcraftCoinBalance >= amount)
+					if (user.LibcraftCoinBalance >= amount)
 					{
 						user.LibcraftCoinBalance -= amount;
 					}
