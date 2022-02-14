@@ -274,9 +274,9 @@ namespace DeepState.Modules
 		}
 		public int CalculateXPGain(Character murderer, Character corpse)
 		{
-			int levelDifferenceMultiplier = (Math.Abs(murderer.Level - corpse.Level) * 2) + 1;
+			double levelDifferenceMultiplier = corpse.Level / murderer.Level;
 			Random rand = new Random(Guid.NewGuid().GetHashCode());
-			return levelDifferenceMultiplier * rand.Next(1,5);
+			return Convert.ToInt32(Math.Floor(levelDifferenceMultiplier * rand.Next(1,5)));
 		}
 		public Loot LootCharacter(Character corpse)
 		{
