@@ -210,6 +210,14 @@ namespace DeepState.Data.Services
 				context.SaveChanges();
 			}
 		}
+		public void AddItem(Item item)
+		{
+			using (RPGContext context = _contextFactory.CreateDbContext())
+			{
+				context.Items.Add(item);
+				context.SaveChanges();
+			}
+		}
 
 		public void LongRest()
 		{

@@ -257,6 +257,7 @@ namespace DeepState.Modules
 				item.character = character;
 				character.Items.Add(item);
 			}
+			character.Items.AddRange(loot.items);
 			_rpgService.UpdateCharacter(character);
 		}
 
@@ -275,6 +276,7 @@ namespace DeepState.Modules
 					item.character = winner;
 					winner.Items.Add(item);
 				}
+				winner.Items.AddRange(loot.items);
 				resultMessage = $"For slaying {loser.Name}, {winner.Name} got {loot.Gold} gold and {xpGained} XP. They also found {loot.items.Count} items!";
 			}
 			else
