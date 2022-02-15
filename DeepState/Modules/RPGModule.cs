@@ -257,7 +257,6 @@ namespace DeepState.Modules
 				item.character = character;
 				character.Items.Add(item);
 			}
-			character.Items.AddRange(loot.items);
 			_rpgService.UpdateCharacter(character);
 		}
 
