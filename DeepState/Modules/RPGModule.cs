@@ -271,7 +271,11 @@ namespace DeepState.Modules
 			string resultMessage;
 			if (loot.items.Count > 0)
 			{
-				winner.Items.AddRange(loot.items);
+				foreach(Item item in loot.items)
+				{
+					item.character = winner;
+					winner.Items.Add(item);
+				}
 				resultMessage = $"For slaying {loser.Name}, {winner.Name} got {loot.Gold} gold and {xpGained} XP. They also found {loot.items.Count} items!";
 			}
 			else
