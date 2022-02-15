@@ -203,12 +203,13 @@ namespace DeepState.Modules
 
 			if(character.Items.Count > 0)
 			{
-				EmbedBuilder embed = new();
+				EmbedBuilder embed = new EmbedBuilder();
 				embed.WithTitle($"{character.Name}'s Items");
 				foreach(Item item in character.Items)
 				{
 					embed.AddField($"{item.ItemID}. {item.Name}", item.Description);
 				}
+				await Context.Channel.SendMessageAsync(embed: embed.Build());
 			}
 			else
 			{
@@ -218,7 +219,7 @@ namespace DeepState.Modules
 
 		[Command("use"), Alias("u")]
 		[Summary("Consume an item, if possible. itemID value can be retireved from the `>pvp items` list.")]
-		public async Task UseItem([Summary("The id of the item to get, from `>pvp items` list.")]int itemId)
+		public async Task UseItem([Summary("The id of the item to get, from `>pvp items` list.")] int itemId)
 		{
 			MessageReference msgReference = new MessageReference(Context.Message.Id);
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
@@ -229,7 +230,7 @@ namespace DeepState.Modules
 			}
 
 			Item item = _rpgService.GetItem(character, itemId);
-			if(item == null)
+			if (item == null)
 			{
 				await Context.Channel.SendMessageAsync($"Sorry, I didn't see item {itemId} in your list.", messageReference: msgReference);
 				return;
@@ -237,12 +238,27 @@ namespace DeepState.Modules
 
 			if (_rpgService.IsItemConsumable(item))
 			{
-				_rpgService.UseItem(character, (ConsumableItem) item, (ITextChannel) Context.Channel);
+				_rpgService.UseItem(character, (ConsumableItem)item, (ITextChannel)Context.Channel);
 			}
 			else
 			{
 				await Context.Channel.SendMessageAsync($"Sorry, {item.Name} is not a consumable item. Maybe you need to `>rpg equip` it?", messageReference: msgReference);
 			}
+		}
+
+		[Command("loot")]
+		[RequireOwner()]
+		public async Task lootTest()
+		{
+			Character character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
+			Loot loot = new Loot { items = new List<Item> { RPGConstants.StrangeMeat } };
+			foreach(Item item in loot.items)
+			{
+				item.character = character;
+				character.Items.Add(item);
+			}
+			character.Items.AddRange(loot.items);
+			_rpgService.UpdateCharacter(character);
 		}
 
 		public void WrapUpCombat(Character winner, Character loser, bool wasCorpseAttacker, ulong guildId, EmbedBuilder embed)

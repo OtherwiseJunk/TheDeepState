@@ -16,6 +16,10 @@ namespace DeepState.Data.Context
 			modelBuilder.Entity<Item>()
 				.HasDiscriminator<string>("item_type")
 				.HasValue<HealingItem>("health_items");
+
+			modelBuilder.Entity<Character>()
+				.HasMany(c => c.Items)
+				.WithOne(i => i.character);
 		}
 		public DbSet<Character> Characters { get; set; }
 		public DbSet<RPGConfiguration> RPGConfigs { get; set; }

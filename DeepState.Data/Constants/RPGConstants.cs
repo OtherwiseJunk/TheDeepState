@@ -198,7 +198,7 @@ namespace DeepState.Data.Constants
 			Uses = 1,
 			HealingDiceSize = 2,
 			Price = 0,
-			ConsumeMessage = "{0} fears no strange meat! They gobble it down and heals for {1} hitpoints! Could use more seasoning."
+			ConsumeMessage = "{0} fears no strange meat! They gobble it down and heal for {1} hitpoints! Could use more seasoning."
 		};
 		public static Item SmallHealingPotion = new HealingItem
 		{
@@ -207,7 +207,7 @@ namespace DeepState.Data.Constants
 			Uses = 1,
 			HealingDiceSize = 6,
 			Price = 2,
-			ConsumeMessage = "{0} quaffs the bitter potion and heals for {1} hitpoints!"
+			ConsumeMessage = "{0} quaffs the bitter potion and heal for {1} hitpoints!"
 		};
 		#endregion
 	}

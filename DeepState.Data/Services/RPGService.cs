@@ -3,6 +3,7 @@ using DeepState.Data.Context;
 using DeepState.Data.Models.RPGModels;
 using Discord;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -146,10 +147,20 @@ namespace DeepState.Data.Services
 			item.Use(character, channel);
 			if(item.Uses <= 0)
 			{
-				character.Items.Remove(item);
+				DeleteItem(item);
 			}
 			UpdateCharacter(character);
 		}
+
+		private void DeleteItem(ConsumableItem item)
+		{
+			using(RPGContext context = _contextFactory.CreateDbContext())
+			{
+				context.Items.Remove(item);
+				context.SaveChanges();
+			}
+		}
+
 		public bool IsItemConsumable(Item item)
 		{
 			return item as ConsumableItem != null;
