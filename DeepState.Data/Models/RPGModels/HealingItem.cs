@@ -23,5 +23,19 @@ namespace DeepState.Data.Models.RPGModels
 			}
 			channel.SendMessageAsync(String.Format(ConsumeMessage, character.Name, healing));
 		}
+		public HealingItem()
+		{
+
+		}
+
+		public HealingItem(HealingItem baseItem, Character owner)
+		{
+			character = owner;
+			Name = baseItem.Name;
+			Description = baseItem.Description;
+			HealingDiceSize = baseItem.HealingDiceSize;
+			Price = baseItem.Price;
+			Uses = baseItem.Uses;
+		}
 	}
 }

@@ -254,10 +254,9 @@ namespace DeepState.Modules
 			Loot loot = new Loot { items = new List<Item> { RPGConstants.StrangeMeat } };
 			foreach(Item item in loot.items)
 			{
-				item.character = character;
-				character.Items.Add(item);
+				character.Items.Add(new HealingItem((HealingItem) item, character));
+				_rpgService.UpdateCharacter(character);
 			}
-			character.Items.AddRange(loot.items);
 			_rpgService.UpdateCharacter(character);
 		}
 
