@@ -132,6 +132,14 @@ namespace DeepState.Modules
 			List<Character> pvpCharacters = _rpgService.GetPVPCharacters();
 			await Context.Channel.SendMessageAsync(embed: _rpgService.BuildPvPListEmbed(pvpCharacters), messageReference: msgReference);
 		}
+		[Command("list"), Alias("l")]
+		[Summary("View a list of characters down to punch people to death. Or maybe get punched to death, yanno.")]
+		public async Task ShowAllCharacters()
+		{
+			MessageReference msgReference = new MessageReference(Context.Message.Id);
+			List<Character> characters = _rpgService.GetAllCharacters();
+			await Context.Channel.SendMessageAsync(embed: _rpgService.BuildCharacterList(characters, Context.Guild), messageReference: msgReference);
+		}
 
 		[Command("challenge"), Alias("fight", "chal", "fite")]
 		[Summary("Fight someone who is PvP flagged. You have to be PvP flagged too.")]

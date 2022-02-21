@@ -145,7 +145,7 @@ namespace DeepState.Data.Services
 		public void UseItem(Character character, HealingItem item, ITextChannel channel)
 		{
 			item.Use(character, channel);
-			if(item.Uses <= 0)
+			if (item.Uses <= 0)
 			{
 				DeleteItem(item);
 			}
@@ -154,7 +154,7 @@ namespace DeepState.Data.Services
 
 		private void DeleteItem(HealingItem item)
 		{
-			using(RPGContext context = _contextFactory.CreateDbContext())
+			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
 				context.Items.Remove(item);
 				context.SaveChanges();
@@ -215,7 +215,7 @@ namespace DeepState.Data.Services
 			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
 				Character character = context.Characters.Include(c => c.Items).First(c => c.DiscordUserId == discordUserId);
-				foreach(HealingItem item in items)
+				foreach (HealingItem item in items)
 				{
 					HealingItem existingItem = character.Items.FirstOrDefault(i => i.Name == item.Name);
 					if (existingItem != null)
@@ -231,11 +231,19 @@ namespace DeepState.Data.Services
 			}
 		}
 
+		public List<Character> GetAllCharacters()
+		{
+			using (RPGContext context = _contextFactory.CreateDbContext())
+			{
+				return context.Characters.ToList();
+			}
+		}
+
 		public void LongRest()
 		{
 			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
-				foreach(Character character in context.Characters)
+				foreach (Character character in context.Characters)
 				{
 					character.Hitpoints = character.MaximumHitpoints;
 					UpdateCharacter(character);
@@ -267,6 +275,20 @@ namespace DeepState.Data.Services
 			foreach (Character character in characters.Where(c => c.PvPFlagged))
 			{
 				builder.AddField(character.Name, $"Level {character.Level} character");
+			}
+
+			return builder.Build();
+		}
+
+		public Embed BuildCharacterList(List<Character> characters, IGuild guild)
+		{
+			EmbedBuilder builder = new EmbedBuilder();
+			builder.Title = "People who may or may not be $&#!ing cowards";
+			foreach (Character character in characters)
+			{
+				string cowardiceString = character.PvPFlagged ? "Brave" : "Cowardly";
+				string playerName = BotUtilities.GetDisplayNameForUser(guild.GetUserAsync(character.DiscordUserId).Result);
+				builder.AddField(character.Name, $"Level {character.Level} {cowardiceString} character played by {playerName}");
 			}
 
 			return builder.Build();
