@@ -192,8 +192,9 @@ namespace DeepState.Modules
 
 		[Command("items"), Alias("i")]
 		[Summary("List all your character's items")]
-		public async Task GetCharacterItems(){
-			Character character = _rpgService.GetCharacter((IGuildUser) Context.Message.Author);
+		public async Task GetCharacterItems()
+		{
+			Character character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
 			MessageReference msgReference = new MessageReference(Context.Message.Id);
 			if (character == null)
 			{
@@ -201,11 +202,11 @@ namespace DeepState.Modules
 				return;
 			}
 
-			if(character.Items.Count > 0)
+			if (character.Items.Count > 0)
 			{
 				EmbedBuilder embed = new EmbedBuilder();
 				embed.WithTitle($"{character.Name}'s Items");
-				foreach(Item item in character.Items)
+				foreach (Item item in character.Items)
 				{
 					embed.AddField($"{item.ItemID}. {item.Name}", item.Description);
 				}
@@ -238,26 +239,12 @@ namespace DeepState.Modules
 
 			if (_rpgService.IsItemConsumable(item))
 			{
-				_rpgService.UseItem(character, (ConsumableItem)item, (ITextChannel)Context.Channel);
+				_rpgService.UseItem(character, (HealingItem)item, (ITextChannel)Context.Channel);
 			}
 			else
 			{
 				await Context.Channel.SendMessageAsync($"Sorry, {item.Name} is not a consumable item. Maybe you need to `>rpg equip` it?", messageReference: msgReference);
 			}
-		}
-
-		[Command("loot")]
-		[RequireOwner()]
-		public async Task lootTest()
-		{
-			Character character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
-			Loot loot = new Loot { items = new List<Item> { RPGConstants.StrangeMeat } };
-			foreach(Item item in loot.items)
-			{
-				character.Items.Add(new HealingItem((HealingItem) item, character));
-				_rpgService.UpdateCharacter(character);
-			}
-			_rpgService.UpdateCharacter(character);
 		}
 
 		public void WrapUpCombat(Character winner, Character loser, bool wasCorpseAttacker, ulong guildId, EmbedBuilder embed)
@@ -270,12 +257,7 @@ namespace DeepState.Modules
 			string resultMessage;
 			if (loot.items.Count > 0)
 			{
-				foreach(Item item in loot.items)
-				{
-					item.character = winner;
-					winner.Items.Add(item);
-				}
-				winner.Items.AddRange(loot.items);
+				_rpgService.AddItems(winner.DiscordUserId, loot.items);
 				resultMessage = $"For slaying {loser.Name}, {winner.Name} got {loot.Gold} gold and {xpGained} XP. They also found {loot.items.Count} items!";
 			}
 			else
@@ -296,13 +278,13 @@ namespace DeepState.Modules
 		{
 			double levelDifferenceMultiplier = corpse.Level / murderer.Level;
 			Random rand = new Random(Guid.NewGuid().GetHashCode());
-			return Convert.ToInt32(Math.Floor(levelDifferenceMultiplier * rand.Next(1,5)));
+			return Convert.ToInt32(Math.Floor(levelDifferenceMultiplier * rand.Next(1, 5)));
 		}
 		public Loot LootCharacter(Character corpse)
 		{
 			Loot loot = new();
 			Random random = new Random(Guid.NewGuid().GetHashCode());
-			if(corpse.Gold <= 1)
+			if (corpse.Gold <= 1)
 			{
 				loot.Gold = random.Next(1, 4);
 			}
@@ -311,19 +293,19 @@ namespace DeepState.Modules
 				loot.Gold = random.Next(1, corpse.Gold);
 			}
 
-			if(corpse.Items.Count > 0)
+			if (corpse.Items.Count > 0)
 			{
-				foreach(Item item in corpse.Items)
+				foreach (HealingItem item in corpse.Items)
 				{
 					if (new Dice(10).Roll() > 2)
 					{
 						loot.items.Add(item);
 					}
-				}	
+				}
 			}
 			else
 			{
-				if(new Dice(10).Roll() > 8)
+				if (new Dice(10).Roll() > 8)
 				{
 					loot.items.Add(RPGConstants.StrangeMeat);
 				}
@@ -360,11 +342,11 @@ namespace DeepState.Modules
 		public void SendObituary(Character corpse, Character murderer, IGuild murderLocation)
 		{
 			List<RPGConfiguration> configs = _rpgService.GetConfigurations();
-			foreach(RPGConfiguration config in configs)
+			foreach (RPGConfiguration config in configs)
 			{
 				IGuild guild = Context.Client.GetGuildAsync(config.DiscordGuildId).Result;
 				string deathMessage = config.DiscordGuildId == murderLocation.Id ? $"{corpse.Name} was killed by {murderer.Name} in THIS VERY SERVER!" : $"{corpse.Name} was killed by {murderer.Name} in a strange unknowable land.";
-				ITextChannel channel = (ITextChannel) guild.GetChannelAsync(config.ObituaryChannelId).Result;
+				ITextChannel channel = (ITextChannel)guild.GetChannelAsync(config.ObituaryChannelId).Result;
 				EmbedBuilder embed = new EmbedBuilder();
 				embed.Title = RPGConstants.ObituaryTitles.GetRandom();
 				embed.ThumbnailUrl = murderer.AvatarUrl;
@@ -375,5 +357,5 @@ namespace DeepState.Modules
 		}
 	}
 
-	
+
 }

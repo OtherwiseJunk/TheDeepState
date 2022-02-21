@@ -25,7 +25,7 @@ namespace DeepState.Data.Models.RPGModels
 		public string AvatarUrl { get; set; }
 		public int PlayersMurdered { get; set; }
 		public bool PvPFlagged { get; set; }
-		public List<Item> Items { get; set; }
+		public List<HealingItem> Items { get; set; }
 
 		public Character()
 		{

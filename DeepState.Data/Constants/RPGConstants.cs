@@ -191,7 +191,7 @@ namespace DeepState.Data.Constants
 		};
 
 		#region Items
-		public static Item StrangeMeat = new HealingItem
+		public static HealingItem StrangeMeat = new HealingItem
 		{
 			Name = "Strange Meat",
 			Description = "Heals a character for 1 or 2 points of health. Smells a bit... Human-y.",
@@ -200,7 +200,7 @@ namespace DeepState.Data.Constants
 			Price = 0,
 			ConsumeMessage = "{0} fears no strange meat! They gobble it down and heal for {1} hitpoints! Could use more seasoning."
 		};
-		public static Item SmallHealingPotion = new HealingItem
+		public static HealingItem SmallHealingPotion = new HealingItem
 		{
 			Name = "Small Healing Potion",
 			Description = "Heals a character for 1 to 6 points of health. Smells and tastes awful, but you can't argue with the results..",

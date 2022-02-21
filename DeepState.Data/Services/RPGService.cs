@@ -142,7 +142,7 @@ namespace DeepState.Data.Services
 
 			return stats;
 		}
-		public void UseItem(Character character, ConsumableItem item, ITextChannel channel)
+		public void UseItem(Character character, HealingItem item, ITextChannel channel)
 		{
 			item.Use(character, channel);
 			if(item.Uses <= 0)
@@ -152,7 +152,7 @@ namespace DeepState.Data.Services
 			UpdateCharacter(character);
 		}
 
-		private void DeleteItem(ConsumableItem item)
+		private void DeleteItem(HealingItem item)
 		{
 			using(RPGContext context = _contextFactory.CreateDbContext())
 			{
@@ -210,11 +210,23 @@ namespace DeepState.Data.Services
 				context.SaveChanges();
 			}
 		}
-		public void AddItem(Item item)
+		public void AddItems(ulong discordUserId, List<HealingItem> items)
 		{
 			using (RPGContext context = _contextFactory.CreateDbContext())
 			{
-				context.Items.Add(item);
+				Character character = context.Characters.Include(c => c.Items).First(c => c.DiscordUserId == discordUserId);
+				foreach(HealingItem item in items)
+				{
+					HealingItem existingItem = character.Items.FirstOrDefault(i => i.Name == item.Name);
+					if (existingItem != null)
+					{
+						existingItem.Uses += item.Uses;
+					}
+					else
+					{
+						character.Items.Add(item);
+					}
+				}
 				context.SaveChanges();
 			}
 		}
