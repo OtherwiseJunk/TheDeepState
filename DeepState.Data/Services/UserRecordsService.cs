@@ -116,8 +116,9 @@ namespace DeepState.Data.Services
 				return PagingUtilities.GetPagedList<UserRecord>(activeUsers.OrderByDescending(ur => ur.LastTimePosted).ToList(), out succesfulPage, page);
 			}
 		}
-		public List<UserRecord> GetActiveUserRecords(ulong guildId)
+		public List<UserRecord> GetActiveUserRecords(IGuild guild)
 		{
+			ulong guildId = guild.Id;
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
 				DateTime defaultDate = new DateTime(0001, 1, 1, 0, 0, 0);
@@ -126,7 +127,10 @@ namespace DeepState.Data.Services
 				{
 					if (record.LastTimePosted != defaultDate && DateTime.Now.Subtract(record.LastTimePosted).TotalDays <= 14)
 					{
-						activeUsers.Add(record);
+						if(guild.GetUserAsync(record.DiscordUserId).Result != null)
+						{
+							activeUsers.Add(record);
+						}						
 					}
 				}
 				return activeUsers;
@@ -162,9 +166,8 @@ namespace DeepState.Data.Services
 			};
 		}
 		public LibcoinEconomicStatistics CalculateActiveEconomicStats(IGuild guild)
-		{
-			ulong guildId = guild.Id;
-			List<UserRecord> guildRecords = GetActiveUserRecords(guildId);
+		{			
+			List<UserRecord> guildRecords = GetActiveUserRecords(guild);
 			double totalCirculation = CalculateTotalCirculation(guildRecords);
 			double meanBalance = guildRecords.Average(ur => ur.LibcraftCoinBalance);
 			double medianBalance = guildRecords.Select(ur => ur.LibcraftCoinBalance).Median();

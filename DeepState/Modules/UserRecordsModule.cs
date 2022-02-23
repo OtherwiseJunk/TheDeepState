@@ -267,7 +267,7 @@ namespace DeepState.Modules
 		[Summary("Shows you what the distribution would look like for a >communism <amount> command.")]
 		public async Task MarxistTheory([Summary("The amount to distribute")] double amount, [Summary("Maximum amount any one user should get")] double maxDistribution = 0)
 		{
-			List<UserRecord> activeUsers = _UserRecordsService.GetActiveUserRecords(Context.Guild.Id);
+			List<UserRecord> activeUsers = _UserRecordsService.GetActiveUserRecords(Context.Guild);
 			UserRecord triggeringUserRecord = activeUsers.FirstOrDefault(u => u.DiscordUserId == Context.Message.Author.Id);
 			if (triggeringUserRecord != null)
 			{
@@ -306,7 +306,7 @@ namespace DeepState.Modules
 				await Context.Channel.SendMessageAsync($"Nuh-uh. I don't get out of the bed in the morning for at least 1 Libcoin, ya feel me? Get this weak 'Hey Deepstate, can you send {amount} lilbcoin distributed among the active users?' bullshit outta here.");
 				return;
 			}
-			List<UserRecord> activeUsers = _UserRecordsService.GetActiveUserRecords(guildId);
+			List<UserRecord> activeUsers = _UserRecordsService.GetActiveUserRecords(Context.Guild);
 			UserRecord triggeringUserRecord = activeUsers.FirstOrDefault(u => u.DiscordUserId == Context.Message.Author.Id);
 			if (triggeringUserRecord != null)
 			{
