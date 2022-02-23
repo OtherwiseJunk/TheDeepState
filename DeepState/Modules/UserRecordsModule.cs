@@ -265,7 +265,7 @@ namespace DeepState.Modules
 
 		[Command("marx"), Alias("readtheory")]
 		[Summary("Shows you what the distribution would look like for a >communism <amount> command.")]
-		public async Task MarxistTheory([Summary("The amount to distribute")] double amount, [Summary("Maximum amount any one user should get")] double maxDistribution)
+		public async Task MarxistTheory([Summary("The amount to distribute")] double amount, [Summary("Maximum amount any one user should get")] double maxDistribution = 0)
 		{
 			List<UserRecord> activeUsers = _UserRecordsService.GetActiveUserRecords(Context.Guild.Id);
 			UserRecord triggeringUserRecord = activeUsers.FirstOrDefault(u => u.DiscordUserId == Context.Message.Author.Id);
@@ -291,7 +291,7 @@ namespace DeepState.Modules
 
 		[Command("communism"), Alias("therevolution")]
 		[Summary("Shows you what the distribution would look like for a >communism <amount> command.")]
-		public async Task MarxistRevolution([Summary("The amount to distribute")] double amount, [Summary("Maximum amount any one user should get")] double maxDistribution)
+		public async Task MarxistRevolution([Summary("The amount to distribute")] double amount, [Summary("Maximum amount any one user should get")] double maxDistribution = 0)
 		{			
 			ulong senderId = Context.Message.Author.Id;
 			ulong guildId = Context.Guild.Id;
@@ -323,7 +323,7 @@ namespace DeepState.Modules
 					IGuildUser user = Context.Guild.GetUserAsync(share.User.DiscordUserId).Result;
 					_UserRecordsService.Deduct(senderId, guildId, share.ProgressiveShare);
 					_UserRecordsService.Grant(share.User.DiscordUserId, guildId, share.ProgressiveShare);
-					sb.AppendLine($"**{DDBUtils.GetDisplayNameForUser(user)}** would get **{share.ProgressiveShare}** libcoin.");
+					sb.AppendLine($"**{DDBUtils.GetDisplayNameForUser(user)}** got **{share.ProgressiveShare}** libcoin.");
 				}
 				sb.AppendLine().AppendLine($"Total sum distributed: {shares.Sum(s => s.ProgressiveShare)}");
 				_MessageReliabilityService.SendMessageToChannel(sb.ToString(), Context.Message, Environment.NewLine);

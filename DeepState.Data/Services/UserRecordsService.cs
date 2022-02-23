@@ -289,6 +289,10 @@ namespace DeepState.Data.Services
 			List<UserProgressiveShare> shares = new();
 			double[] distribution = new double[activePool.Count];
 			double totalCirculation = activePool.Sum(u => u.LibcraftCoinBalance);
+			if(maximumAmount == 0)
+			{
+				maximumAmount = amountToShare;
+			}
 			int index = 0;
 			foreach(UserRecord user in activePool.OrderByDescending(u => u.LibcraftCoinBalance))
 			{
