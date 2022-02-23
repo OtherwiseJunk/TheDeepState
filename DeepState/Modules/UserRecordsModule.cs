@@ -303,7 +303,7 @@ namespace DeepState.Modules
 			}
 			if(amount < 1)
 			{
-				await Context.Channel.SendMessageAsync($"Nuh-uh. I don't get out of the bed in the morning for at least 1 Libcoin, ya feel me? Get this week 'Hey Deepstate, can you send {amount} lilbcoin distributed among the active users?' bullshit outta here.");
+				await Context.Channel.SendMessageAsync($"Nuh-uh. I don't get out of the bed in the morning for at least 1 Libcoin, ya feel me? Get this weak 'Hey Deepstate, can you send {amount} lilbcoin distributed among the active users?' bullshit outta here.");
 				return;
 			}
 			List<UserRecord> activeUsers = _UserRecordsService.GetActiveUserRecords(guildId);
