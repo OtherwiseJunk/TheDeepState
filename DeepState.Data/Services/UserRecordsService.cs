@@ -219,6 +219,7 @@ namespace DeepState.Data.Services
 				{
 					Console.WriteLine($"Found user record! Adding {amount.ToString("F8")} libcoin to their balance of {user.LibcraftCoinBalance}...");
 					user.LibcraftCoinBalance += amount;
+					user.LibcraftCoinBalance = Math.Round(user.LibcraftCoinBalance, 8);
 					context.SaveChanges();
 					Console.WriteLine($"Success! User now has a balance of {user.LibcraftCoinBalance}");
 					return;
@@ -228,7 +229,7 @@ namespace DeepState.Data.Services
 				{
 					DiscordGuildId = guildId,
 					DiscordUserId = userId,
-					LibcraftCoinBalance = amount
+					LibcraftCoinBalance = Math.Round(amount, 8)
 				});
 				context.SaveChanges();
 			}
@@ -248,6 +249,7 @@ namespace DeepState.Data.Services
 					{
 						user.LibcraftCoinBalance = 0;
 					}
+					user.LibcraftCoinBalance = Math.Round(user.LibcraftCoinBalance, 8);
 					context.SaveChanges();
 					return true;
 				}

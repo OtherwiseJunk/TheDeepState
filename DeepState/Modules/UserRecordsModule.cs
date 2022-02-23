@@ -292,9 +292,20 @@ namespace DeepState.Modules
 		[Command("communism"), Alias("therevolution")]
 		[Summary("Shows you what the distribution would look like for a >communism <amount> command.")]
 		public async Task MarxistRevolution([Summary("The amount to distribute")] double amount, [Summary("Maximum amount any one user should get")] double maxDistribution)
-		{
+		{			
 			ulong senderId = Context.Message.Author.Id;
 			ulong guildId = Context.Guild.Id;
+			double senderBalance = _UserRecordsService.GetUserBalance(senderId, guildId);
+			if (senderBalance < amount)
+			{
+				await Context.Channel.SendMessageAsync($"Sorry, you're too poor to give out that much money, Karl. You only have {senderBalance} libcoin, how the hell would you give out {amount} libcoin?");
+				return;
+			}
+			if(amount < 1)
+			{
+				await Context.Channel.SendMessageAsync($"Nuh-uh. I don't get out of the bed in the morning for at least 1 Libcoin, ya feel me? Get this week 'Hey Deepstate, can you send {amount} lilbcoin distributed among the active users?' bullshit outta here.");
+				return;
+			}
 			List<UserRecord> activeUsers = _UserRecordsService.GetActiveUserRecords(guildId);
 			UserRecord triggeringUserRecord = activeUsers.FirstOrDefault(u => u.DiscordUserId == Context.Message.Author.Id);
 			if (triggeringUserRecord != null)
