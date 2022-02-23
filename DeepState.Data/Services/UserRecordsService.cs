@@ -281,5 +281,33 @@ namespace DeepState.Data.Services
 			}
 			return Circulation;
 		}
+
+		public List<UserProgressiveShare> CalculateProgressiveShare(List<UserRecord> activePool, double amountToShare, double maximumAmount)
+		{
+			List<UserProgressiveShare> shares = new();
+			double[] distribution = new double[activePool.Count];
+			double totalCirculation = activePool.Sum(u => u.LibcraftCoinBalance);
+			int index = 0;
+			foreach(UserRecord user in activePool.OrderByDescending(u => u.LibcraftCoinBalance))
+			{
+				distribution[index] = user.LibcraftCoinBalance / totalCirculation;
+				index++;
+			}
+			index--;
+			foreach (UserRecord user in activePool.OrderByDescending(u => u.LibcraftCoinBalance))
+			{
+				double share = Math.Round(amountToShare * distribution[index], 8);
+				share = share > maximumAmount ? maximumAmount : share;
+				shares.Add(new UserProgressiveShare { User = user, ProgressiveShare = share });
+				index--;
+			}
+
+			return shares;
+		}
+	}
+	public struct UserProgressiveShare
+	{
+		public UserRecord User;
+		public double ProgressiveShare;
 	}
 }

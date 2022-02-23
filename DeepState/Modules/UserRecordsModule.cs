@@ -1,4 +1,5 @@
-﻿using DeepState.Constants;
+﻿using DartsDiscordBots.Services.Interfaces;
+using DeepState.Constants;
 using DeepState.Data.Models;
 using DeepState.Data.Services;
 using DeepState.Modules.Preconditions;
@@ -9,6 +10,8 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
@@ -19,9 +22,11 @@ namespace DeepState.Modules
 	{
 		public int DartoshiConstant = 100000000;
 		private UserRecordsService _UserRecordsService { get; set; }
-		public UserRecordsModule(UserRecordsService service)
+		private IMessageReliabilityService _MessageReliabilityService { get; set; }
+		public UserRecordsModule(UserRecordsService service, IMessageReliabilityService messageReliabilityService)
 		{
 			_UserRecordsService = service;
+			_MessageReliabilityService = messageReliabilityService;
 		}
 
 		[Command("balance")]
@@ -205,7 +210,8 @@ namespace DeepState.Modules
 			amount = Math.Abs(amount);
 			if (user != null)
 			{
-				if (_UserRecordsService.Deduct(user.Id, Context.Guild.Id, amount)) {
+				if (_UserRecordsService.Deduct(user.Id, Context.Guild.Id, amount))
+				{
 					_ = Context.Channel.SendMessageAsync($"Ok, I've taken  {amount.ToString("F8")} libcoin from {DDBUtils.GetDisplayNameForUser(user)}. If they didn't have that much they have nothing now.");
 				}
 				else
@@ -255,6 +261,62 @@ namespace DeepState.Modules
 			{
 				_ = Context.Channel.SendMessageAsync("Sorry, it looks like you don't have a balance yet! It'll happen eventually I'm sure.");
 			}
+		}
+
+		[Command("marx"), Alias("readtheory")]
+		[Summary("Shows you what the distribution would look like for a >communism <amount> command.")]
+		public async Task MarxistTheory([Summary("The amount to distribute")] double amount, [Summary("Maximum amount any one user should get")] double maxDistribution)
+		{
+			List<UserRecord> activeUsers = _UserRecordsService.GetActiveUserRecords(Context.Guild.Id);
+			UserRecord triggeringUserRecord = activeUsers.FirstOrDefault(u => u.DiscordUserId == Context.Message.Author.Id);
+			if (triggeringUserRecord != null)
+			{
+				activeUsers.Remove(triggeringUserRecord);
+			}
+			new Thread(async () =>
+			{
+				await Context.Guild.DownloadUsersAsync();
+				List<UserProgressiveShare> shares = _UserRecordsService.CalculateProgressiveShare(activeUsers, amount, maxDistribution);
+				StringBuilder sb = new("Ok, here's how I would distribute that amount for you, in theory anyway...");
+				sb.AppendLine();
+				foreach (UserProgressiveShare share in shares.OrderByDescending(s => s.ProgressiveShare))
+				{
+					IGuildUser user = Context.Guild.GetUserAsync(share.User.DiscordUserId).Result;
+					sb.AppendLine($"**{DDBUtils.GetDisplayNameForUser(user)}** would get **{share.ProgressiveShare}** libcoin.");
+				}
+				sb.AppendLine().AppendLine($"Total sum distributed: {shares.Sum(s => s.ProgressiveShare)}");
+				_MessageReliabilityService.SendMessageToChannel(sb.ToString(), Context.Message, Environment.NewLine);
+			}).Start();
+		}
+
+		[Command("communism"), Alias("therevolution")]
+		[Summary("Shows you what the distribution would look like for a >communism <amount> command.")]
+		public async Task MarxistRevolution([Summary("The amount to distribute")] double amount, [Summary("Maximum amount any one user should get")] double maxDistribution)
+		{
+			ulong senderId = Context.Message.Author.Id;
+			ulong guildId = Context.Guild.Id;
+			List<UserRecord> activeUsers = _UserRecordsService.GetActiveUserRecords(guildId);
+			UserRecord triggeringUserRecord = activeUsers.FirstOrDefault(u => u.DiscordUserId == Context.Message.Author.Id);
+			if (triggeringUserRecord != null)
+			{
+				activeUsers.Remove(triggeringUserRecord);
+			}
+			new Thread(async () =>
+			{
+				await Context.Guild.DownloadUsersAsync();
+				List<UserProgressiveShare> shares = _UserRecordsService.CalculateProgressiveShare(activeUsers, amount, maxDistribution);
+				StringBuilder sb = new("Ok, here's how I would distribute that amount for you, in theory anyway...");
+				sb.AppendLine();
+				foreach (UserProgressiveShare share in shares.OrderByDescending(s => s.ProgressiveShare))
+				{
+					IGuildUser user = Context.Guild.GetUserAsync(share.User.DiscordUserId).Result;
+					_UserRecordsService.Deduct(senderId, guildId, share.ProgressiveShare);
+					_UserRecordsService.Grant(share.User.DiscordUserId, guildId, share.ProgressiveShare);
+					sb.AppendLine($"**{DDBUtils.GetDisplayNameForUser(user)}** would get **{share.ProgressiveShare}** libcoin.");
+				}
+				sb.AppendLine().AppendLine($"Total sum distributed: {shares.Sum(s => s.ProgressiveShare)}");
+				_MessageReliabilityService.SendMessageToChannel(sb.ToString(), Context.Message, Environment.NewLine);
+			}).Start();
 		}
 	}
 }
