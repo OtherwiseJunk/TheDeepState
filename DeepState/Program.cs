@@ -77,8 +77,6 @@ namespace DeepState
 
 			await _client.LoginAsync(TokenType.Bot, token);
 			await _client.StartAsync();
-			while (_client.Guilds.Count == 0) { }
-			await _client.DownloadUsersAsync(_client.Guilds);
 
 			new Thread( () => _ = LibcoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>() ) ).Start();
 			new Thread( () => _ = LibcoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>() ) ).Start();
@@ -156,7 +154,8 @@ namespace DeepState
 		private async Task OnMessage(SocketMessage messageParam)
 		{
 			//Don't process the command if it was a system message
-			var message = messageParam as SocketUserMessage;
+			SocketUserMessage message = messageParam as SocketUserMessage;
+			IGuild guild = ((IGuildChannel)message.Channel).Guild;
 			if (message == null) return;
 
 			if (message.Author.IsBot)
@@ -166,6 +165,7 @@ namespace DeepState
 			}
 			UserRecordsService urservice = _services.GetService<UserRecordsService>();
 			new Thread(async () => { LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
+			new Thread(async () => { OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
 
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
 			{
