@@ -57,7 +57,7 @@ namespace DeepState
 	=> new Program().MainAsync().GetAwaiter().GetResult();
 		public async Task MainAsync()
 		{
-			Console.WriteLine($"{BotProperties.InternalName} has been INITIALIZED");
+			Console.WriteLine($"DEEPSTATE has been INITIALIZED");
 
 			await InstallCommandsAsync();
 
@@ -77,6 +77,7 @@ namespace DeepState
 
 			await _client.LoginAsync(TokenType.Bot, token);
 			await _client.StartAsync();
+			while (_client.Guilds.Count == 0) { }
 			await _client.DownloadUsersAsync(_client.Guilds);
 
 			new Thread( () => _ = LibcoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>() ) ).Start();
