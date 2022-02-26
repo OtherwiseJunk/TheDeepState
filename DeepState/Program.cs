@@ -77,6 +77,7 @@ namespace DeepState
 
 			await _client.LoginAsync(TokenType.Bot, token);
 			await _client.StartAsync();
+			await _client.DownloadUsersAsync(_client.Guilds);
 
 			new Thread( () => _ = LibcoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>() ) ).Start();
 			new Thread( () => _ = LibcoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>() ) ).Start();
