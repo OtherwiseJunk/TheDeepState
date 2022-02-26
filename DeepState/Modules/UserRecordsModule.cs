@@ -84,7 +84,6 @@ namespace DeepState.Modules
 			{
 				new Thread(async () =>
 				{
-					await Context.Guild.DownloadUsersAsync();
 					Embed embed = LibcoinUtilities.BuildLeaderboardEmbed(balances, currentPage, Context.Guild);
 					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
 					msg.AddReactionAsync(new Emoji("⬅️"));
@@ -108,7 +107,6 @@ namespace DeepState.Modules
 			{
 				new Thread(async () =>
 				{
-					await Context.Guild.DownloadUsersAsync();
 					Embed embed = LibcoinUtilities.BuildActiveUserEmbed(balances, currentPage, Context.Guild);
 					IUserMessage msg = Context.Channel.SendMessageAsync(embed: embed).Result;
 					msg.AddReactionAsync(new Emoji("⬅️"));
@@ -275,7 +273,6 @@ namespace DeepState.Modules
 			}
 			new Thread(async () =>
 			{
-				await Context.Guild.DownloadUsersAsync();
 				List<UserProgressiveShare> shares = _UserRecordsService.CalculateProgressiveShare(activeUsers, amount, maxDistribution);
 				StringBuilder sb = new("Ok, here's how I would distribute that amount for you, in theory anyway...");
 				sb.AppendLine();
@@ -314,7 +311,6 @@ namespace DeepState.Modules
 			}
 			new Thread(async () =>
 			{
-				await Context.Guild.DownloadUsersAsync();
 				List<UserProgressiveShare> shares = _UserRecordsService.CalculateProgressiveShare(activeUsers, amount, maxDistribution);
 				StringBuilder sb = new("Ok, here's how I would distribute that amount for you, in theory anyway...");
 				sb.AppendLine();
