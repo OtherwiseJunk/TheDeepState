@@ -224,6 +224,7 @@ namespace DeepState.Data.Services
 					}
 					else
 					{
+						item.Character = character;
 						character.Items.Add(item);
 					}
 				}
