@@ -35,10 +35,41 @@ namespace DeepState.Data.Constants
 			"Rene",
 			"Ripley",
 			"Sam",
-			"Wren"
+			"Wren",
+			"Rodrigo",
+			"Corn",
+			"D9",
+			"Junk",
+			"Jonny",
+			"Multi",
+			"Gore",
+			"Clara",
+			"Toasted",
+			"Root",
+			"Petrichor",
+			"Liet",
+			"Nickimmy",
+			"Slazac",
+			"Gwalms",
+			"Mikkim",
+			"Reddy",
+			"Ryohu",
+			"BanMalarkey",
+			"Asticky",
+			"Nerdy",
+			"Macho",
+			"POTUS",
+			"Anton",
+			"Le Yyz",
+			"Dent",
+			"Yankee",
+			"Cute Sanity",
 		};
 		public static List<string> titles = new List<string>
 		{
+			"White",
+			"Imposter",
+			"Extremely Cute and Valid",
 			"Unknowable",
 			"Playful",
 			"Romantic",
@@ -93,7 +124,10 @@ namespace DeepState.Data.Constants
 			"Wide-Ranging",
 			"Ambiguous",
 			"Confused",
-			"Depraved"
+			"Depraved",
+			"Criminal",
+			"Perpetually Stoned",
+			"Alive"
 		};
 		public static List<string> ObituaryTitles = new List<string>
 		{
