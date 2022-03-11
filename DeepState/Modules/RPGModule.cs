@@ -296,7 +296,8 @@ namespace DeepState.Modules
 		{
 			double levelDifferenceMultiplier = corpse.Level / murderer.Level;
 			Random rand = new Random(Guid.NewGuid().GetHashCode());
-			return Convert.ToInt32(Math.Floor(levelDifferenceMultiplier * rand.Next(1,5)));
+			int xp = Convert.ToInt32(Math.Floor(levelDifferenceMultiplier * rand.Next(1,5)));
+			return xp > 0 ? xp : 1;
 		}
 		public Loot LootCharacter(Character corpse)
 		{
