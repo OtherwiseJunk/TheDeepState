@@ -13,16 +13,12 @@ namespace DeepState.Data.Context
 		}
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Entity<Item>()
-				.HasDiscriminator<string>("item_type")
-				.HasValue<HealingItem>("health_items");
-
-			modelBuilder.Entity<Character>()
-				.HasMany(c => c.Items)
-				.WithOne(i => i.character);
+			modelBuilder.Entity<HealingItem>()
+				.HasOne(i => i.Character)
+				.WithMany(c => c.Items);
 		}
 		public DbSet<Character> Characters { get; set; }
 		public DbSet<RPGConfiguration> RPGConfigs { get; set; }
-		public DbSet<Item> Items { get; set; }
+		public DbSet<HealingItem> Items { get; set; }
 	}
 }

@@ -3,14 +3,16 @@ using DeepState.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DeepState.Data.Migrations.RPG
 {
     [DbContext(typeof(RPGContext))]
-    partial class RPGContextModelSnapshot : ModelSnapshot
+    [Migration("20220221032909_removeForeignKey")]
+    partial class removeForeignKey
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +30,6 @@ namespace DeepState.Data.Migrations.RPG
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DungeonsCompleted")
-                        .HasColumnType("int");
-
                     b.Property<int>("Fortitude")
                         .HasColumnType("int");
 
@@ -39,9 +38,6 @@ namespace DeepState.Data.Migrations.RPG
 
                     b.Property<int>("Hitpoints")
                         .HasColumnType("int");
-
-                    b.Property<bool>("InADungeon")
-                        .HasColumnType("bit");
 
                     b.Property<int>("Level")
                         .HasColumnType("int");
@@ -64,9 +60,6 @@ namespace DeepState.Data.Migrations.RPG
                     b.Property<bool>("PvPFlagged")
                         .HasColumnType("bit");
 
-                    b.Property<int>("RoomsCompletedThisRun")
-                        .HasColumnType("int");
-
                     b.Property<int>("XP")
                         .HasColumnType("int");
 
@@ -75,7 +68,7 @@ namespace DeepState.Data.Migrations.RPG
                     b.ToTable("Characters");
                 });
 
-            modelBuilder.Entity("DeepState.Data.Models.RPGModels.HealingItem", b =>
+            modelBuilder.Entity("DeepState.Data.Models.RPGModels.Item", b =>
                 {
                     b.Property<int>("ItemID")
                         .ValueGeneratedOnAdd()
@@ -84,9 +77,6 @@ namespace DeepState.Data.Migrations.RPG
 
                     b.Property<decimal?>("CharacterDiscordUserId")
                         .HasColumnType("decimal(20,0)");
-
-                    b.Property<string>("ConsumeMessage")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -97,14 +87,17 @@ namespace DeepState.Data.Migrations.RPG
                     b.Property<int>("Price")
                         .HasColumnType("int");
 
-                    b.Property<int>("Uses")
-                        .HasColumnType("int");
+                    b.Property<string>("item_type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ItemID");
 
                     b.HasIndex("CharacterDiscordUserId");
 
                     b.ToTable("Items");
+
+                    b.HasDiscriminator<string>("item_type").HasValue("Item");
                 });
 
             modelBuilder.Entity("DeepState.Data.Models.RPGModels.RPGConfiguration", b =>
@@ -123,6 +116,19 @@ namespace DeepState.Data.Migrations.RPG
                 });
 
             modelBuilder.Entity("DeepState.Data.Models.RPGModels.HealingItem", b =>
+                {
+                    b.HasBaseType("DeepState.Data.Models.RPGModels.Item");
+
+                    b.Property<string>("ConsumeMessage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Uses")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("health_items");
+                });
+
+            modelBuilder.Entity("DeepState.Data.Models.RPGModels.Item", b =>
                 {
                     b.HasOne("DeepState.Data.Models.RPGModels.Character", "Character")
                         .WithMany("Items")

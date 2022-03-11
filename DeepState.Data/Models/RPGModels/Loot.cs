@@ -13,6 +13,6 @@ namespace DeepState.Data.Models.RPGModels
 			items = new();
 		}
 		public int Gold;
-		public List<Item> items;
+		public List<HealingItem> items;
 	}
 }

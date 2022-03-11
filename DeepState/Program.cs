@@ -57,7 +57,7 @@ namespace DeepState
 	=> new Program().MainAsync().GetAwaiter().GetResult();
 		public async Task MainAsync()
 		{
-			Console.WriteLine($"{BotProperties.InternalName} has been INITIALIZED");
+			Console.WriteLine($"DEEPSTATE has been INITIALIZED");
 
 			await InstallCommandsAsync();
 
@@ -154,7 +154,8 @@ namespace DeepState
 		private async Task OnMessage(SocketMessage messageParam)
 		{
 			//Don't process the command if it was a system message
-			var message = messageParam as SocketUserMessage;
+			SocketUserMessage message = messageParam as SocketUserMessage;
+			IGuild guild = ((IGuildChannel)message.Channel).Guild;
 			if (message == null) return;
 
 			if (message.Author.IsBot)
@@ -164,6 +165,7 @@ namespace DeepState
 			}
 			UserRecordsService urservice = _services.GetService<UserRecordsService>();
 			new Thread(async () => { LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
+			new Thread(async () => { OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
 
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
 			{

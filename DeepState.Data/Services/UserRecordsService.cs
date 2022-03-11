@@ -116,8 +116,9 @@ namespace DeepState.Data.Services
 				return PagingUtilities.GetPagedList<UserRecord>(activeUsers.OrderByDescending(ur => ur.LastTimePosted).ToList(), out succesfulPage, page);
 			}
 		}
-		public List<UserRecord> GetActiveUserRecords(ulong guildId)
+		public List<UserRecord> GetActiveUserRecords(IGuild guild)
 		{
+			ulong guildId = guild.Id;
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())
 			{
 				DateTime defaultDate = new DateTime(0001, 1, 1, 0, 0, 0);
@@ -126,7 +127,10 @@ namespace DeepState.Data.Services
 				{
 					if (record.LastTimePosted != defaultDate && DateTime.Now.Subtract(record.LastTimePosted).TotalDays <= 14)
 					{
-						activeUsers.Add(record);
+						if(guild.GetUserAsync(record.DiscordUserId).Result != null)
+						{
+							activeUsers.Add(record);
+						}						
 					}
 				}
 				return activeUsers;
@@ -162,9 +166,8 @@ namespace DeepState.Data.Services
 			};
 		}
 		public LibcoinEconomicStatistics CalculateActiveEconomicStats(IGuild guild)
-		{
-			ulong guildId = guild.Id;
-			List<UserRecord> guildRecords = GetActiveUserRecords(guildId);
+		{			
+			List<UserRecord> guildRecords = GetActiveUserRecords(guild);
 			double totalCirculation = CalculateTotalCirculation(guildRecords);
 			double meanBalance = guildRecords.Average(ur => ur.LibcraftCoinBalance);
 			double medianBalance = guildRecords.Select(ur => ur.LibcraftCoinBalance).Median();
@@ -219,6 +222,7 @@ namespace DeepState.Data.Services
 				{
 					Console.WriteLine($"Found user record! Adding {amount.ToString("F8")} libcoin to their balance of {user.LibcraftCoinBalance}...");
 					user.LibcraftCoinBalance += amount;
+					user.LibcraftCoinBalance = Math.Round(user.LibcraftCoinBalance, 8);
 					context.SaveChanges();
 					Console.WriteLine($"Success! User now has a balance of {user.LibcraftCoinBalance}");
 					return;
@@ -228,7 +232,7 @@ namespace DeepState.Data.Services
 				{
 					DiscordGuildId = guildId,
 					DiscordUserId = userId,
-					LibcraftCoinBalance = amount
+					LibcraftCoinBalance = Math.Round(amount, 8)
 				});
 				context.SaveChanges();
 			}
@@ -248,6 +252,7 @@ namespace DeepState.Data.Services
 					{
 						user.LibcraftCoinBalance = 0;
 					}
+					user.LibcraftCoinBalance = Math.Round(user.LibcraftCoinBalance, 8);
 					context.SaveChanges();
 					return true;
 				}
@@ -281,5 +286,37 @@ namespace DeepState.Data.Services
 			}
 			return Circulation;
 		}
+
+		public List<UserProgressiveShare> CalculateProgressiveShare(List<UserRecord> activePool, double amountToShare, double maximumAmount)
+		{
+			List<UserProgressiveShare> shares = new();
+			double[] distribution = new double[activePool.Count];
+			double totalCirculation = activePool.Sum(u => u.LibcraftCoinBalance);
+			if(maximumAmount == 0)
+			{
+				maximumAmount = amountToShare;
+			}
+			int index = 0;
+			foreach(UserRecord user in activePool.OrderByDescending(u => u.LibcraftCoinBalance))
+			{
+				distribution[index] = user.LibcraftCoinBalance / totalCirculation;
+				index++;
+			}
+			index--;
+			foreach (UserRecord user in activePool.OrderByDescending(u => u.LibcraftCoinBalance))
+			{
+				double share = Math.Round(amountToShare * distribution[index], 8);
+				share = share > maximumAmount ? maximumAmount : share;
+				shares.Add(new UserProgressiveShare { User = user, ProgressiveShare = share });
+				index--;
+			}
+
+			return shares;
+		}
+	}
+	public struct UserProgressiveShare
+	{
+		public UserRecord User;
+		public double ProgressiveShare;
 	}
 }

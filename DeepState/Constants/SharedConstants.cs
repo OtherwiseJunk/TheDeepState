@@ -37,13 +37,17 @@ namespace DeepState.Constants
 		public const ulong LCBotCommandsChannel = 718986327642734654;
 		public const ulong TestChannel = 176357319687405569;
 		public const ulong LCShitpostChannelId = 855227586212134922;
+		public const ulong UkraineInfoThread = 941783493476753408;
+		public const ulong UkraineMemeThread = 946913420219932712;
 		#endregion
 
 		#region Channel Lists
 		public static List<ulong> NoAutoReactsChannel = new List<ulong>
 		{
 			SelfCareChannelId,
-			SeriousDiscussionChannelId
+			SeriousDiscussionChannelId,
+			UkraineInfoThread,
+			UkraineMemeThread
 		};
 		#endregion
 
