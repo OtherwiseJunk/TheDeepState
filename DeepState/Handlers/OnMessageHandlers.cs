@@ -46,6 +46,10 @@ namespace DeepState.Handlers
 					await msg.AddReactionAsync(Emote.Parse(SharedConstants.ReactableEmotes.GetRandom()));
 				}
 			}
+			if(msg.Content.ToLower() == "!eank" && Utils.PercentileCheck(10))
+			{
+				msg.Channel.SendMessageAsync("J0nny5 detected. Preparing to terminate...");
+			}
 		}
 
 		public static async Task MalarkeyLevelOfHandler(SocketMessage msg)
