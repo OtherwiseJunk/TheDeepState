@@ -58,6 +58,13 @@ namespace DeepState.Modules
 			await Context.Channel.SendMessageAsync($"{SharedConstants.JonathanFrakesThatsNotTrue.GetRandom()}");
 		}
 
+		[Command("clara"), Alias("sillywoman")]
+		[Summary("CLARA!")]
+		public async Task Clara()
+		{
+			await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/931723945416228915/952094761907535872/shut_up_silly_woman.mp4");
+		}
+
 		[Command("weekend")]
 		[Summary("It's The Weekend, Ladies and Gentleman!")]
 		public async Task TheWeekend()
