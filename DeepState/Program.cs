@@ -149,7 +149,25 @@ namespace DeepState
 			
 #endif
 			_client.MessageReceived += OnMessage;
-			_client.MessageReceived += (async (SocketMessage messageParam) => { _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix); });
+			_client.MessageReceived += (async (SocketMessage messageParam) =>
+			{
+				try
+				{
+					_ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix);
+				}
+				catch(Exception ex)
+				{
+					Console.WriteLine("Exception from the DDB Command Handler:");
+					Console.WriteLine(ex.Message);
+					while(ex.InnerException != null)
+					{
+						ex = ex.InnerException;
+						Console.WriteLine("Inner Exception: ");
+						Console.WriteLine(ex.Message);
+					}
+				}
+			});
+				
 		}
 		private async Task OnMessage(SocketMessage messageParam)
 		{
