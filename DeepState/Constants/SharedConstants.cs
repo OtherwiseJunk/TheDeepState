@@ -148,6 +148,33 @@ namespace DeepState.Constants
 			"📵",
 			"❌"
 		};
+		public static List<IEmote> AprilFoolsMalarkeyLevels = new()
+		{
+			new Emoji("🕧"),
+			new Emoji("🕦"),
+			new Emoji("🕔"),
+			new Emoji("🕤"),
+			new Emoji("🕥"),
+			new Emoji("🕢"),
+			new Emoji("🕣"),
+			new Emoji("🕠"),
+			new Emoji("🕡"),
+			new Emoji("🕞"),
+			new Emoji("🕟"),
+			new Emoji("🕜"),
+			new Emoji("🕝"),
+			new Emoji("🕕"),
+			new Emoji("🕓"),
+			new Emoji("🕚"),
+			new Emoji("🕘"),
+			new Emoji("🕙"),
+			new Emoji("🕖"),
+			new Emoji("🕗"),
+			new Emoji("🕛"),
+			new Emoji("🕒"),
+			new Emoji("🕑"),
+			new Emoji("🕐")
+		};
 		public static List<IEmote> MalarkeyLevels = new List<IEmote>
 		{
 			new Emoji("\u0031\ufe0f\u20e3"),

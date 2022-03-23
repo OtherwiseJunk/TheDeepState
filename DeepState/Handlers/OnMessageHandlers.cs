@@ -69,7 +69,15 @@ namespace DeepState.Handlers
 		{
 			if (msg.Content.ToLower().Contains("malarkey level of"))
 			{
-				var response = msg.AddReactionAsync(SharedConstants.MalarkeyLevels.GetRandom());
+				DateTime now = DateTime.Now;
+				if(now.Day == 1 && now.Month == 4)
+				{
+					_ = msg.AddReactionAsync(SharedConstants.AprilFoolsMalarkeyLevels.GetRandom());
+				}
+				else
+				{
+					_ = msg.AddReactionAsync(SharedConstants.MalarkeyLevels.GetRandom());
+				} 
 			}
 		}
 	}
