@@ -51,6 +51,12 @@ namespace DeepState.Modules
 			}
 		}
 
+		[Command("racisme")]
+		public async Task LeRacisme()
+		{
+			await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/959323818860621885/959325464093138964/gamer_country.mp4");
+		}
+
 		[Command("notthistime")]
 		[Summary("Not This Time. It's Fiction.")]
 		public async Task NotThisTime()
