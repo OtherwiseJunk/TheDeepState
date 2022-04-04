@@ -160,5 +160,26 @@ namespace DeepState.Utilities
 
 			return embed.Build();
 		}
+
+		internal static Embed BuildProgressiveSharesEmbed(List<UserProgressiveShare> shares, int currentPage, IGuild guild)
+		{
+			shares = shares.OrderByDescending(share => share.ProgressiveShare).ToList();
+
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.Title = PagedEmbedConstants.ProgressiveDsitributionEmbedTitle;
+
+			int place = 1;
+			foreach (UserProgressiveShare share in shares)
+			{
+				IGuildUser user = guild.GetUserAsync(share.User.DiscordUserId, CacheMode.AllowDownload).Result;
+				string userName = DDBUtils.GetDisplayNameForUser(user);
+
+				embed.AddField($"{place + (currentPage * 10)}. {userName}", share.ProgressiveShare);
+				place++;
+			}
+			embed.WithFooter($"{currentPage}");
+
+			return embed.Build();
+		}
 	}
 }

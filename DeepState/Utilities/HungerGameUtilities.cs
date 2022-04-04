@@ -413,6 +413,11 @@ namespace DeepState.Utilities
 			{
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} went to Brazil",
 				"Smote by God for being far, far, too horny.",
+				"Taken out by the Ghost of Kyiv.",
+				"Ate the Cheese Skirtussy",
+				"Was voted the asshole on r/amitheasshole",
+				"Was NOT the imposter",
+				"Grabbed by the Joe Biden hand",
 				$"Attacked by a roving pack of enraged twitter users, who cancelled {victimPronounsByConjugation[PronounConjugations.Objective].GetRandom()}, permanently.",
 				"Chased off a cliff by a swarm of Japanese Murder Hornets.",
 				$"Tripped while descending down a steep slope, breaking {rand.Next(47,206)} bones.",
@@ -500,7 +505,15 @@ namespace DeepState.Utilities
 				$"{victimName} aggro'd the witch alone. What an idiot",
 				$"{victimName} was thrown into the Mississippi River by a tank while waiting for the rescue boat to arrive. Should've stayed on the restaurant roof.",
 				$"{victimName} did not survive the Cheese Burger Apocolypse",
-				$"{victimName} drowned in {victimPronounsByConjugation[PronounConjugations.Possessive]} own tears while watching Clannad."
+				$"{victimName} drowned in {victimPronounsByConjugation[PronounConjugations.Possessive]} own tears while watching Clannad.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got busted down on, sexual style.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} never showed up for the games. We didn't realize until now.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} drank 12 gallons of milk",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} got impeached for high crimes and misdemeanors",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} paid an arm and a leg for gasoline (literally)",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} paid an arm and a leg for gasoline (figuratively, and the later died in their sleep.)",
+				"Gazed deep into #unusual-foods. Was gazed back.",
+				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} snapped their fingers and said, \"shucks.\""
 			};
 
 			return environmentalKillDetails.GetRandom();
@@ -524,7 +537,8 @@ namespace DeepState.Utilities
 				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} {rand.Next(69,420)} EU4 saves files.",
 				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} disappointed fans and patrons.",
 				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} belief that Trump will be reinstated <:soontm:322880475066793986>",
-				$"Survived by {HungerGameConstants.OldGods.GetRandom()}, who will live eternally."
+				$"Survived by {HungerGameConstants.OldGods.GetRandom()}, who will live eternally.",
+				"Busted down, sexual style and goated with the sauce"
 			};
 			if (victim != null && victim.Id == HungerGameConstants.TheRepublican)
 			{

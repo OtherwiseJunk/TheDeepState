@@ -1,4 +1,5 @@
 ﻿using DartsDiscordBots.Utilities;
+using DeepState.Utilities;
 using DeepState.Constants;
 using DeepState.Data.Constants;
 using DeepState.Data.Models;
@@ -9,6 +10,7 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DeepState.Handlers
@@ -53,6 +55,65 @@ namespace DeepState.Handlers
 						await msg.RemoveReactionAsync(reaction.Key, currentUser);
 					}
 				}
+			}
+		}
+		public static async Task MarxEmbedPagingHandler(SocketReaction reaction, IMessage message, SocketSelfUser currentUser, string embedTitle, IServiceProvider serviceProvider)
+		{
+			//We only allow page changes for the first five minutes of a message.
+			if ((DateTime.Now - message.Timestamp.DateTime).Minutes >= 5)
+			{
+				return;
+			}
+			//We only care about messages the bot has sent.
+			if (message.Author.Id != currentUser.Id)
+			{
+				return;
+			}
+			//We only care about about messages with 1 embed.
+			if (message.Embeds.Count != 1)
+			{
+				return;
+			}
+			//We don't care about reactions that the bot added 
+			if (reaction.User.Value.Id == currentUser.Id)
+			{
+				return;
+			}
+			//Finally, we only care about the embed with our specific title
+			IEmbed embed = message.Embeds.First();
+			if (!embed.Title.Contains(" Distribution"))
+			{
+				return;
+			}
+
+
+			int currentPage = Int32.Parse(embed.Footer.Value.Text);
+			//ToDo: Extract <distributionAmount:requestingUserDIscordId> from title instead of just distribution amount
+			int distributionAmount = Int32.Parse(Regex.Match(embed.Title, @"\d+").Value);
+			
+			UserRecordsService urs = (UserRecordsService)serviceProvider.GetService(typeof(UserRecordsService));
+
+			if (reaction.Emote.Name == DartsDiscordBots.Constants.SharedConstants.LeftArrowEmoji)
+			{
+				//Only bother if we're not on the first page.
+				if (currentPage > 0)
+				{
+					// Embed newEmbed = PagingUtilities.MarxEmbedPagingCalback(message, serviceProvider, currentPage, false, distributionAmount);
+					_ = ((IUserMessage)message).ModifyAsync(msg =>
+					{
+						// msg.Embed = newEmbed;
+					});
+				}
+				_ = message.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
+			}
+			if (reaction.Emote.Name == DartsDiscordBots.Constants.SharedConstants.RightArrowEmoji)
+			{
+				// Embed newEmbed = PagingUtilities.MarxEmbedPagingCalback(message, serviceProvider, currentPage, true, distributionAmount);
+				_ = ((IUserMessage)message).ModifyAsync(msg =>
+				{
+					// msg.Embed = newEmbed;
+				});
+				_ = message.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
 			}
 		}
 	}
