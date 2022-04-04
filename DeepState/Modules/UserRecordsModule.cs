@@ -273,16 +273,13 @@ namespace DeepState.Modules
 			}
 			new Thread(async () =>
 			{
-				List<UserProgressiveShare> shares = _UserRecordsService.CalculateProgressiveShare(activeUsers, amount, maxDistribution);
-				StringBuilder sb = new("Ok, here's how I would distribute that amount for you, in theory anyway...");
-				sb.AppendLine();
-				foreach (UserProgressiveShare share in shares.OrderByDescending(s => s.ProgressiveShare))
-				{
-					IGuildUser user = Context.Guild.GetUserAsync(share.User.DiscordUserId).Result;
-					sb.AppendLine($"**{DDBUtils.GetDisplayNameForUser(user)}** would get **{share.ProgressiveShare}** libcoin.");
-				}
-				sb.AppendLine().AppendLine($"Total sum distributed: {shares.Sum(s => s.ProgressiveShare)}");
-				_MessageReliabilityService.SendMessageToChannel(sb.ToString(), Context.Message, Environment.NewLine);
+				ComponentBuilder builder = new ComponentBuilder()
+				.WithButton("Previous Page", $"{PagedEmbedConstants.ProgressiveDistributionPreviousPage}:{amount}:{triggeringUserRecord.DiscordUserId}:{maxDistribution}")
+				.WithButton("Next Page", $"{PagedEmbedConstants.ProgressiveDistributionNextPage}:{amount}:{triggeringUserRecord.DiscordUserId}:{maxDistribution}");
+				int successfulPage;
+				List<UserProgressiveShare> shares = _UserRecordsService.GetPagedProgressiveShares(activeUsers, amount, maxDistribution, out successfulPage);
+				
+				Context.Channel.SendMessageAsync(components: builder.Build(), embed: LibcoinUtilities.BuildProgressiveSharesEmbed(shares, successfulPage, ((IGuildChannel)Context.Channel).Guild));
 			}).Start();
 		}
 

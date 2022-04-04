@@ -13,5 +13,8 @@ namespace DeepState.Constants
 		public static string ClosedRequestEmbedTitle { get; set; } = "Closed Mod Team Requests";
 		public static string LibcoinBalancesEmbedTitle { get; set; } = "Libcoin Balance Leaderboard";
 		public static string LibcoinActiveUserListTitle { get; set; } = "Active User List";
+		public static string ProgressiveDsitributionEmbedTitle { get; set; } = "Radical Distribution Shares";
+		public const string ProgressiveDistributionPreviousPage = "PreviousDistribution";
+		public const string ProgressiveDistributionNextPage = "NextDistribution";
 	}
 }

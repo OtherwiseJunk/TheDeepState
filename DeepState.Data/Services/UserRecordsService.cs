@@ -116,6 +116,37 @@ namespace DeepState.Data.Services
 				return PagingUtilities.GetPagedList<UserRecord>(activeUsers.OrderByDescending(ur => ur.LastTimePosted).ToList(), out succesfulPage, page);
 			}
 		}
+		public List<UserProgressiveShare> GetPagedProgressiveShares(List<UserRecord> activePool, double amountToShare, double maximumAmount, out int succesfulPage, int page = 0)
+		{
+			List<UserProgressiveShare> shares = CalculateProgressiveShare(activePool, amountToShare, maximumAmount);
+			return PagingUtilities.GetPagedList<UserProgressiveShare>(shares.OrderByDescending(ur => ur.ProgressiveShare).ToList(), out succesfulPage, page); 
+		}
+		public List<UserProgressiveShare> CalculateProgressiveShare(List<UserRecord> activePool, double amountToShare, double maximumAmount)
+		{
+			List<UserProgressiveShare> shares = new();
+			double[] distribution = new double[activePool.Count];
+			double totalCirculation = activePool.Sum(u => u.LibcraftCoinBalance);
+			if (maximumAmount == 0)
+			{
+				maximumAmount = amountToShare;
+			}
+			int index = 0;
+			foreach (UserRecord user in activePool.OrderByDescending(u => u.LibcraftCoinBalance))
+			{
+				distribution[index] = user.LibcraftCoinBalance / totalCirculation;
+				index++;
+			}
+			index--;
+			foreach (UserRecord user in activePool.OrderByDescending(u => u.LibcraftCoinBalance))
+			{
+				double share = Math.Round(amountToShare * distribution[index], 8);
+				share = share > maximumAmount ? maximumAmount : share;
+				shares.Add(new UserProgressiveShare { User = user, ProgressiveShare = share });
+				index--;
+			}
+
+			return shares;
+		}
 		public List<UserRecord> GetActiveUserRecords(IGuild guild)
 		{
 			ulong guildId = guild.Id;
@@ -286,35 +317,8 @@ namespace DeepState.Data.Services
 			}
 			return Circulation;
 		}
-
-		public List<UserProgressiveShare> CalculateProgressiveShare(List<UserRecord> activePool, double amountToShare, double maximumAmount)
-		{
-			List<UserProgressiveShare> shares = new();
-			double[] distribution = new double[activePool.Count];
-			double totalCirculation = activePool.Sum(u => u.LibcraftCoinBalance);
-			if(maximumAmount == 0)
-			{
-				maximumAmount = amountToShare;
-			}
-			int index = 0;
-			foreach(UserRecord user in activePool.OrderByDescending(u => u.LibcraftCoinBalance))
-			{
-				distribution[index] = user.LibcraftCoinBalance / totalCirculation;
-				index++;
-			}
-			index--;
-			foreach (UserRecord user in activePool.OrderByDescending(u => u.LibcraftCoinBalance))
-			{
-				double share = Math.Round(amountToShare * distribution[index], 8);
-				share = share > maximumAmount ? maximumAmount : share;
-				shares.Add(new UserProgressiveShare { User = user, ProgressiveShare = share });
-				index--;
-			}
-
-			return shares;
-		}
 	}
-	public struct UserProgressiveShare
+	public class UserProgressiveShare
 	{
 		public UserRecord User;
 		public double ProgressiveShare;
