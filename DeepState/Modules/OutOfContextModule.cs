@@ -48,7 +48,7 @@ namespace DeepState.Modules
 
 		public void SendRandomOOCItem(IGuild triggeringGuild, IMessageChannel triggeringChannel)
 		{
-			OOCItem pulledItem = _OOCService.GetRandomRecord();
+			OOCItem pulledItem = _OOCService.GetRandomRecord(triggeringGuild.Id);
 			IGuildUser reportingUser = triggeringGuild.GetUserAsync(pulledItem.ReportingUserId, CacheMode.AllowDownload).Result;
 			string reportingUsername = DDBUtils.GetDisplayNameForUser(reportingUser);
 
@@ -148,7 +148,7 @@ namespace DeepState.Modules
 						if (messageRepliedTo.Reactions.Where(r => r.Key.Name == "📷" && r.Value.IsMe).Count() == 0)
 						{
 							string url = _imageService.UploadImage(OutOfCOntextFolder, image);
-							_OOCService.AddRecord(Context.Message.Author.Id, url);
+							_OOCService.AddRecord(Context.Message.Author.Id, Context.Guild.Id, url);
 							
 							await Context.Message.AddReactionAsync(new Emoji("✅"));
 							_ = messageRepliedTo.AddReactionAsync(new Emoji("📷"));
