@@ -56,7 +56,7 @@ namespace DeepState.Modules
 
 			EmbedBuilder embed = new EmbedBuilder();
 			embed.WithTitle(String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername));
-			embed.WithImageUrl(pulledItem.Base64Image);
+			embed.WithImageUrl(pulledItem.ImageUrl);
 			embed.WithColor(new Color(nameHash[0], nameHash[1], nameHash[2]));
 			embed.AddField("Date Stored", $"{pulledItem.DateStored.ToString("yyyy-MM-dd")} (yyyy-MM-dd)");
 

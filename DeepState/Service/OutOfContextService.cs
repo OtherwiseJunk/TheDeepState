@@ -18,7 +18,7 @@ namespace DeepState.Service
 		{
 			using(OOCDBContext context = _contextFactory.CreateDbContext())
 			{
-				return context.OutOfContextRecords.FirstOrDefaultAsync(oocr => oocr.Base64Image == base64Image).Result != null;
+				return context.OutOfContextRecords.FirstOrDefaultAsync(oocr => oocr.ImageUrl == base64Image).Result != null;
 			}
 
 		}
@@ -27,7 +27,7 @@ namespace DeepState.Service
 		{
 			using (OOCDBContext context = _contextFactory.CreateDbContext())
 			{
-				OOCItem itemToDelete = context.OutOfContextRecords.FirstOrDefaultAsync(oocr => oocr.Base64Image == imageUrl).Result;
+				OOCItem itemToDelete = context.OutOfContextRecords.FirstOrDefaultAsync(oocr => oocr.ImageUrl == imageUrl).Result;
 				context.OutOfContextRecords.Remove(itemToDelete);
 
 				context.SaveChanges();
@@ -42,7 +42,7 @@ namespace DeepState.Service
 				{
 					ReportingUserId = reportingUserId,
 
-					Base64Image = base64Image,
+					ImageUrl = base64Image,
 					DateStored = DateTime.Now
 				});
 
@@ -67,9 +67,9 @@ namespace DeepState.Service
 				int processedRecords = 1;
 				foreach(OOCItem item in context.OutOfContextRecords)
 				{
-					string base64 = item.Base64Image.Replace("image/jpeg;base64,", "");
+					string base64 = item.ImageUrl.Replace("image/jpeg;base64,", "");
 					Stream imageStream = Converters.GetImageStreamFromBase64(base64);
-					item.Base64Image = _image.UploadImage("OutOfContext", imageStream);
+					item.ImageUrl = _image.UploadImage("OutOfContext", imageStream);
 					Console.WriteLine($"[OOC SERVICE] Successfully processed {processedRecords} of {totalRecords}");
 					processedRecords++;
 				}
