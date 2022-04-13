@@ -16,6 +16,7 @@ using DeepState.Models;
 using Newtonsoft.Json;
 using System.Globalization;
 using Utils = DeepState.Utilities.Utilities;
+using System.Collections.Generic;
 
 namespace DeepState.Modules
 {
@@ -74,7 +75,9 @@ namespace DeepState.Modules
 			{
                 if (Utils.PercentileCheck(25))
                 {
-					foreach(string headPatEmote in SharedConstants.HeadPats.Shuffle())
+					List<string> headPats = SharedConstants.HeadPats;
+					headPats.Shuffle();
+					foreach(string headPatEmote in headPats)
 					{
 						_ = Context.Message.AddReactionAsync(Emote.Parse(headPatEmote));
 						Thread.Sleep(100);
