@@ -1,17 +1,12 @@
 ﻿using Discord;
 using Discord.Commands;
-using Discord.WebSocket;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DeepState.Constants;
 using TraceLd.MineStatSharp;
 using DartsDiscordBots.Permissions;
 using DeepState.Utilities;
 using DartsDiscordBots.Utilities;
-using DartsDiscordBots.Services.Interfaces;
 using DeepState.Service;
 using System.IO;
 using SkiaSharp;
@@ -20,6 +15,7 @@ using System.Net.Http;
 using DeepState.Models;
 using Newtonsoft.Json;
 using System.Globalization;
+using Utils = DeepState.Utilities.Utilities;
 
 namespace DeepState.Modules
 {
@@ -62,16 +58,36 @@ namespace DeepState.Modules
 		public async Task NotThisTime()
 		{
 			await Context.Channel.SendMessageAsync($"{SharedConstants.JonathanFrakesThatsNotTrue.GetRandom()}");
-		}
+        }
 
-		[Command("clara"), Alias("sillywoman")]
-		[Summary("CLARA!")]
-		public async Task Clara()
-		{
-			await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/931723945416228915/952094761907535872/shut_up_silly_woman.mp4");
-		}
+        [Command("clara"), Alias("sillywoman")]
+        [Summary("CLARA!")]
+        public async Task Clara()
+        {
+            await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/931723945416228915/952094761907535872/shut_up_silly_woman.mp4");
+        }
+		[Command("rodrigo"),Alias("patbomb")]
+		[Summary("")]
+		public async Task PatBomb()
+        {
+			new Thread(() =>
+			{
+                if (Utils.PercentileCheck(25))
+                {
+					foreach(string headPatEmote in SharedConstants.HeadPats)
+					{
+						_ = Context.Message.AddReactionAsync(Emote.Parse(headPatEmote));
+						Thread.Sleep(100);
+					};
+                }
+                else
+                {
+					Context.Message.AddReactionAsync(Emote.Parse(SharedConstants.HeadPats.GetRandom()));
+                }
+			}).Start();
+        }
 
-		[Command("weekend")]
+        [Command("weekend")]
 		[Summary("It's The Weekend, Ladies and Gentleman!")]
 		public async Task TheWeekend()
 		{
