@@ -74,7 +74,7 @@ namespace DeepState.Modules
 			{
                 if (Utils.PercentileCheck(25))
                 {
-					foreach(string headPatEmote in SharedConstants.HeadPats)
+					foreach(string headPatEmote in SharedConstants.HeadPats.Shuffle())
 					{
 						_ = Context.Message.AddReactionAsync(Emote.Parse(headPatEmote));
 						Thread.Sleep(100);
