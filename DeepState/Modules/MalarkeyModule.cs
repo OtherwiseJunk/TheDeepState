@@ -40,7 +40,8 @@ namespace DeepState.Modules
             "I betcha wanna know how many people are playing. Good news, I know one surefire way to find out.",
             "Touch Blocks",
             "If you don't log on I'm going to call in a raid by your trading hall. I'm sure it'll be fine though right?",
-            "Log on or the Gwalms gets it!"
+            "Log on or the Gwalms gets it!",
+            "Turmoil has engulfed Fantasia. The taxation of trade routes to utlying star systems is in disupute. Hoping to resolve the matter with their thousands of diamonds, the greedy Trade Federation has stopped all shipping to Arcadia."
         };
         List<string> ServerIsFullSnark { get; set; } = new()
         {
