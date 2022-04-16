@@ -8,6 +8,7 @@ using DartsDiscordBots.Utilities;
 using Discord;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace DeepState.Handlers
 {
@@ -40,6 +41,15 @@ namespace DeepState.Handlers
 				}				
 			}
 		}
+
+		public static async Task DeletePreggersMessage(SocketMessage msg)
+        {
+			if(Regex.IsMatch(msg.Content, "p+r+e+g+e+r+s+", RegexOptions.IgnoreCase))
+            {
+                _ = msg.Channel.SendMessageAsync("Gwalms.........");
+				_ = msg.DeleteAsync();
+            }
+        }
 		public static async Task RandomReactCheck(SocketMessage msg)
 		{
 			if (msg.Content.ToLower() == "!rank") Console.WriteLine("Rolling for rank...");

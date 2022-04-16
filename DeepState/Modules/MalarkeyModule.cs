@@ -41,7 +41,7 @@ namespace DeepState.Modules
             "Touch Blocks",
             "If you don't log on I'm going to call in a raid by your trading hall. I'm sure it'll be fine though right?",
             "Log on or the Gwalms gets it!",
-            "Turmoil has engulfed Fantasia. The taxation of trade routes to utlying star systems is in disupute. Hoping to resolve the matter with their thousands of diamonds, the greedy Trade Federation has stopped all shipping to Arcadia."
+            "Turmoil has engulfed Fantasia. The taxation of trade routes to outlying regions is in disupute. Hoping to resolve the matter with their thousands of diamonds, the greedy Trade Federation has stopped all shipping to Arcadia."
         };
         List<string> ServerIsFullSnark { get; set; } = new()
         {
