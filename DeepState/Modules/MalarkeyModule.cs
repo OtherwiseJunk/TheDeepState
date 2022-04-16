@@ -23,7 +23,26 @@ namespace DeepState.Modules
 	public class MalarkeyModule : ModuleBase
 	{
 		ImagingService _imaging { get; set; }
-		public MalarkeyModule(ImagingService imaging)
+		List<string> BotSnark { get; set; } = new()
+        {
+            "You'd know how many are on, if you'd play",
+            "Turn on, tune in, drop out, drop off, switch off, switch on, and explode",
+            "If you logged on there would be {ms.currentPlayers +1} friends breaking blocks!",
+            "More blocks than your body has room for.",
+            "I think I saw a creeper skulking around the base. You might want to log on and take care of that.",
+			"You will eat the bugs. You will Mine the Craft.",
+            "I bet you 50 libcoin you can't find my base. Here's a hint: There's a lot of restone.",
+            "The Phantom Power Party will rise again.",
+            "'The Rise and Fall of the Arcadian Empire' is my favorite book",
+            "I saw some shady figure by your stuff. Better log on to make sure it's all good.",
+            "Citizen, we have always been at war with the River Basin Confederation",
+            "I'm selling elytra for 1 iron bar to everyone who logs in in the next 15 minutes and finds my base.",
+			"I betcha wanna know how many people are playing. Good news, I know one surefire way to find out.",
+			"Touch Blocks",
+			"If you don't log on I'm going to call in a raid by your trading hall. I'm sure it'll be fine though right?",
+			"Log on or the Gwalms gets it!"
+        };
+        public MalarkeyModule(ImagingService imaging)
 		{
 			_imaging = imaging;
 		}
@@ -40,8 +59,9 @@ namespace DeepState.Modules
 
 				eb.WithTitle($"{serverAddress} Status");
 				eb.AddField("Server Full:", $"{serverFull}");
-				eb.AddField("MotD:", $"{ms.Motd}");
-				await Context.Channel.SendMessageAsync("", false, eb.Build());
+                eb.AddField("MotD:", $"{ms.Motd}");
+				eb.AddField("Deepstate Says", $"{BotSnark.GetRandom()}");
+                await Context.Channel.SendMessageAsync("", false, eb.Build());
 			}
 			else
 			{
