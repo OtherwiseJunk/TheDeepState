@@ -36,9 +36,10 @@ namespace DeepState.Modules
 			if (ms.ServerUp)
 			{
 				EmbedBuilder eb = new EmbedBuilder();
+				string serverFull = ms.CurrentPlayers == ms.MaximumPlayers ? "true" : "false";
 
 				eb.WithTitle($"{serverAddress} Status");
-				eb.AddField("Player Count:", $"{ms.CurrentPlayers}/{ms.MaximumPlayers}");
+				eb.AddField("Server Full:", $"{serverFull}");
 				eb.AddField("MotD:", $"{ms.Motd}");
 				await Context.Channel.SendMessageAsync("", false, eb.Build());
 			}
@@ -68,7 +69,7 @@ namespace DeepState.Modules
             await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/931723945416228915/952094761907535872/shut_up_silly_woman.mp4");
         }
 		[Command("rodrigo"),Alias("patbomb")]
-		[Summary("")]
+		[Summary("get pats. Maybe get lots of pats.")]
 		public async Task PatBomb()
         {
 			new Thread(() =>
