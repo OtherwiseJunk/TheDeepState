@@ -14,7 +14,7 @@ namespace DeepState.Handlers
 {
 	public static class OnMessageHandlers
 	{
-		static string PreggersDetector = "[p,ß,р]+[r]+[e,е,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+g+[e,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[r,r]+s*";
+		static string PreggersDetector = "[p,ß,*,р]+[r]+[e,е,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,*,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[g,ġ,*]+[e,*,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[r,r,*]+s*";
 		static HashSet<ulong> GuildUserCacheDownloaded = new();
 		static object HashsetLock = new();
 		public static void EgoCheck(SocketMessage msg, bool isMentioningMe)
@@ -47,6 +47,10 @@ namespace DeepState.Handlers
         {
 			if(Regex.Matches(msg.Content, PreggersDetector, RegexOptions.IgnoreCase).Count > 0)
             {
+                if (Utils.PercentileCheck(10))
+                {
+					_ = msg.Channel.SendMessageAsync("https://c.tenor.com/BH_8JPewRk4AAAAd/free-guy-ryan-reynolds.gif");
+                }
                 _ = msg.Channel.SendMessageAsync("Gwalms.........");
 				_ = msg.DeleteAsync();
             }
