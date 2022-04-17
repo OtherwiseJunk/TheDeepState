@@ -14,7 +14,7 @@ namespace DeepState.Handlers
 {
 	public static class OnMessageHandlers
 	{
-		static string PreggersDetector = "[p,ß,*,р]+[r]+[e,е,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,*,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[g,ġ,*]+[e,*,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[r,r,*]+s*";
+		static string PreggersDetector = "[p,𝐩,𝞺,𝚙,ｐ,𝞀,ß,*,р]+[r]+[e,е,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,*,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[g,ġ,ℊ,𝒈,𝗀,𝕘,*]+[e,*,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[r,r,*]+s*";
 		static HashSet<ulong> GuildUserCacheDownloaded = new();
 		static object HashsetLock = new();
 		public static void EgoCheck(SocketMessage msg, bool isMentioningMe)
