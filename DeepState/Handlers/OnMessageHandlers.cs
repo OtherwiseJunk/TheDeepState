@@ -14,6 +14,7 @@ namespace DeepState.Handlers
 {
 	public static class OnMessageHandlers
 	{
+		static string PreggersDetector = "[p,ß]+[r]+[e,е,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+g+[e,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[r,r]+s+";
 		static HashSet<ulong> GuildUserCacheDownloaded = new();
 		static object HashsetLock = new();
 		public static void EgoCheck(SocketMessage msg, bool isMentioningMe)
@@ -44,7 +45,7 @@ namespace DeepState.Handlers
 
 		public static async Task DeletePreggersMessage(SocketMessage msg)
         {
-			if(Regex.Matches(msg.Content, "p+r+e+g+e+r+s+", RegexOptions.IgnoreCase).Count > 0)
+			if(Regex.Matches(msg.Content, PreggersDetector, RegexOptions.IgnoreCase).Count > 0)
             {
                 _ = msg.Channel.SendMessageAsync("Gwalms.........");
 				_ = msg.DeleteAsync();
