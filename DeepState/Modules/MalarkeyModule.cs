@@ -53,7 +53,7 @@ namespace DeepState.Modules
         };
         List<string> ServerIsOfflineSnark { get; set; } = new()
         {
-            "Everyone pray to God (Sprof), the server is down."
+            "Everyone pray to God (Sporf), the server is down."
         };
         public MalarkeyModule(ImagingService imaging)
         {
@@ -66,7 +66,7 @@ namespace DeepState.Modules
             MineStat ms = new MineStat(serverAddress, serverPort);
             EmbedBuilder eb = new();
             string serverStatus;
-            if (ms.ServerUp)
+            if (!ms.ServerUp)
             {
                 serverStatus = ServerIsOfflineSnark.GetRandom();
             }
