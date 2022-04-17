@@ -190,11 +190,11 @@ namespace DeepState
 			}
 			UserRecordsService urservice = _services.GetService<UserRecordsService>();
 			new Thread(async () => { LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
-            new Thread(async () => { OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();			
+            new Thread(async () => { OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
+			new Thread(async () => { OnMessageHandlers.DeletePreggersMessage(message); }).Start();
 
-            if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
+			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
 			{
-				new Thread(async () => { OnMessageHandlers.DeletePreggersMessage(message); }).Start();
 				new Thread(() => { OnMessageHandlers.EgoCheck(messageParam, Utils.IsMentioningMe(messageParam, _client.CurrentUser)); }).Start();
 				new Thread(() => { _ = OnMessageHandlers.RandomReactCheck(messageParam); }).Start();
 				new Thread(() => { OnMessageHandlers.Imposter(messageParam, Utils.IsSus(messageParam.Content)); }).Start();

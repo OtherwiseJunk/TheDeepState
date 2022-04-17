@@ -44,7 +44,7 @@ namespace DeepState.Handlers
 
 		public static async Task DeletePreggersMessage(SocketMessage msg)
         {
-			if(Regex.IsMatch(msg.Content, "p+r+e+g+e+r+s+", RegexOptions.IgnoreCase))
+			if(Regex.Matches(msg.Content, "p+r+e+g+e+r+s+", RegexOptions.IgnoreCase).Count > 0)
             {
                 _ = msg.Channel.SendMessageAsync("Gwalms.........");
 				_ = msg.DeleteAsync();
