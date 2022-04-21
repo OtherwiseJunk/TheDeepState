@@ -151,7 +151,7 @@ namespace DeepState.Modules
 			Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/701194133074608198/939019260754272296/LiveAntonReaction.png");
 		}
 
-		[Command("nationaldebt"), Alias("debt","nd")]
+		[Command("nationaldebt"), Alias("debt", "nd")]
 		[Summary("Query the official .gov API to get the current national debt.")]
 		public async Task GetNationalDebt()
 		{
@@ -167,6 +167,20 @@ namespace DeepState.Modules
 				embed.AddField("Government Holdings", nationalDebtData.governmentHoldings.ToString("C"));
 
 				await Context.Channel.SendMessageAsync(embed: embed.Build());
+			}
+		}
+
+		[Command("ididitlikethis"), Alias("likethis")]
+		[Summary("That's how I did it yanno, just like this.")]
+		public async Task IDidItLikeThis()
+		{
+			if(Context.Message.Author.Id == SharedConstants.TheDungeonMaster)
+			{
+				_ = Context.Message.ReplyAsync("https://y.yarn.co/5bf8015a-95c4-46d0-9d50-3da21e0d8357_text.gif");
+			}
+			else
+			{
+				_ = Context.Message.ReplyAsync("https://cdn.discordapp.com/attachments/883466654443507773/904792562777354280/video0.mov");
 			}
 		}
 
