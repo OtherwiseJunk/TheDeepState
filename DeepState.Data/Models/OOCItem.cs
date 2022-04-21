@@ -10,7 +10,8 @@ namespace DeepState.Data.Models
 		[Key]
 		public int ItemID { get; set; }
 		public ulong ReportingUserId { get; set; }
-		public string Base64Image { get; set; }
-		public DateTime DateStored { get; set; }
+        public string ImageUrl { get; set; }
+		public ulong DiscordGuildId { get; set; }
+        public DateTime DateStored { get; set; }
 	}
 }

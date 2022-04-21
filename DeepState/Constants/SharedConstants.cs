@@ -193,6 +193,23 @@ namespace DeepState.Constants
 		#endregion
 
 		#region Emote Lists
+		public static List<string> HeadPats = new List<string>
+		{
+			"<:GorePat2:905366033534156800>",
+			"<a:d9pat:944698428829605948>",
+			"<a:damnpatanimated:953488419894480926>",
+			"<:dAmnpat:953488587163328532>",
+			"<:dAmnpat2:953489511466291230>",
+			"<a:gorepatanimated:906750561406292040>",
+			"<:headpat_hand:953484733952700446>",
+			"<:headpat:776873435803680769>",
+			"<:horny_headpat:781709292779995137>",
+			"<:natepat:934608869982879785>",
+			"<:pleadingheadpat:904087894883442740>",
+			"<a:stickypat:944698360735096923>",
+			"<:smilkeyseyspat:948457401303060510>",
+			"<a:squishpat:944073688360300584>"
+		};
 		public static List<string> VotingEmotes = new List<string>
 		{
 			"✅",

@@ -4,6 +4,7 @@ using System;
 using DeepState.Data.Models;
 using DartsDiscordBots.Utilities;
 using System.IO;
+using System.Linq;
 
 namespace DeepState.Service
 {
@@ -18,7 +19,7 @@ namespace DeepState.Service
 		{
 			using(OOCDBContext context = _contextFactory.CreateDbContext())
 			{
-				return context.OutOfContextRecords.FirstOrDefaultAsync(oocr => oocr.Base64Image == base64Image).Result != null;
+				return context.OutOfContextRecords.AsQueryable().FirstOrDefaultAsync(oocr => oocr.ImageUrl == base64Image).Result != null;
 			}
 
 		}
@@ -27,22 +28,22 @@ namespace DeepState.Service
 		{
 			using (OOCDBContext context = _contextFactory.CreateDbContext())
 			{
-				OOCItem itemToDelete = context.OutOfContextRecords.FirstOrDefaultAsync(oocr => oocr.Base64Image == imageUrl).Result;
+				OOCItem itemToDelete = context.OutOfContextRecords.AsQueryable().FirstOrDefaultAsync(oocr => oocr.ImageUrl == imageUrl).Result;
 				context.OutOfContextRecords.Remove(itemToDelete);
 
 				context.SaveChanges();
 			}
 		}
 
-		public void AddRecord(ulong reportingUserId, string base64Image)
+		public void AddRecord(ulong reportingUserId, ulong guildId, string base64Image)
 		{
 			using (OOCDBContext context = _contextFactory.CreateDbContext())
 			{
 				context.OutOfContextRecords.Add(new OOCItem
 				{
 					ReportingUserId = reportingUserId,
-
-					Base64Image = base64Image,
+					DiscordGuildId = guildId,
+					ImageUrl = base64Image,
 					DateStored = DateTime.Now
 				});
 
@@ -51,11 +52,11 @@ namespace DeepState.Service
 			
 		}
 
-		public OOCItem GetRandomRecord()
+		public OOCItem GetRandomRecord(ulong guildId)
 		{
 			using (OOCDBContext context = _contextFactory.CreateDbContext())
 			{
-				return context.OutOfContextRecords.ToListAsync().Result.GetRandom();
+				return context.OutOfContextRecords.AsQueryable().Where(ooc => ooc.DiscordGuildId == guildId).ToList().GetRandom();
 			}
 		}
 
@@ -63,13 +64,13 @@ namespace DeepState.Service
 		{
 			using(OOCDBContext context = _contextFactory.CreateDbContext())
 			{
-				int totalRecords = context.OutOfContextRecords.CountAsync().Result;
+				int totalRecords = context.OutOfContextRecords.AsQueryable().CountAsync().Result;
 				int processedRecords = 1;
 				foreach(OOCItem item in context.OutOfContextRecords)
 				{
-					string base64 = item.Base64Image.Replace("image/jpeg;base64,", "");
+					string base64 = item.ImageUrl.Replace("image/jpeg;base64,", "");
 					Stream imageStream = Converters.GetImageStreamFromBase64(base64);
-					item.Base64Image = _image.UploadImage("OutOfContext", imageStream);
+					item.ImageUrl = _image.UploadImage("OutOfContext", imageStream);
 					Console.WriteLine($"[OOC SERVICE] Successfully processed {processedRecords} of {totalRecords}");
 					processedRecords++;
 				}

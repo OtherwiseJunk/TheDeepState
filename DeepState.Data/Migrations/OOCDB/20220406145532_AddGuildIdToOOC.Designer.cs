@@ -4,14 +4,16 @@ using DeepState.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DeepState.Data.Migrations.OOCDB
 {
     [DbContext(typeof(OOCDBContext))]
-    partial class OOCDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220406145532_AddGuildIdToOOC")]
+    partial class AddGuildIdToOOC
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

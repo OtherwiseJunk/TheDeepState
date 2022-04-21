@@ -8,11 +8,13 @@ using DartsDiscordBots.Utilities;
 using Discord;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace DeepState.Handlers
 {
 	public static class OnMessageHandlers
 	{
+		static string PreggersDetector = "[p,𝐩,𝞺,𝚙,ｐ,𝞀,ß,*,р]+[r]+[e,е,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,*,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[g,ġ,ℊ,𝒈,𝗀,𝕘,*]+[e,*,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[r,r,*]+s*";
 		static HashSet<ulong> GuildUserCacheDownloaded = new();
 		static object HashsetLock = new();
 		public static void EgoCheck(SocketMessage msg, bool isMentioningMe)
@@ -40,6 +42,19 @@ namespace DeepState.Handlers
 				}				
 			}
 		}
+
+		public static async Task DeletePreggersMessage(SocketMessage msg)
+        {
+			if(Regex.Matches(msg.Content, PreggersDetector, RegexOptions.IgnoreCase).Count > 0)
+            {
+                if (Utils.PercentileCheck(10))
+                {
+					_ = msg.Channel.SendMessageAsync("https://c.tenor.com/BH_8JPewRk4AAAAd/free-guy-ryan-reynolds.gif");
+                }
+                _ = msg.Channel.SendMessageAsync("Gwalms.........");
+				_ = msg.DeleteAsync();
+            }
+        }
 		public static async Task RandomReactCheck(SocketMessage msg)
 		{
 			if (msg.Content.ToLower() == "!rank") Console.WriteLine("Rolling for rank...");

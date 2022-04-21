@@ -72,11 +72,11 @@ namespace DeepState.Modules
 						_userService.Deduct(Context.User.Id, Context.Guild.Id, RPGConstants.NewCharacterCost);
 						if (flags == "f" || flags == "fite")
 						{
-							await Context.Channel.SendMessageAsync("Today your character woke up and chose _violence_.", messageReference: msgReference);
+							await Context.Channel.SendMessageAsync("Today your character woke up and chose _violence_.");
 							_rpgService.ToggleCharacterPvPFlag((IGuildUser)Context.Message.Author);
 							character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
 						}
-						await Context.Channel.SendMessageAsync($"Ok I rolled you up a new character! {RPGConstants.NewCharacterCost} Libcoin has been deducted from your account.", embed: _rpgService.BuildCharacterEmbed(character), messageReference: msgReference);
+						await Context.Message.ReplyAsync($"Ok I rolled you up a new character! {RPGConstants.NewCharacterCost} Libcoin has been deducted from your account.", embed: _rpgService.BuildCharacterEmbed(character));
 					}
 				}
 				catch (Exception ex)
@@ -87,7 +87,7 @@ namespace DeepState.Modules
 			}
 			else
 			{
-				await Context.Channel.SendMessageAsync("Looks like you already have a character.", embed: _rpgService.BuildCharacterEmbed(character), messageReference: msgReference);
+				await Context.Message.ReplyAsync("Looks like you already have a character.", embed: _rpgService.BuildCharacterEmbed(character));
 			}
 		}
 
@@ -99,11 +99,11 @@ namespace DeepState.Modules
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.User);
 			if (character == null)
 			{
-				await Context.Channel.SendMessageAsync($"Sorry friend, you haven't rolled up a character yet. It costs {RPGConstants.NewCharacterCost} Libcoin but it's worth it!", messageReference: msgReference);
+				await Context.Message.ReplyAsync($"Sorry friend, you haven't rolled up a character yet. It costs {RPGConstants.NewCharacterCost} Libcoin but it's worth it!");
 			}
 			else
 			{
-				await Context.Channel.SendMessageAsync(embed: _rpgService.BuildCharacterEmbed(character), messageReference: msgReference);
+				await Context.Message.ReplyAsync(embed: _rpgService.BuildCharacterEmbed(character));
 			}
 		}
 
@@ -116,11 +116,11 @@ namespace DeepState.Modules
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.User);
 			if (character.PvPFlagged)
 			{
-				await Context.Channel.SendMessageAsync($"Ok, I'll let everyone know {character.Name} is ready to rumble!", messageReference: msgReference);
+				await Context.Message.ReplyAsync($"Ok, I'll let everyone know {character.Name} is ready to rumble!");
 			}
 			else
 			{
-				await Context.Channel.SendMessageAsync($"Ok, I'll let everyone know {character.Name} is character of peace. For now.", messageReference: msgReference);
+				await Context.Message.ReplyAsync($"Ok, I'll let everyone know {character.Name} is character of peace. For now.");
 			}
 		}
 
@@ -130,7 +130,7 @@ namespace DeepState.Modules
 		{
 			MessageReference msgReference = new MessageReference(Context.Message.Id);
 			List<Character> pvpCharacters = _rpgService.GetPVPCharacters();
-			await Context.Channel.SendMessageAsync(embed: _rpgService.BuildPvPListEmbed(pvpCharacters), messageReference: msgReference);
+			await Context.Message.ReplyAsync(embed: _rpgService.BuildPvPListEmbed(pvpCharacters));
 		}
 		[Command("list"), Alias("l")]
 		[Summary("View a list of characters down to punch people to death. Or maybe get punched to death, yanno.")]
@@ -138,7 +138,7 @@ namespace DeepState.Modules
 		{
 			MessageReference msgReference = new MessageReference(Context.Message.Id);
 			List<Character> characters = _rpgService.GetAllCharacters();
-			await Context.Channel.SendMessageAsync(embed: _rpgService.BuildCharacterList(characters, Context.Guild), messageReference: msgReference);
+			await Context.Message.ReplyAsync(embed: _rpgService.BuildCharacterList(characters, Context.Guild));
 		}
 
 		[Command("challenge"), Alias("fight", "chal", "fite")]
@@ -151,6 +151,10 @@ namespace DeepState.Modules
 			if (target == "")
 			{
 				List<Character> pvpers = _rpgService.GetPVPCharacters().Where(c => c.DiscordUserId != Context.Message.Author.Id).ToList();
+				if(pvpers.Count == 0) {
+					_ = Context.Message.ReplyAsync("Sorry, no targets found.");
+					return; 
+				}
 				pvpers.Shuffle();
 				defender = pvpers.First();
 			}
@@ -161,19 +165,19 @@ namespace DeepState.Modules
 
 			if (defender == null)
 			{
-				await Context.Channel.SendMessageAsync($"I don't see anyone named {target} in the PvP list. Sorry.", messageReference: msgReference);
+				await Context.Message.ReplyAsync($"I don't see anyone named {target} in the PvP list. Sorry.");
 			}
 			else if (attacker == null)
 			{
-				await Context.Channel.SendMessageAsync("I don't think you have a character, friend.", messageReference: msgReference);
+				await Context.Message.ReplyAsync("I don't think you have a character, friend.");
 			}
 			else if (!attacker.PvPFlagged)
 			{
-				await Context.Channel.SendMessageAsync("I know you're excited, but you have to be PvP flagged before you can punch people yanno?!", messageReference: msgReference);
+				await Context.Message.ReplyAsync("I know you're excited, but you have to be PvP flagged before you can punch people yanno?!");
 			}
 			else if (attacker.Name == defender.Name && attacker.DiscordUserId == defender.DiscordUserId)
 			{
-				await Context.Channel.SendMessageAsync("You can't fight yourself, get out of here.", messageReference: msgReference);
+				await Context.Message.ReplyAsync("You can't fight yourself, get out of here.");
 			}
 			else
 			{
@@ -194,7 +198,7 @@ namespace DeepState.Modules
 				embed.AddField($"{attacker.Name} Combat Stats", $"{stats.AttackerHits} Hits. {stats.AttackerMisses} Misses. {stats.AttackerDmg} Damage done.{Environment.NewLine}Status: {attackerStatus}");
 				embed.AddField($"{defender.Name} Combat Stats", $"{stats.DefenderHits} Hits. {stats.DefenderMisses} Misses. {stats.DefenderDmg} Damage done.{Environment.NewLine}Status: {defenderStatus}");
 
-				await Context.Channel.SendMessageAsync(embed: embed.Build(), messageReference: msgReference);
+				await Context.Message.ReplyAsync(embed: embed.Build());
 			}
 		}
 
@@ -206,7 +210,7 @@ namespace DeepState.Modules
 			MessageReference msgReference = new MessageReference(Context.Message.Id);
 			if (character == null)
 			{
-				await Context.Channel.SendMessageAsync("You don't have a character, so they don't have items you see.", messageReference: msgReference);
+				await Context.Message.ReplyAsync("You don't have a character, so they don't have items you see.");
 				return;
 			}
 
@@ -218,11 +222,11 @@ namespace DeepState.Modules
 				{
 					embed.AddField($"{item.ItemID}. {item.Name}", item.Description);
 				}
-				await Context.Channel.SendMessageAsync(embed: embed.Build());
+				await Context.Message.ReplyAsync(embed: embed.Build());
 			}
 			else
 			{
-				await Context.Channel.SendMessageAsync("Ok that's easy. You have none.");
+				await Context.Message.ReplyAsync("Ok that's easy. You have none.");
 			}
 		}
 
@@ -234,14 +238,14 @@ namespace DeepState.Modules
 			Character character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
 			if (character == null)
 			{
-				await Context.Channel.SendMessageAsync("You don't have a character, so they don't have items you see.", messageReference: msgReference);
+				await Context.Message.ReplyAsync("You don't have a character, so they don't have items you see.");
 				return;
 			}
 
 			Item item = _rpgService.GetItem(character, itemId);
 			if (item == null)
 			{
-				await Context.Channel.SendMessageAsync($"Sorry, I didn't see item {itemId} in your list.", messageReference: msgReference);
+				await Context.Message.ReplyAsync($"Sorry, I didn't see item {itemId} in your list.");
 				return;
 			}
 
@@ -251,7 +255,7 @@ namespace DeepState.Modules
 			}
 			else
 			{
-				await Context.Channel.SendMessageAsync($"Sorry, {item.Name} is not a consumable item. Maybe you need to `>rpg equip` it?", messageReference: msgReference);
+				await Context.Message.ReplyAsync($"Sorry, {item.Name} is not a consumable item. Maybe you need to `>rpg equip` it?");
 			}
 		}
 
@@ -340,7 +344,7 @@ namespace DeepState.Modules
 
 			if (libcoinPayout > 0)
 			{
-				Context.Channel.SendMessageAsync($"{corpse.Name} had {corpseGold} in their pocket, so I've issued a {libcoinPayout} Libcoin payout.");
+				Context.Message.ReplyAsync($"{corpse.Name} had {corpseGold} in their pocket, so I've issued a {libcoinPayout} Libcoin payout.");
 				_userService.Grant(corpse.DiscordUserId, guildIdForPayout, libcoinPayout);
 			}
 			SendObituary(corpse, murderer, Context.Guild);
@@ -361,7 +365,10 @@ namespace DeepState.Modules
 				embed.ThumbnailUrl = murderer.AvatarUrl;
 				embed.ImageUrl = corpse.AvatarUrl;
 				embed.AddField("A murder most foul", deathMessage);
-				channel.SendMessageAsync(embed: embed.Build());
+				if(channel != null)
+                {
+					channel.SendMessageAsync(embed: embed.Build());
+				}				
 			}
 		}
 	}
