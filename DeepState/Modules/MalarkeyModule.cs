@@ -124,6 +124,13 @@ namespace DeepState.Modules
             }).Start();
         }
 
+        [Command("eml"),Alias("notaferret")]
+        [Summary("Live EML Reaction")]
+        public async Task EMLReaction()
+        {
+            await Context.Message.ReplyAsync("https://cdn.discordapp.com/attachments/740033615617982514/967206627109392384/LiveEMLReaction.png");
+        }
+
         [Command("weekend")]
         [Summary("It's The Weekend, Ladies and Gentleman!")]
         public async Task TheWeekend()
