@@ -36,7 +36,7 @@ namespace DeepState.Modules
 			}
 			else
 			{
-				int requestId = _requestService.CreateRequest(Context.Message.Author.Id, Context.Guild.Id, requestMessage);
+				int requestId = _requestService.CreateRequest(Context.Message.Author.Id, SharedConstants.LibcraftGuildId, requestMessage);
 				
 				IMessage msg = Context.Channel.SendMessageAsync("Ok, I've submitted your request!").Result;
 				ITextChannel requests = (ITextChannel) Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;

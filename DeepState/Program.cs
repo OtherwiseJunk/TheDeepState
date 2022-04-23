@@ -85,12 +85,12 @@ namespace DeepState
 		}
 		private void ConfigureDatabases()
 		{
-			var oocContext = _services.GetService<OOCDBContext>();
+			/* var oocContext = _services.GetService<OOCDBContext>();
 			oocContext.Database.EnsureCreated();
 			var userRecordContext = _services.GetService<GuildUserRecordContext>();
 			userRecordContext.Database.EnsureCreated();
 			var hungerGamesContext = _services.GetService<HungerGamesContext>();
-			hungerGamesContext.Database.EnsureCreated();
+			hungerGamesContext.Database.EnsureCreated(); */
 		}
 		private static IServiceProvider ConfigureServices()
 		{
@@ -148,25 +148,25 @@ namespace DeepState
 #if !DEBUG
 			
 #endif
+            _client.MessageReceived += (async (SocketMessage messageParam) =>
+            {
+                try
+                {
+                    _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception from the DDB Command Handler:");
+                    Console.WriteLine(ex.Message);
+                    while (ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                        Console.WriteLine("Inner Exception: ");
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            });
 			_client.MessageReceived += OnMessage;
-			_client.MessageReceived += (async (SocketMessage messageParam) =>
-			{
-				try
-				{
-					_ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix);
-				}
-				catch (Exception ex)
-				{
-					Console.WriteLine("Exception from the DDB Command Handler:");
-					Console.WriteLine(ex.Message);
-					while (ex.InnerException != null)
-					{
-						ex = ex.InnerException;
-						Console.WriteLine("Inner Exception: ");
-						Console.WriteLine(ex.Message);
-					}
-				}
-			});
 			_client.ButtonExecuted += OnButtonClicked;
 
 		}
