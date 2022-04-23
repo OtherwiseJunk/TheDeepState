@@ -136,12 +136,20 @@ namespace DeepState.Data.Services
 			{
 				embed.Title = $"Closed Mod Team Requests";
 			}
-			foreach(ModTeamRequest request in requests)
+			foreach (ModTeamRequest request in requests)
 			{
 				IGuildUser requestingUser = guild.GetUserAsync(request.RequestingUserDiscordId, CacheMode.AllowDownload).Result;
-				IGuildUser modTeamMemberUser = guild.GetUserAsync(request.modifyingModDiscordId, CacheMode.AllowDownload).Result;
-				embed.AddField($"{request.RequestId}.{DDBUtils.GetDisplayNameForUser(requestingUser)} - {request.Request}",
-					BuildStatusMessage(request, modTeamMemberUser));
+				IGuildUser modTeamMemberUser = null;
+				if (request.modifyingModDiscordId != 0)
+                {
+					 modTeamMemberUser = guild.GetUserAsync(request.modifyingModDiscordId, CacheMode.AllowDownload).Result;
+				}
+				string requestFieldTitle = $"{request.RequestId}.{DDBUtils.GetDisplayNameForUser(requestingUser)},{request.Request}";
+				if(requestFieldTitle.Length > 256)
+                {
+					requestFieldTitle = requestFieldTitle.Substring(0, 253) + "...";
+				}
+				embed.AddField(requestFieldTitle, BuildStatusMessage(request, modTeamMemberUser));
 			}
 			embed.WithFooter($"{currentPage}");
 
