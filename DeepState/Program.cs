@@ -166,11 +166,21 @@ namespace DeepState
                     }
                 }
             });
+			_client.GuildScheduledEventCreated += OnEventCreated;
 			_client.MessageReceived += OnMessage;
 			_client.ButtonExecuted += OnButtonClicked;
 
 		}
-		private async Task OnButtonClicked(SocketMessageComponent component)
+
+		private async Task OnEventCreated(SocketGuildEvent arg)
+        {
+			new Task(() =>
+			{
+				OnEventCreatedHandlers.AnnounceNewEvent(arg);
+			}).Start();
+        }
+
+        private async Task OnButtonClicked(SocketMessageComponent component)
 		{
 			new Thread(() => {
 				_ = OnComponentInteractionHandlers.ProgressiveSharesDistributionHandler(component, _services);
