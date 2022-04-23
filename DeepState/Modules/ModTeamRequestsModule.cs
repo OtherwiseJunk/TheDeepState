@@ -36,15 +36,35 @@ namespace DeepState.Modules
 			}
 			else
 			{
-				int requestId = _requestService.CreateRequest(Context.Message.Author.Id, SharedConstants.LibcraftGuildId, requestMessage);
-				
+				int requestId;
+				if (Context.Guild == null)
+				{
+					requestId = _requestService.CreateRequest(Context.Message.Author.Id, SharedConstants.LibcraftGuildId, requestMessage);
+				}
+				else
+				{
+					requestId = _requestService.CreateRequest(Context.Message.Author.Id, Context.Guild.Id, requestMessage);
+				}
+
 				IMessage msg = Context.Channel.SendMessageAsync("Ok, I've submitted your request!").Result;
-				ITextChannel requests = (ITextChannel) Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
-				await requests.SendMessageAsync($"{DDBUtils.GetDisplayNameForUser((IGuildUser)Context.Message.Author)} has submitted a new request: {requestId}. {requestMessage} {Environment.NewLine} Link: {msg.GetJumpUrl()}");
+				if (Context.Guild.Id == SharedConstants.LibcraftGuildId)
+				{
+					ITextChannel requests = (ITextChannel)Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
+					await requests.SendMessageAsync($"{DDBUtils.GetDisplayNameForUser((IGuildUser)Context.Message.Author)} has submitted a new request: {requestId}. {requestMessage} {Environment.NewLine} Link: {msg.GetJumpUrl()}");
+				}
 			}
 		}
 
-		[Command("requests")]
+		[Command("requestd")]
+		[Summary("Submit a request to the mod team, and the request will be deleted. They may indicate a libcoin price for your request to be completed.")]
+		// when you change `minRequestMessageLength` make sure to change this
+		public async Task AddDeletedModTeamRequest([Summary("The request to be sent to the mod team. Minimum 10 characters."), Remainder] string requestMessage)
+        {
+            await AddModTeamRequest(requestMessage);
+			await Context.Message.DeleteAsync();
+        }
+
+        [Command("requests")]
 		[Summary("Submit a request to the mod team. They may indicate a libcoin price for your request to be completed.")]		
 		public async Task GetOpenRequestLIst()
 		{
