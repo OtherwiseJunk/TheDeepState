@@ -49,7 +49,12 @@ namespace DeepState.Modules
 				IMessage msg = Context.Channel.SendMessageAsync("Ok, I've submitted your request!").Result;
 				if (Context.Guild == null || Context.Guild.Id == SharedConstants.LibcraftGuildId)
 				{
-					ITextChannel requests = (ITextChannel)Context.Guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
+					IGuild guild = Context.Guild;
+					if (guild == null)
+                    {
+						guild = await Context.Client.GetGuildAsync(SharedConstants.LibcraftGuildId);
+                    }
+					ITextChannel requests = (ITextChannel)guild.GetChannelAsync(SharedConstants.RequestsChannelId).Result;
 					await requests.SendMessageAsync($"{DDBUtils.GetDisplayNameForUser((IGuildUser)Context.Message.Author)} has submitted a new request: {requestId}. {requestMessage} {Environment.NewLine} Link: {msg.GetJumpUrl()}");
 				}
 			}
