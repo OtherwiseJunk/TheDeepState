@@ -17,12 +17,12 @@ using Newtonsoft.Json;
 using System.Globalization;
 using Utils = DeepState.Utilities.Utilities;
 using System.Collections.Generic;
+using DartsDiscordBots.Services;
 
 namespace DeepState.Modules
 {
     public class MalarkeyModule : ModuleBase
     {
-        ImagingService _imaging { get; set; }
         List<string> DeepstateSaysSnark { get; set; } = new()
         {
             "You'd know how many are on, if you'd play",
@@ -55,10 +55,6 @@ namespace DeepState.Modules
         {
             "Everyone pray to God (Sporf), the server is down."
         };
-        public MalarkeyModule(ImagingService imaging)
-        {
-            _imaging = imaging;
-        }
         [Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 })]
         [Summary("Returns a message with a status of Sporf's Minecraft server")]
         public async Task MinecraftStatus(string serverAddress = SporfbaseConstants.ServerAddress, ushort serverPort = SporfbaseConstants.ServerPort)
@@ -243,38 +239,5 @@ namespace DeepState.Modules
 				_ = Context.Message.ReplyAsync("https://cdn.discordapp.com/attachments/883466654443507773/904792562777354280/video0.mov");
 			}
 		}
-
-		[Command("nft")]
-		[Summary("Generates an NFT for the user.")]
-		public async Task MakeNFT([Remainder] string mode = "")
-		{
-			new Thread(async () =>
-			{
-				string guid = Guid.NewGuid().ToString();
-				SKBitmap bmp;
-				if (mode.ToLower() == "rainbow" || mode.ToLower() == "r")
-				{
-					bmp = _imaging.GenerateJuliaSetImage(1028, 720, _imaging.BuildRainbowPallette()).Result;
-				}
-				else if (mode.ToLower() == "mandelbrot" || mode.ToLower() == "m")
-				{
-					bmp = _imaging.GenerateMandlebrotSet(1028, 720, _imaging.BuildStandardPallette()).Result;
-				}
-				else if (mode.ToLower() == "mandelbrotrandom" || mode.ToLower() == "mr")
-				{
-					bmp = _imaging.GenerateMandlebrotSet(1028, 720, _imaging.BuildRainbowPallette()).Result;
-				}
-				else
-				{
-					bmp = _imaging.GenerateJuliaSetImage(1028, 720, _imaging.BuildStandardPallette()).Result;
-				}
-				Stream stream = bmp.Encode(SKEncodedImageFormat.Png, 100).AsStream();
-				await Context.Channel.SendFileAsync(stream, $"{guid}.png", text: $"Here is your newly minted NFT, ID {Guid.NewGuid()}. Write it down or something, I'm not gonna track it.");
-			})
-			{
-
-            }.Start();
-
-        }
     }
 }

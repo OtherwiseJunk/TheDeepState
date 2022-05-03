@@ -28,6 +28,7 @@ using FluentScheduler;
 using HungerGameConstants = DeepState.Data.Constants.HungerGameConstants;
 using Serilog;
 using DartsDiscordBots.Modules.Jackbox.Interfaces;
+using DartsDiscordBots.Modules.NFT;
 
 namespace DeepState
 {
@@ -144,6 +145,7 @@ namespace DeepState
 			await _commands.AddModuleAsync<ModTeamRequestModule>(_services);
 			await _commands.AddModuleAsync<JackboxModule>(_services);
 			await _commands.AddModuleAsync<RPGModule>(_services);
+			await _commands.AddModuleAsync<NFTModule>(_services);
 
 #if !DEBUG
 			
