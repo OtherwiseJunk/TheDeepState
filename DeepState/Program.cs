@@ -105,7 +105,11 @@ namespace DeepState
 				.AddSingleton<IBotInformation, BotInformation>()
 				.AddSingleton<IMessageReliabilityService, MessageReliabilityService>()
 				.AddSingleton<IJackboxService, JackboxService>()
-				.AddSingleton<ImagingService>()
+				.AddSingleton(new ImagingService(Environment.GetEnvironmentVariable("DOPUBLIC"),
+					Environment.GetEnvironmentVariable("DOSECRET"),
+					Environment.GetEnvironmentVariable("DOURL"),
+					Environment.GetEnvironmentVariable("DOBUCKET"))
+				)
 				.AddSingleton<OutOfContextService>()
 				.AddSingleton<HungerGamesService>()
 				.AddSingleton<UserRecordsService>()
