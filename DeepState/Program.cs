@@ -24,6 +24,7 @@ using Utils = DeepState.Utilities.Utilities;
 using DeepState.Utilities;
 using OMH = DartsDiscordBots.Handlers.OnMessageHandlers;
 using ORH = DartsDiscordBots.Handlers.OnReactHandlers;
+using OEH = DartsDiscordBots.Handlers.OnEventCreatedHandlers;
 using FluentScheduler;
 using HungerGameConstants = DeepState.Data.Constants.HungerGameConstants;
 using Serilog;
@@ -182,7 +183,7 @@ namespace DeepState
         {
 			new Task(() =>
 			{
-				OnEventCreatedHandlers.AnnounceNewEvent(arg);
+				OEH.AnnounceNewEvent(arg);
 			}).Start();
         }
 
