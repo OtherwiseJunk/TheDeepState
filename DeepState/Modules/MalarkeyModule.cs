@@ -17,7 +17,9 @@ using Newtonsoft.Json;
 using System.Globalization;
 using Utils = DeepState.Utilities.Utilities;
 using System.Collections.Generic;
-using DartsDiscordBots.Services;
+using System.Drawing;
+using System.Linq;
+using FFMpegCore.Extend;
 
 namespace DeepState.Modules
 {
@@ -160,6 +162,35 @@ namespace DeepState.Modules
             embed.AddField($"{name}", "Status: Dad");
 
             _ = Context.Channel.SendMessageAsync(embed: embed.Build());
+        }
+
+        [Command("wilhelm")]
+        [Summary("Adds the wilhelm scream sound to an image. As r00t IDK.")]
+        public async Task WilhelmScream()
+        {
+            string attachmentUrl = null;
+            if(Context.Message.Attachments.Count == 1)
+            {
+                attachmentUrl = Context.Message.Attachments.First().Url;                
+            }
+            else if (Context.Message.ReferencedMessage != null)
+            {
+                IMessage messageRepliedTo = await Context.Channel.GetMessageAsync(Context.Message.ReferencedMessage.Id);
+                if(messageRepliedTo.Attachments.Count == 1) {
+                    attachmentUrl = messageRepliedTo.Attachments.First().Url;
+                }
+            }
+            else
+            {
+                _ = Context.Channel.SendMessageAsync("No image attachment found.");
+            }
+
+            if(attachmentUrl != null)
+            {
+                var image = System.Drawing.Image.FromFile(attachmentUrl);
+                image.AddAudio("./wilhelm.ogg", "output.mp4");
+                _ = Context.Channel.SendFileAsync("./output.mp4");
+            }
         }
 
         [Command("imgonnacome")]

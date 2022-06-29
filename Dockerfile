@@ -31,6 +31,9 @@ RUN apt-get install -y libfreetype6
 RUN apt-get install -y libfontconfig1
 RUN apt-get install -y libc6-dev 
 RUN apt-get install -y libgdiplus
+RUN apt-get install -y ffmpeg
+run apt-get install -y wget
+RUN wget https://upload.wikimedia.org/wikipedia/commons/d/d9/Wilhelm_Scream.ogg -O /app/wilhelm.ogg
 RUN rm /etc/localtime
 RUN ln -s /usr/share/zoneinfo/America/New_York /etc/localtime
 ENTRYPOINT ["dotnet", "DeepState.dll"]
