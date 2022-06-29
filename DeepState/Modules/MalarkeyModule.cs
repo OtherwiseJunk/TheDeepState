@@ -187,9 +187,24 @@ namespace DeepState.Modules
 
             if(attachmentUrl != null)
             {
-                var image = System.Drawing.Image.FromFile(attachmentUrl);
-                image.AddAudio("./wilhelm.ogg", "output.mp4");
-                _ = Context.Channel.SendFileAsync("./output.mp4");
+                using(HttpClient httpClient = new HttpClient())
+                {
+                    using(HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, attachmentUrl))
+                    {
+                        using(HttpResponseMessage response = await httpClient.SendAsync(request))
+                        {
+                            var image = System.Drawing.Image.FromStream(response.Content.ReadAsStream());
+                            int height = image.Height % 2 == 0 ? image.Height : image.Height + 1;
+                            int width = image.Width % 2 == 0 ? image.Width : image.Width + 1;
+                            if (image.Height % 2 != 0 || image.Width % 2 != 0)
+                            {
+                                image = (System.Drawing.Image)new Bitmap(image, new Size(width, height));
+                            }
+                            image.AddAudio("./wilhelm.ogg", "output.mp4");
+                            _ = Context.Channel.SendFileAsync("./output.mp4");
+                        }                        
+                    }
+                }                
             }
         }
 
