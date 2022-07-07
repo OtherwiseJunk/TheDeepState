@@ -91,13 +91,13 @@ namespace DeepState.Modules
         [Command("wokemoralists"), Alias("lobsters", "cleanyourroom", "peterson")]
         public async Task WokeMoralists()
         {
-            AutoResponse("https://twitter.com/bradenisbased/status/1544448370500161543");
+            AutoResponse("https://vxtwitter.com/bradenisbased/status/1544448370500161543");
         }
 
         [Command("petersonsex"), Alias("lobstersex")]
         public async Task PetersonSex()
         {
-            AutoResponse("https://twitter.com/alaning/status/1544546265828139010?s=20&t=jI8Ujl52cbASY2SN6QFyqw");
+            AutoResponse("https://vxtwitter.com/alaning/status/1544546265828139010?s=20&t=jI8Ujl52cbASY2SN6QFyqw");
         }
 
         [Command("notthistime")]
