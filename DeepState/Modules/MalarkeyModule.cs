@@ -85,21 +85,33 @@ namespace DeepState.Modules
         [Command("racisme")]
         public async Task LeRacisme()
         {
-            await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/959323818860621885/959325464093138964/gamer_country.mp4");
+            AutoResponse("https://cdn.discordapp.com/attachments/959323818860621885/959325464093138964/gamer_country.mp4");
+        }
+
+        [Command("wokemoralists"), Alias("lobsters", "cleanyourroom", "peterson")]
+        public async Task WokeMoralists()
+        {
+            AutoResponse("https://twitter.com/bradenisbased/status/1544448370500161543");
+        }
+
+        [Command("petersonsex"), Alias("lobstersex")]
+        public async Task PetersonSex()
+        {
+            AutoResponse("https://twitter.com/alaning/status/1544546265828139010?s=20&t=jI8Ujl52cbASY2SN6QFyqw");
         }
 
         [Command("notthistime")]
         [Summary("Not This Time. It's Fiction.")]
         public async Task NotThisTime()
         {
-            await Context.Channel.SendMessageAsync($"{SharedConstants.JonathanFrakesThatsNotTrue.GetRandom()}");
+            AutoResponse($"{SharedConstants.JonathanFrakesThatsNotTrue.GetRandom()}");
         }
 
         [Command("clara"), Alias("sillywoman")]
         [Summary("CLARA!")]
         public async Task Clara()
         {
-            await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/931723945416228915/952094761907535872/shut_up_silly_woman.mp4");
+            AutoResponse("https://cdn.discordapp.com/attachments/931723945416228915/952094761907535872/shut_up_silly_woman.mp4");
         }
         [Command("rodrigo"), Alias("patbomb")]
         [Summary("get pats. Maybe get lots of pats.")]
@@ -128,28 +140,28 @@ namespace DeepState.Modules
         [Summary("Live EML Reaction")]
         public async Task EMLReaction()
         {
-            await Context.Message.ReplyAsync("https://cdn.discordapp.com/attachments/740033615617982514/967206627109392384/LiveEMLReaction.png");
+            AutoResponse("https://cdn.discordapp.com/attachments/740033615617982514/967206627109392384/LiveEMLReaction.png");
         }
 
         [Command("weekend")]
         [Summary("It's The Weekend, Ladies and Gentleman!")]
         public async Task TheWeekend()
         {
-            await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/745024703365644320/840383340790939658/theweekend.mp4");
+            AutoResponse("https://cdn.discordapp.com/attachments/745024703365644320/840383340790939658/theweekend.mp4");
         }
 
         [Command("stupidsonofabitch"), Alias("ssoab", "sob", "ssob")]
         [Summary("You're a stupid son of a bitch.")]
         public async Task StupidSonOfABitch()
         {
-            await Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/855227586212134922/937769372406132756/RPReplay_Final1643652007.mov");
+            AutoResponse("https://cdn.discordapp.com/attachments/855227586212134922/937769372406132756/RPReplay_Final1643652007.mov");
         }
 
         [Command("2spicy"), Alias("tummytroubles")]
         [Summary("Anton has a weak stomache.")]
         public async Task TummyTroubles()
         {
-            await Context.Channel.SendMessageAsync("https://media.discordapp.net/attachments/701194133074608198/923110430732324914/album_2021-12-22_00-08-55.gif");
+            AutoResponse("https://media.discordapp.net/attachments/701194133074608198/923110430732324914/album_2021-12-22_00-08-55.gif");
         }
 
         [Command("walkingdad"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 })]
@@ -223,15 +235,15 @@ namespace DeepState.Modules
         }
 
         [Command("imgonnacome")]
-        public async Task ImGonnaCome()
+        public void ImGonnaCome()
         {
-            _ = Context.Channel.SendMessageAsync("https://youtu.be/NRCf3KUEVyw");
+            AutoResponse("https://youtu.be/NRCf3KUEVyw");
         }
 
         [Command("donotcome")]
-        public async Task DoNotCome()
+        public void DoNotCome()
         {
-            _ = Context.Channel.SendMessageAsync("https://media.tenor.com/images/a7b5e8c66c4214d3f04f3726a5475a65/tenor.gif");
+            AutoResponse("https://media.tenor.com/images/a7b5e8c66c4214d3f04f3726a5475a65/tenor.gif");
         }
 
         [Command("portal")]
@@ -258,13 +270,13 @@ namespace DeepState.Modules
         [Command("imfromarizona")]
         public async Task ImFromArizona()
         {
-            Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/701194133074608198/936088371485364255/video0.mov");
+            AutoResponse("https://cdn.discordapp.com/attachments/701194133074608198/936088371485364255/video0.mov");
         }
 
         [Command("antoncheckin"), Alias("anton")]
         public async Task AntonCheckIn()
         {
-            Context.Channel.SendMessageAsync("https://cdn.discordapp.com/attachments/701194133074608198/939019260754272296/LiveAntonReaction.png");
+            AutoResponse("https://cdn.discordapp.com/attachments/701194133074608198/939019260754272296/LiveAntonReaction.png");
         }
 
 		[Command("nationaldebt"), Alias("debt", "nd")]
@@ -299,5 +311,10 @@ namespace DeepState.Modules
 				_ = Context.Message.ReplyAsync("https://cdn.discordapp.com/attachments/883466654443507773/904792562777354280/video0.mov");
 			}
 		}
+
+        public void AutoResponse(string response)
+        {
+            Context.Channel.SendMessageAsync(response, messageReference: Context.Message.Reference);
+        }
     }
 }
