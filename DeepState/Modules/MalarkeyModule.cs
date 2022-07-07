@@ -20,11 +20,13 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using FFMpegCore.Extend;
+using System.Text.RegularExpressions;
 
 namespace DeepState.Modules
 {
     public class MalarkeyModule : ModuleBase
     {
+        public string ImageURLRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|webp)";
         List<string> DeepstateSaysSnark { get; set; } = new()
         {
             "You'd know how many are on, if you'd play",
@@ -173,11 +175,20 @@ namespace DeepState.Modules
             {
                 attachmentUrl = Context.Message.Attachments.First().Url;                
             }
+            else if(Regex.IsMatch(Context.Message.Content, ImageURLRegex)){
+                attachmentUrl = Regex.Match(Context.Message.Content, ImageURLRegex).Groups.Values.First().Value;
+            }
             else if (Context.Message.ReferencedMessage != null)
             {
                 IMessage messageRepliedTo = await Context.Channel.GetMessageAsync(Context.Message.ReferencedMessage.Id);
-                if(messageRepliedTo.Attachments.Count == 1) {
+                if (messageRepliedTo.Attachments.Count == 1)
+                {
                     attachmentUrl = messageRepliedTo.Attachments.First().Url;
+                }
+                Match match = Regex.Match(messageRepliedTo.Content, ImageURLRegex);
+                if (match.Success)
+                {
+                    attachmentUrl = match.Value;
                 }
             }
             else
@@ -187,24 +198,27 @@ namespace DeepState.Modules
 
             if(attachmentUrl != null)
             {
-                using(HttpClient httpClient = new HttpClient())
+                new Thread(async () =>
                 {
-                    using(HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, attachmentUrl))
+                    using (HttpClient httpClient = new HttpClient())
                     {
-                        using(HttpResponseMessage response = await httpClient.SendAsync(request))
+                        using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, attachmentUrl))
                         {
-                            var image = System.Drawing.Image.FromStream(response.Content.ReadAsStream());
-                            int height = image.Height % 2 == 0 ? image.Height : image.Height + 1;
-                            int width = image.Width % 2 == 0 ? image.Width : image.Width + 1;
-                            if (image.Height % 2 != 0 || image.Width % 2 != 0)
+                            using (HttpResponseMessage response = await httpClient.SendAsync(request))
                             {
-                                image = (System.Drawing.Image)new Bitmap(image, new Size(width, height));
+                                var image = System.Drawing.Image.FromStream(response.Content.ReadAsStream());
+                                int height = image.Height % 2 == 0 ? image.Height : image.Height + 1;
+                                int width = image.Width % 2 == 0 ? image.Width : image.Width + 1;
+                                if (image.Height % 2 != 0 || image.Width % 2 != 0)
+                                {
+                                    image = (System.Drawing.Image)new Bitmap(image, new Size(width, height));
+                                }
+                                image.AddAudio("./wilhelm.ogg", "output.mp4");
+                                _ = Context.Channel.SendFileAsync("./output.mp4");
                             }
-                            image.AddAudio("./wilhelm.ogg", "output.mp4");
-                            _ = Context.Channel.SendFileAsync("./output.mp4");
-                        }                        
+                        }
                     }
-                }                
+                }).Start();                            
             }
         }
 
