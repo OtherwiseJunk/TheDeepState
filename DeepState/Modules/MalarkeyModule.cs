@@ -94,6 +94,12 @@ namespace DeepState.Modules
             AutoResponse("https://vxtwitter.com/bradenisbased/status/1544448370500161543");
         }
 
+        [Command("darkbrandom"), Alias("letsgobrandon","theonetruebrandon")]
+        public async Task LetsGoDarkBrandon()
+        {
+            AutoResponse("https://cdn.discordapp.com/attachments/999910404316733500/1001980262994956309/dark_brandon.mp4");
+        }
+
         [Command("petersonsex"), Alias("lobstersex")]
         public async Task PetersonSex()
         {
