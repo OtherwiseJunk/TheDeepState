@@ -15,6 +15,7 @@ namespace DeepState.Data.Constants
 		public const string TributeRoleName = "Tribute";
 		public const string ChampionRoleName = "⛈️CHAMPION⛈️";
 		public const string CorpseRoleName = "Corpse";
+		public const string HungerGamesRoleName = "Hunger Games";
 
 		public static List<string> Weapons = new List<string>
 		{

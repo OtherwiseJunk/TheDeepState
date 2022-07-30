@@ -76,6 +76,7 @@ namespace DeepState.Utilities
 			state.CorpseRole = state.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.CorpseRoleName.ToLower());
 			state.Tributes = hgService.GetTributeList(config.DiscordGuildId);
 			state.CurrentStage = DetermineEventStage(DateTime.Now, state.Tributes);
+			state.HungerGamesRole = state.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == HungerGameConstants.HungerGamesRoleName.ToLower());
 
 			return state;
 		}
@@ -89,13 +90,14 @@ namespace DeepState.Utilities
 			{
 				HungerGamesGameState state = BuildGameStateFromConfig(config, client, hgService);
 				Console.WriteLine($"Today is {now}, and the game has deterinned the event stage for {state.Guild.Name} is {Enum.GetName(state.CurrentStage)}");
+				
 
 				if (state.Guild.Id == LibcraftGuildId)
-				{
-					libcraftBotChannel = (IMessageChannel)await state.Guild.GetChannelAsync(LCBotCommandsChannel);
-				}
+                {
+                    libcraftBotChannel = (IMessageChannel)await state.Guild.GetChannelAsync(LCBotCommandsChannel);
+                }
 
-				new Thread(() =>
+                new Thread(() =>
 				{
 					switch (state.CurrentStage)
 					{
@@ -103,6 +105,14 @@ namespace DeepState.Utilities
 							Console.WriteLine($"Firing First Day Registration Period for {state.Guild.Name}");
 							if (libcraftBotChannel != null)
 							{
+								if(state.HungerGamesRole != null)
+                                {
+									libcraftBotChannel.SendMessageAsync($"{state.HungerGamesRole.Mention} Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
+								}
+                                else
+                                {
+									libcraftBotChannel.SendMessageAsync("Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
+								}
 								libcraftBotChannel.SendMessageAsync("Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
 								libcraftBotChannel = null;
 							}

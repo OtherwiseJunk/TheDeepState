@@ -17,6 +17,7 @@ namespace DeepState.Models
 		public IRole TributeRole { get; set; }
 		public IRole CorpseRole { get; set; }
 		public List<HungerGamesTribute> Tributes { get; set; }
-		public EventStage CurrentStage { get; set; }
-	}
+        public EventStage CurrentStage { get; set; }
+		public IRole HungerGamesRole { get; set; }
+    }
 }
