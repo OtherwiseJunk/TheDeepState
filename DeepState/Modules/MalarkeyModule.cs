@@ -146,7 +146,7 @@ namespace DeepState.Modules
         [Summary("Live EML Reaction")]
         public async Task EMLReaction()
         {
-            AutoResponse("https://cdn.discordapp.com/attachments/740033615617982514/967206627109392384/LiveEMLReaction.png");
+            AutoResponse("https://cacheblasters.nyc3.digitaloceanspaces.com/eml.png");
         }
 
         [Command("weekend")]
