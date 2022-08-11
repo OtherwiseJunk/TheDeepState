@@ -424,6 +424,7 @@ namespace DeepState.Utilities
 				$"{victimPronounsByConjugation[PronounConjugations.Subjective].GetRandom().ToPascalCase()} went to Brazil",
 				"Smote by God for being far, far, too horny.",
 				"Taken out by the Ghost of Kyiv.",
+				"Couldn't handle they/them pussy",
 				"Ate the Cheese Skirtussy",
 				"Was voted the asshole on r/amitheasshole",
 				"Was NOT the imposter",
