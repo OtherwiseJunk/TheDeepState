@@ -203,7 +203,8 @@ namespace DeepState.Data.Constants
 			"https://media.newyorker.com/photos/5c3e10b2f92c694343cc71b9/2:2/w_128,h_128,c_limit/Rosner-Fast-Food-Trump.jpg",
 			"https://64.media.tumblr.com/avatar_4a3efe2f2d5b_128.pnj",
 			"https://cdn.discordapp.com/attachments/850406580037222420/933510154291396649/image0.jpg",
-
+			"https://cacheblasters.nyc3.digitaloceanspaces.com/fortnite.png",
+			"https://cacheblasters.nyc3.digitaloceanspaces.com/jerma.png",
 		};
 	}
 }
