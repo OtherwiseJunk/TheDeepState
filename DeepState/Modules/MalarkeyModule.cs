@@ -156,6 +156,13 @@ namespace DeepState.Modules
             AutoResponse("https://cdn.discordapp.com/attachments/745024703365644320/840383340790939658/theweekend.mp4");
         }
 
+        [Command("crackers")]
+        [Summary("That's just how they feel, yanno?")]
+        public async Task Crackers()
+        {
+            AutoResponse("https://vocaroo.com/1bINV12mPOSF");
+        }
+
         [Command("stupidsonofabitch"), Alias("ssoab", "sob", "ssob")]
         [Summary("You're a stupid son of a bitch.")]
         public async Task StupidSonOfABitch()
