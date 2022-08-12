@@ -44,7 +44,6 @@ namespace DeepState
 				GatewayIntents = GatewayIntents.All
 			});
 			_services = ConfigureServices();
-			ConfigureDatabases();
 			_commands = new CommandService();
 			_client.Log += Log;
 			_commands.Log += Log;
@@ -83,15 +82,6 @@ namespace DeepState
 			new Thread( () => _ = LibcoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>() ) ).Start();
 			// Block this task until the program is closed.
 			await Task.Delay(-1);
-		}
-		private void ConfigureDatabases()
-		{
-			/* var oocContext = _services.GetService<OOCDBContext>();
-			oocContext.Database.EnsureCreated();
-			var userRecordContext = _services.GetService<GuildUserRecordContext>();
-			userRecordContext.Database.EnsureCreated();
-			var hungerGamesContext = _services.GetService<HungerGamesContext>();
-			hungerGamesContext.Database.EnsureCreated(); */
 		}
 		private static IServiceProvider ConfigureServices()
 		{

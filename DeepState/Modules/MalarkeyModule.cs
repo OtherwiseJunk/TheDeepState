@@ -192,7 +192,7 @@ namespace DeepState.Modules
         }
 
         [Command("wilhelm")]
-        [Summary("Adds the wilhelm scream sound to an image. As r00t IDK.")]
+        [Summary("Adds the wilhelm scream sound to an image. Ask r00t IDK.")]
         public async Task WilhelmScream()
         {
             string attachmentUrl = null;
@@ -248,13 +248,15 @@ namespace DeepState.Modules
         }
 
         [Command("imgonnacome")]
-        public void ImGonnaCome()
+        [Summary("He'll do it.")]
+        public async Task ImGonnaCome()
         {
             AutoResponse("https://youtu.be/NRCf3KUEVyw");
         }
 
         [Command("donotcome")]
-        public void DoNotCome()
+        [Summary("Just don't.")]
+        public async Task DoNotCome()
         {
             AutoResponse("https://media.tenor.com/images/a7b5e8c66c4214d3f04f3726a5475a65/tenor.gif");
         }
