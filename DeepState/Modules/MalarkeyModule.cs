@@ -251,7 +251,7 @@ namespace DeepState.Modules
         [Summary("He'll do it.")]
         public async Task ImGonnaCome()
         {
-            AutoResponse("https://youtu.be/NRCf3KUEVyw");
+            AutoResponse("https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/TrumpGonnaCome.mp4");
         }
 
         [Command("donotcome")]
