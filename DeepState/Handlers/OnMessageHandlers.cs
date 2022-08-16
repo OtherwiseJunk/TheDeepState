@@ -9,6 +9,8 @@ using Discord;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using DeepState.Data.Services;
+using static DartsDiscordBots.Constants.SharedConstants;
 
 namespace DeepState.Handlers
 {
@@ -95,5 +97,36 @@ namespace DeepState.Handlers
 				} 
 			}
 		}
+
+		public static async Task TableFlipCheck(SocketMessage msg, IGuild guild, UserRecordsService userRecordService)
+        {
+            if (BotUtilities.isUserFlippingTable(msg.Content) && userRecordService.UserRecordExists(msg.Author.Id, guild.Id))
+            {
+				int tablesFlipped = userRecordService.IncrementTableflip(msg.Author.Id, guild.Id);
+				TableFlipTier tier = GetTableflipTier(tablesFlipped);
+
+				_ = msg.Channel.SendMessageAsync(String.Format(TableFlipResponses[tier].GetRandom(), DartsDiscordBots.Utilities.BotUtilities.GetDisplayNameForUser((IGuildUser) msg.Author)));
+            }
+        }
+		private static TableFlipTier GetTableflipTier(int tablesFlipped)
+        {
+			const int tierSize = 35;
+
+			switch (tablesFlipped)
+            {
+				case < (1 * tierSize):
+                    return TableFlipTier.Polite;
+				case < (2 * tierSize):
+					return TableFlipTier.Chastising;
+				case < (3 * tierSize):
+					return TableFlipTier.Aggresive;
+				case < (4 * tierSize):
+					return TableFlipTier.Scalding;
+				case > (5 * tierSize):
+					return TableFlipTier.NavySeal;
+                default:
+					return TableFlipTier.Polite;
+            }
+        }
 	}
 }

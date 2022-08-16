@@ -27,6 +27,21 @@ namespace DeepState.Data.Services
 				return context.UserRecords.AsQueryable().FirstOrDefaultAsync(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId).Result != null;
 			}
 		}
+		public int IncrementTableflip(ulong userId, ulong guildId)
+        {
+			using(GuildUserRecordContext context = _contextFactory.CreateDbContext())
+            {
+                if (UserRecordExists(userId, guildId))
+                {
+                    UserRecord record = context.UserRecords.AsQueryable().First(ur => ur.DiscordUserId == userId && ur.DiscordGuildId == guildId);
+                    record.TableFlipCount++;
+                    context.SaveChanges();
+
+					return record.TableFlipCount;
+                }
+				return 0;
+            }
+        }
 		public void IssuePayout(ulong userId, ulong guildId)
 		{
 			double payoutAmount = RollPayout();
@@ -167,7 +182,6 @@ namespace DeepState.Data.Services
 				return activeUsers;
 			}
 		}
-
 		public List<UserRecord> GetGuildUserRecords(ulong guildId)
 		{
 			using (GuildUserRecordContext context = _contextFactory.CreateDbContext())

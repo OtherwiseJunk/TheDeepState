@@ -204,10 +204,11 @@ namespace DeepState
 				new Thread(() => { OnMessageHandlers.EgoCheck(messageParam, Utils.IsMentioningMe(messageParam, _client.CurrentUser)); }).Start();
 				new Thread(() => { _ = OnMessageHandlers.RandomReactCheck(messageParam); }).Start();
 				new Thread(() => { OnMessageHandlers.Imposter(messageParam, Utils.IsSus(messageParam.Content)); }).Start();
-				new Thread(() => { _ = OnMessageHandlers.MalarkeyLevelOfHandler(message); }).Start();
+                new Thread(() => { _ = OnMessageHandlers.MalarkeyLevelOfHandler(message); }).Start();
+				new Thread(() => { _ = OnMessageHandlers.TableFlipCheck(messageParam, guild, _services.GetService<UserRecordsService>()); }).Start();
 			}
 
-		}
+        }
 		private async Task OnReact(Cacheable<IUserMessage, ulong> cachedMessage, Cacheable<IMessageChannel,ulong> cachedChannel, SocketReaction reaction)
 		{
 			ISocketMessageChannel channel = (ISocketMessageChannel)cachedChannel.Value;
