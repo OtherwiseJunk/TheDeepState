@@ -100,12 +100,25 @@ namespace DeepState.Handlers
 
 		public static async Task TableFlipCheck(SocketMessage msg, IGuild guild, UserRecordsService userRecordService)
         {
-            if (BotUtilities.isUserFlippingTable(msg.Content) && userRecordService.UserRecordExists(msg.Author.Id, guild.Id))
+            if (BotUtilities.isUserFlippingTable(msg.Content, out TableFlipType? type) && userRecordService.UserRecordExists(msg.Author.Id, guild.Id))
             {
 				int tablesFlipped = userRecordService.IncrementTableflip(msg.Author.Id, guild.Id);
 				TableFlipTier tier = GetTableflipTier(tablesFlipped);
+                switch (type)
+                {
+                    case TableFlipType.Single:
+						_ = msg.Channel.SendMessageAsync(UnflippedTable);
+						break;
+					case TableFlipType.Double:
+                        _ = msg.Channel.SendMessageAsync(LeftDoubleUnflippedTable);
+						_ = msg.Channel.SendMessageAsync(RightDoubleUnflippedTable);
+						break;
+					case TableFlipType.Enraged:
+						_ = msg.Channel.SendMessageAsync(EnragedUnflippedTable);
+						break;
+				}
 
-				_ = msg.Channel.SendMessageAsync(String.Format(TableFlipResponses[tier].GetRandom(), DartsDiscordBots.Utilities.BotUtilities.GetDisplayNameForUser((IGuildUser) msg.Author)));
+                _ = msg.Channel.SendMessageAsync(String.Format(TableFlipResponses[tier].GetRandom(), DartsDiscordBots.Utilities.BotUtilities.GetDisplayNameForUser((IGuildUser) msg.Author)));
             }
         }
 		private static TableFlipTier GetTableflipTier(int tablesFlipped)
