@@ -41,6 +41,7 @@ namespace DeepState.Service
 
         public string RequestJWT()
         {
+            _log.Information("Requesting Panopticon JWT...");
             string token = "";
 
             using (HttpRequestMessage msg = new(HttpMethod.Post, "https://dev-apsgkx34.us.auth0.com/oauth/token"))
@@ -52,10 +53,13 @@ namespace DeepState.Service
 
                 using (HttpResponseMessage resp = _httpClient.SendAsync(msg).Result)
                 {
+                    _log.Information($"Panopticon JWT Status Code: {resp.StatusCode}");
                     JsonNode json = JsonSerializer.Deserialize<JsonNode>(resp.Content.ReadAsStringAsync().Result);
+                    _log.Information($"Received json: {json}");
                     token = json["access_token"].GetValue<string>();
                 }
             }
+
             return token;
         }
 
