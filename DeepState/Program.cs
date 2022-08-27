@@ -91,7 +91,9 @@ namespace DeepState
 			//We don't have any services currently for DI
 			//but once we do this is where we would add them.
 			var map = new ServiceCollection()
-				.AddSingleton<IHelpConfig, HelpConfig>()
+				.AddSingleton<ILogger>(log);
+
+			map.AddSingleton<IHelpConfig, HelpConfig>()
 				.AddSingleton<IBotInformation, BotInformation>()
 				.AddSingleton<IMessageReliabilityService, MessageReliabilityService>()
 				.AddSingleton<IJackboxService, JackboxService>()
@@ -105,7 +107,8 @@ namespace DeepState
 				.AddSingleton<UserRecordsService>()
 				.AddSingleton<ModTeamRequestService>()
 				.AddSingleton<RPGService>()
-				.AddSingleton<ILogger>(log)
+				
+				.AddSingleton<PanopticonService>()
 				.AddDbContext<OOCDBContext>()
 				.AddDbContext<GuildUserRecordContext>()
 				.AddDbContext<HungerGamesContext>()
@@ -115,6 +118,8 @@ namespace DeepState
 				.AddDbContextFactory<ModTeamRequestContext>()
 				.AddDbContextFactory<JackboxContext>()
 				.AddDbContextFactory<RPGContext>();
+				
+			map.AddHttpClient<PanopticonService>();
 
 			return map.BuildServiceProvider();
 		}
@@ -140,6 +145,7 @@ namespace DeepState
 			await _commands.AddModuleAsync<JackboxModule>(_services);
 			await _commands.AddModuleAsync<RPGModule>(_services);
 			await _commands.AddModuleAsync<NFTModule>(_services);
+			await _commands.AddModuleAsync<FeedbackModule>(_services);
 
 #if !DEBUG
 			
