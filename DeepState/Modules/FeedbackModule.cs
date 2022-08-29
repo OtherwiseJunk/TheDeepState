@@ -29,6 +29,10 @@ namespace DeepState.Modules
             try
             {
                 _log.Information("Received a feedback command");
+                foreach(IGuild guild in Context.Client.GetGuildsAsync().Result)
+                {
+                    _log.Information($"{guild.Name}: {guild.Id}");
+                }
                 IGuild libcraftGuild = Context.Client.GetGuildAsync(LibcraftGuildId).Result;
                 if (libcraftGuild == null)
                 {
