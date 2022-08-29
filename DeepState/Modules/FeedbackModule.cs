@@ -18,6 +18,7 @@ namespace DeepState.Modules
         public FeedbackModule(PanopticonService service, ILogger logger)
         {
             _service = service;
+            _log = logger;
         }
 
         [Command()]
