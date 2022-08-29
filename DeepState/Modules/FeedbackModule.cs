@@ -4,6 +4,7 @@ using Discord.Commands;
 using System.Linq;
 using System.Threading.Tasks;
 using Serilog;
+using System;
 
 namespace DeepState.Modules
 {
@@ -25,32 +26,45 @@ namespace DeepState.Modules
         [Summary("Sends feedback to the Libcraft Admins")]
         public async Task CreateFeedback([Remainder] string feedback)
         {
-            _log.Information("Received a feedback command");
-            IGuild libcraftGuild = Context.Client.GetGuildAsync(LibcraftGuildId).Result;
-            if(libcraftGuild == null)
+            try
             {
-                ITextChannel feedbackChannel = (ITextChannel)libcraftGuild.GetChannelAsync(FeedbackChannelId).Result;
-                if (feedbackChannel == null)
+                _log.Information("Received a feedback command");
+                IGuild libcraftGuild = Context.Client.GetGuildAsync(LibcraftGuildId).Result;
+                if (libcraftGuild == null)
                 {
-                    _log.Information("Attempting to create feedback.");
-                    _service.CreateFeedback(feedback, Context.Message.Author.Id);
-                    _log.Information("Created feedback");
-                    int id = _service.GetAllFeedback().First(fb => fb.Message == feedback).Id;
-                    _log.Information("Extracted ID");
-                    EmbedBuilder builder = new EmbedBuilder();
-                    builder.Title = $"Feedback #{id}";
-                    builder.Description = feedback;
-                    await feedbackChannel.SendMessageAsync(embed: builder.Build());
-                    _log.Information("Feedback sent to reports channel.");
+                    ITextChannel feedbackChannel = (ITextChannel)libcraftGuild.GetChannelAsync(FeedbackChannelId).Result;
+                    if (feedbackChannel == null)
+                    {
+                        _log.Information("Attempting to create feedback.");
+                        _service.CreateFeedback(feedback, Context.Message.Author.Id);
+                        _log.Information("Created feedback");
+                        int id = _service.GetAllFeedback().First(fb => fb.Message == feedback).Id;
+                        _log.Information("Extracted ID");
+                        EmbedBuilder builder = new EmbedBuilder();
+                        builder.Title = $"Feedback #{id}";
+                        builder.Description = feedback;
+                        await feedbackChannel.SendMessageAsync(embed: builder.Build());
+                        _log.Information("Feedback sent to reports channel.");
+                    }
+                    else
+                    {
+                        _log.Error("Failed to find libcraft report channel when attempting to create feedback");
+                    }
                 }
                 else
                 {
-                    _log.Error("Failed to find libcraft report channel when attempting to create feedback");
-                }                
-            }
-            else
+                    _log.Error("Failed to find libcraft Guild when attempting to create feedback");
+                }
+            }    
+            catch(Exception ex)
             {
-                _log.Error("Failed to find libcraft Guild when attempting to create feedback");
+                _log.Error(ex.Message);
+                _log.Information("Looping through any inner exceptions...");
+                while (ex.InnerException != null)
+                {
+                    _log.Error(ex.InnerException.Message);
+                    ex = ex.InnerException;
+                }
             }
         }
     }
