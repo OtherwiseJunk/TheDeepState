@@ -66,7 +66,7 @@ namespace DeepState.Data.Constants
 			"Jeb's `PLEASE CLAP` sign.",
 			"a (sabotauged) Faulty O-Ring.",
 			"a Tesla, in autopilot mode.",
-			"an ICMB.",
+			"an ICBM.",
 			"a battleaxe.",
 			"a dagger.",
 			"a sickle.",
