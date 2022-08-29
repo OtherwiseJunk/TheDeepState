@@ -30,7 +30,7 @@ namespace DeepState.Modules
             if(libcraftGuild != null)
             {
                 ITextChannel feedbackChannel = (ITextChannel)libcraftGuild.GetChannelAsync(FeedbackChannelId).Result;
-                if (feedbackChannel == null)
+                if (feedbackChannel != null)
                 {
                     _log.Information("Attempting to create feedback.");
                     _service.CreateFeedback(feedback, Context.Message.Author.Id);
