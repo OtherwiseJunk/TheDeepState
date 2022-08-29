@@ -14,7 +14,7 @@ namespace DeepState.Modules
         ILogger _log { get; set; }
         PanopticonService _service { get; set; }
         ulong FeedbackChannelId = 967308491041693706;
-        ulong LibcraftGuildId = 698639095940907048;        
+        ulong LibcraftGuildId = 698639095940907048;
 
         public FeedbackModule(PanopticonService service, ILogger logger)
         {
@@ -29,11 +29,8 @@ namespace DeepState.Modules
             try
             {
                 _log.Information("Received a feedback command");
-                foreach(IGuild guild in Context.Client.GetGuildsAsync().Result)
-                {
-                    _log.Information($"{guild.Name}: {guild.Id}");
-                }
-                IGuild libcraftGuild = Context.Client.GetGuildAsync(LibcraftGuildId).Result;
+
+                IGuild libcraftGuild = Context.Client.GetGuildsAsync().Result.FirstOrDefault(g => g.Id == LibcraftGuildId);
                 if (libcraftGuild == null)
                 {
                     ITextChannel feedbackChannel = (ITextChannel)libcraftGuild.GetChannelAsync(FeedbackChannelId).Result;
