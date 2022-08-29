@@ -30,7 +30,15 @@ namespace DeepState.Modules
             {
                 _log.Information("Received a feedback command");
 
-                IGuild libcraftGuild = Context.Client.GetGuildsAsync().Result.FirstOrDefault(g => g.Id == LibcraftGuildId);
+                IGuild libcraftGuild = null;
+                foreach(IGuild guild in Context.Client.GetGuildsAsync().Result)
+                {
+                    Console.WriteLine($"Does guild ID match? {guild.Id} == {LibcraftGuildId} = {guild.Id == LibcraftGuildId}");
+                    if(guild.Id == LibcraftGuildId)
+                    {
+                        libcraftGuild = guild;
+                    }
+                }
                 if (libcraftGuild == null)
                 {
                     ITextChannel feedbackChannel = (ITextChannel)libcraftGuild.GetChannelAsync(FeedbackChannelId).Result;
