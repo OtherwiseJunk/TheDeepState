@@ -47,6 +47,7 @@ namespace DeepState.Modules
                     builder.Title = $"Feedback #{id}";
                     builder.Description = feedback;
                     await feedbackChannel.SendMessageAsync(embed: builder.Build());
+                    await Context.Message.Author.SendMessageAsync("Successfully submitted your feedback to the Libcraft team.");
                     _log.Information("Feedback sent to reports channel.");
                 }
                 else
