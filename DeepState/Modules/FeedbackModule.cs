@@ -29,7 +29,37 @@ namespace DeepState.Modules
             _imaging = imaging;
         }
 
-        [Command()]
+        [Command("list")]
+        [Summary("Gets a list of all feedback. Only works for admins")]
+        [RequireOwner(Group = "admins"), RequireUserPermission(GuildPermission.ManageGuild, Group = "admins"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId })]
+        public async Task GetListOfFeedback()
+        {
+            List<Feedback> feedbackList = _panopticon.GetAllFeedback();
+            if (feedbackList != null)
+            {
+                if (feedbackList.Count > 0)
+                {
+                    EmbedBuilder builder = new EmbedBuilder();
+                    builder.Title = "Libcraft Feedback Submissions";
+                    foreach (Feedback feedback in feedbackList)
+                    {
+                        builder.AddField($"{feedback.Id}", feedback.Message);
+                    }
+                    ITextChannel feedbackChannel = GetFeedbackChannel();
+                    _ = feedbackChannel.SendMessageAsync(embed: builder.Build());
+                }
+                else
+                {
+                    _ = Context.Channel.SendMessageAsync("Sorry, looks like there's no active feedback submissions");
+                }
+            }
+            else
+            {
+                _ = Context.Channel.SendMessageAsync("Shit Broke :crying:");
+            }
+        }
+
+        [Command("submit")]
         [Summary("Sends feedback to the Libcraft Admins")]
         public async Task CreateFeedback([Remainder] string feedback)
         {
@@ -57,35 +87,6 @@ namespace DeepState.Modules
             }
         }
 
-        [Command("list")]
-        [Summary("Gets a list of all feedback. Only works for admins")]
-        [RequireOwner(Group = "admins"), RequireUserPermission(GuildPermission.ManageGuild), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId })]
-        public async Task GetListOfFeedback()
-        {
-            List<Feedback> feedbackList = _panopticon.GetAllFeedback();
-            if (feedbackList != null)
-            {
-                if (feedbackList.Count > 0)
-                {
-                    EmbedBuilder builder = new EmbedBuilder();
-                    builder.Title = "Libcraft Feedback Submissions";
-                    foreach (Feedback feedback in feedbackList)
-                    {
-                        builder.AddField($"{feedback.Id}", feedback.Message);
-                    }
-                    ITextChannel feedbackChannel = GetFeedbackChannel();
-                    _ = feedbackChannel.SendMessageAsync(embed: builder.Build());
-                }
-                else
-                {
-                    _ = Context.Channel.SendMessageAsync("Sorry, looks like there's no active feedback submissions");
-                }
-            }
-            else
-            {
-                _ = Context.Channel.SendMessageAsync("Shit Broke :crying:");
-            }
-        }
         private ITextChannel GetFeedbackChannel()
         {
             IGuild libcraftGuild = Context.Client.GetGuildAsync(LibcraftGuildId).Result;
