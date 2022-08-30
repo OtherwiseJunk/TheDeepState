@@ -89,7 +89,7 @@ namespace DeepState.Modules
         private ITextChannel GetFeedbackChannel()
         {
             IGuild libcraftGuild = Context.Client.GetGuildAsync(LibcraftGuildId).Result;
-            return (ITextChannel)libcraftGuild.GetChannelAsync(FeedbackChannelId);
+            return (ITextChannel)libcraftGuild.GetChannelAsync(FeedbackChannelId).Result;
         }
         private string GenerateAttachmentLinksString(IReadOnlyCollection<IAttachment> attachments)
         {
