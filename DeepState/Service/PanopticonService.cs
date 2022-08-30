@@ -94,12 +94,13 @@ namespace DeepState.Service
             using (HttpRequestMessage req = new(HttpMethod.Post, $"https://panopticon.cacheblasters.com/Feedback?userId={reportingUser}"))
             {
                 req.AddJWTAuthorization(RequestJWT);
-                req.Content = new StringContent($"\"{msg}\"", Encoding.UTF8, "application/json");
+                req.Content = new StringContent($"\"{msg.Replace(Environment.NewLine,String.Empty)}\"", Encoding.UTF8, "application/json");
                 using (HttpResponseMessage resp = _httpClient.SendAsync(req).Result)
                 {
                     if(resp.StatusCode != HttpStatusCode.NoContent)
                     {
                         _log.Error("Received a non-200 response from Panopticon request for creating feedback.");
+                        _log.Error($"Response Content: {resp.Content.ReadAsStringAsync().Result}");
                     }                    
                 }
             }

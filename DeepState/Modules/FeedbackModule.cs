@@ -41,7 +41,7 @@ namespace DeepState.Modules
                     _log.Information("Attempting to create feedback.");
                     _panopticon.CreateFeedback(feedback, Context.Message.Author.Id);
                     _log.Information("Created feedback");
-                    int id = _panopticon.GetAllFeedback().First(fb => fb.Message == feedback).Id;
+                    int id = _panopticon.GetAllFeedback().First(fb => fb.Message == feedback.Replace(Environment.NewLine, String.Empty)).Id;
                     _log.Information("Extracted ID");
                     EmbedBuilder builder = new EmbedBuilder();
                     builder.Title = $"Feedback #{id}";
@@ -70,7 +70,7 @@ namespace DeepState.Modules
             }
             foreach (IAttachment attachment in attachments)
             {
-                links += $"{attachment.Url}{Environment.NewLine}";
+                links += $"{attachment.Url} {Environment.NewLine}";
             }
             _log.Information($"Found {attachments.Count} attachments, generated links.");
             return links;
