@@ -200,32 +200,29 @@ namespace DeepState.Modules
 
         [Command("wilhelm")]
         [Summary("Adds the wilhelm scream sound to an image. Ask r00t IDK.")]
-        public async Task WilhelmScream()
+        public async Task WilhelmScream(string contentUrl = "")
         {
-            IAttachment imageAttachment _ffmpeg.AttachmentHasSingularAcceptableMediaType(Context.Message.Attachments, out MediaType mediaType);
-            if(attachmentUrl != null)
+            string url = _ffmpeg.GetSingleAcceptableAttachmentUrl(Context.Message.Attachments.ToList(), out MediaType? mediaType);
+            if (url == null) { url = _ffmpeg.GetSingleAcceptableContentUrl(contentUrl, out mediaType); }
+            if(Context.Message.ReferencedMessage != null)
             {
-                new Thread(async () =>
-                {
-                    using (HttpClient httpClient = new HttpClient())
+                if (url == null) { url = _ffmpeg.GetSingleAcceptableAttachmentUrl(Context.Message.ReferencedMessage.Attachments.ToList(), out mediaType); }
+                if (url == null) { url = _ffmpeg.GetSingleAcceptableContentUrl(Context.Message.ReferencedMessage.Content, out mediaType); }
+            }            
+
+            if (url != null)
+            {
+                string fileName = "output";
+                new Thread(async () => {
+                    if(await _ffmpeg.AddWilhelmToAttachment(url, (MediaType)mediaType, fileName))
                     {
-                        using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, attachmentUrl))
-                        {
-                            using (HttpResponseMessage response = await httpClient.SendAsync(request))
-                            {
-                                System.Drawing.Image image = System.Drawing.Image.FromStream(response.Content.ReadAsStream());
-                                int height = image.Height % 2 == 0 ? image.Height : image.Height + 1;
-                                int width = image.Width % 2 == 0 ? image.Width : image.Width + 1;
-                                if (image.Height % 2 != 0 || image.Width % 2 != 0)
-                                {
-                                    image = new Bitmap(image, new Size(width, height));
-                                }
-                                image.AddAudio("./wilhelm.ogg", "output.mp4");
-                                _ = Context.Channel.SendFileAsync("./output.mp4");
-                            }
-                        }
+                        _ = Context.Channel.SendFileAsync($"./{fileName}.mp4");
                     }
-                }).Start();                            
+                    else
+                    {
+                        _ = Context.Channel.SendMessageAsync("Sorry, either the filetype of the attachment is not supported at this time, but it had");
+                    }
+                }).Start();                
             }
         }
 

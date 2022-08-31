@@ -107,7 +107,7 @@ namespace DeepState
 				.AddSingleton<UserRecordsService>()
 				.AddSingleton<ModTeamRequestService>()
 				.AddSingleton<RPGService>()
-				
+				.AddSingleton<FFMPEGService>()
 				.AddSingleton<PanopticonService>()
 				.AddDbContext<OOCDBContext>()
 				.AddDbContext<GuildUserRecordContext>()
@@ -120,6 +120,7 @@ namespace DeepState
 				.AddDbContextFactory<RPGContext>();
 				
 			map.AddHttpClient<PanopticonService>();
+			map.AddHttpClient<FFMPEGService>();
 
 			return map.BuildServiceProvider();
 		}
