@@ -26,6 +26,13 @@ namespace DeepState.Modules
 {
     public class MalarkeyModule : ModuleBase
     {
+        public FFMPEGService _ffmpeg { get; set; }
+
+        public MalarkeyModule(FFMPEGService ffmpeg)
+        {
+            _ffmpeg = ffmpeg;
+        }
+
         public string ImageURLRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png|webp)";
         List<string> DeepstateSaysSnark { get; set; } = new()
         {
@@ -195,32 +202,7 @@ namespace DeepState.Modules
         [Summary("Adds the wilhelm scream sound to an image. Ask r00t IDK.")]
         public async Task WilhelmScream()
         {
-            string attachmentUrl = null;
-            if(Context.Message.Attachments.Count == 1)
-            {
-                attachmentUrl = Context.Message.Attachments.First().Url;                
-            }
-            else if(Regex.IsMatch(Context.Message.Content, ImageURLRegex)){
-                attachmentUrl = Regex.Match(Context.Message.Content, ImageURLRegex).Groups.Values.First().Value;
-            }
-            else if (Context.Message.ReferencedMessage != null)
-            {
-                IMessage messageRepliedTo = await Context.Channel.GetMessageAsync(Context.Message.ReferencedMessage.Id);
-                if (messageRepliedTo.Attachments.Count == 1)
-                {
-                    attachmentUrl = messageRepliedTo.Attachments.First().Url;
-                }
-                Match match = Regex.Match(messageRepliedTo.Content, ImageURLRegex);
-                if (match.Success)
-                {
-                    attachmentUrl = match.Value;
-                }
-            }
-            else
-            {
-                _ = Context.Channel.SendMessageAsync("No image attachment found.");
-            }
-
+            IAttachment imageAttachment _ffmpeg.AttachmentHasSingularAcceptableMediaType(Context.Message.Attachments, out MediaType mediaType);
             if(attachmentUrl != null)
             {
                 new Thread(async () =>
@@ -231,12 +213,12 @@ namespace DeepState.Modules
                         {
                             using (HttpResponseMessage response = await httpClient.SendAsync(request))
                             {
-                                var image = System.Drawing.Image.FromStream(response.Content.ReadAsStream());
+                                System.Drawing.Image image = System.Drawing.Image.FromStream(response.Content.ReadAsStream());
                                 int height = image.Height % 2 == 0 ? image.Height : image.Height + 1;
                                 int width = image.Width % 2 == 0 ? image.Width : image.Width + 1;
                                 if (image.Height % 2 != 0 || image.Width % 2 != 0)
                                 {
-                                    image = (System.Drawing.Image)new Bitmap(image, new Size(width, height));
+                                    image = new Bitmap(image, new Size(width, height));
                                 }
                                 image.AddAudio("./wilhelm.ogg", "output.mp4");
                                 _ = Context.Channel.SendFileAsync("./output.mp4");
