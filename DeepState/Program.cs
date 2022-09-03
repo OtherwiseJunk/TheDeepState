@@ -30,6 +30,7 @@ using Serilog;
 using DartsDiscordBots.Modules.Jackbox.Interfaces;
 using DartsDiscordBots.Modules.NFT;
 using DartsDiscordBots.Utilities;
+using System.Collections.Generic;
 
 namespace DeepState
 {
@@ -246,7 +247,22 @@ namespace DeepState
 					command = new SlashCommandBuilder();
 					command.WithName(commandInfo.Name);
 					command.WithDescription(commandInfo.Name);
-					command.WithNameLocalizations(null);
+					if (commandInfo.NameLocalizations == null)
+					{
+						command.WithNameLocalizations(new Dictionary<string, string>());
+					}
+					else
+					{
+						command.WithNameLocalizations(commandInfo.NameLocalizations);
+					}
+					if (commandInfo.DescriptionLocalizations == null)
+					{
+						command.WithDescriptionLocalizations(new Dictionary<string, string>());
+					}
+					else
+					{
+						command.WithDescriptionLocalizations(commandInfo.DescriptionLocalizations);
+					}
 					command.WithDefaultPermission(commandInfo.DefaultPermission);
 					if (commandInfo.Options != null)
 					{
