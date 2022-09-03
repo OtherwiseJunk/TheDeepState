@@ -87,7 +87,7 @@ namespace DeepState.Service
                         case MediaType.AnimatedImage:
                             return false;
                         case MediaType.Image:
-                            return await AddWilhemToImage(response.Content.ReadAsStream(), filename);
+                            return AddWilhemToImage(response.Content.ReadAsStream(), filename);
                         case MediaType.Webp:
                             return false;
                         default:
@@ -97,17 +97,21 @@ namespace DeepState.Service
             }
         }
 
-        public async Task<bool> AddWilhemToImage(Stream fileStream, string fileName)
+        private bool AddWilhemToImage(Stream fileStream, string fileName)
         {
-            System.Drawing.Image image = System.Drawing.Image.FromStream(fileStream);
+            System.Drawing.Image image = MakeImageDimensionsEven(System.Drawing.Image.FromStream(fileStream));
+            return image.AddAudio("./wilhelm.ogg", $"{fileName}.mp4");            
+        }
+
+        private System.Drawing.Image MakeImageDimensionsEven(System.Drawing.Image image)
+        {
             int height = image.Height % 2 == 0 ? image.Height : image.Height + 1;
             int width = image.Width % 2 == 0 ? image.Width : image.Width + 1;
             if (image.Height % 2 != 0 || image.Width % 2 != 0)
             {
                 image = new Bitmap(image, new Size(width, height));
             }
-            image.AddAudio("./wilhelm.ogg", $"{fileName}.mp4");
-            return true;
+            return image;
         }
 
     }
