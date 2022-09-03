@@ -29,6 +29,7 @@ using FluentScheduler;
 using Serilog;
 using DartsDiscordBots.Modules.Jackbox.Interfaces;
 using DartsDiscordBots.Modules.NFT;
+using DartsDiscordBots.Utilities;
 
 namespace DeepState
 {
@@ -107,7 +108,7 @@ namespace DeepState
 				.AddSingleton<UserRecordsService>()
 				.AddSingleton<ModTeamRequestService>()
 				.AddSingleton<RPGService>()
-				
+				.AddSingleton<FFMPEGService>()
 				.AddSingleton<PanopticonService>()
 				.AddDbContext<OOCDBContext>()
 				.AddDbContext<GuildUserRecordContext>()
@@ -120,6 +121,7 @@ namespace DeepState
 				.AddDbContextFactory<RPGContext>();
 				
 			map.AddHttpClient<PanopticonService>();
+			map.AddHttpClient<FFMPEGService>();
 
 			return map.BuildServiceProvider();
 		}
@@ -171,10 +173,98 @@ namespace DeepState
 			_client.GuildScheduledEventCreated += OnEventCreated;
 			_client.MessageReceived += OnMessage;
 			_client.ButtonExecuted += OnButtonClicked;
+			_client.Ready += InstallSlashCommands;
+			_client.SlashCommandExecuted += HandleAutoResponseCommands;
 
 		}
 
-		private async Task OnEventCreated(SocketGuildEvent arg)
+        private async Task HandleAutoResponseCommands(SocketSlashCommand command)
+        {
+			string response = null;
+            switch (command.CommandName)
+            {
+				case SlashCommands.LeRacisme:
+					response = "https://cdn.discordapp.com/attachments/959323818860621885/959325464093138964/gamer_country.mp4";
+					break;
+				case SlashCommands.WokeMoralists:
+					response = "https://vxtwitter.com/bradenisbased/status/1544448370500161543";
+					break;
+				case SlashCommands.DarkBrandon:
+					response = "https://cdn.discordapp.com/attachments/999910404316733500/1001980262994956309/dark_brandon.mp4";
+					break;
+				case SlashCommands.PetersonSex:
+					response = "https://vxtwitter.com/alaning/status/1544546265828139010?s=20&t=jI8Ujl52cbASY2SN6QFyqw";
+					break;
+				case SlashCommands.NotThisTime:
+					response = SharedConstants.JonathanFrakesThatsNotTrue.GetRandom();
+					break;
+				case SlashCommands.Clara:
+					response = "https://cdn.discordapp.com/attachments/931723945416228915/952094761907535872/shut_up_silly_woman.mp4";
+					break;
+				case SlashCommands.EML:
+					response = "https://cacheblasters.nyc3.digitaloceanspaces.com/eml.png";
+					break;
+				case SlashCommands.TheWeekend:
+					response = "https://cdn.discordapp.com/attachments/745024703365644320/840383340790939658/theweekend.mp4";
+					break;
+				case SlashCommands.Crackers:
+					response = "https://vocaroo.com/1bINV12mPOSF";
+					break;
+				case SlashCommands.StupidSonOfAbitch:
+					response = "https://cdn.discordapp.com/attachments/855227586212134922/937769372406132756/RPReplay_Final1643652007.mov";
+					break;
+				case SlashCommands.TooSpicy:
+					response = "https://media.discordapp.net/attachments/701194133074608198/923110430732324914/album_2021-12-22_00-08-55.gif";
+					break;
+				case SlashCommands.ImGonnaCome:
+					response = "https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/TrumpGonnaCome.mp4";
+					break;
+				case SlashCommands.DoNotCome:
+					response = "https://media.tenor.com/images/a7b5e8c66c4214d3f04f3726a5475a65/tenor.gif";
+					break;
+                case SlashCommands.ImFromArizona:
+					response = "https://cdn.discordapp.com/attachments/701194133074608198/936088371485364255/video0.mov";
+					break;
+				case SlashCommands.AntonCheckin:
+					response = "https://cdn.discordapp.com/attachments/701194133074608198/939019260754272296/LiveAntonReaction.png";
+					break;
+            }
+			if(response != null)
+            {
+				_ = command.RespondAsync(response);
+            }
+        }
+
+        private async Task InstallSlashCommands()
+        {
+            foreach(var item in SlashCommands.SlashCommandsToInstall)
+            {
+				IGuild guild = _client.GetGuild(item.Key);
+				SlashCommandBuilder command;
+				foreach (SlashCommandInformation commandInfo in item.Value)
+				{
+					command = new SlashCommandBuilder();
+					command.WithName(commandInfo.Name);
+					command.WithDescription(commandInfo.Name);
+					command.WithNameLocalizations(null);
+					command.WithDefaultPermission(commandInfo.DefaultPermission);
+					if (commandInfo.Options != null)
+					{
+						// Do things to generate command options.
+					}
+					if(guild != null)
+                    {
+						await guild.CreateApplicationCommandAsync(command.Build());
+					}
+                    else
+                    {
+						await _client.CreateGlobalApplicationCommandAsync(command.Build());
+					}
+				}
+            }
+        }
+
+        private async Task OnEventCreated(SocketGuildEvent arg)
         {
 			new Task(() =>
 			{
