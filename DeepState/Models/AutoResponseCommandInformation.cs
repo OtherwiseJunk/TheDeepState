@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DeepState.Models
 {
-    public class AutoResponseCommandInformation: SlashCommandInformation
+    public class AutoResponseCommandInformation : SlashCommandInformation
     {
         public AutoResponseCommandInformation(string name, string description)
         {
@@ -18,5 +18,5 @@ namespace DeepState.Models
             NameLocalizations = new Dictionary<string, string>();
             DescriptionLocalizations = new Dictionary<string, string>();
         }
-    
+    }   
 }
