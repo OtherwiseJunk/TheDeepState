@@ -29,96 +29,21 @@ namespace DeepState.Constants
             {
                 SharedConstants.LibcraftGuildId, new List<SlashCommandInformation>
                 {
-                    new SlashCommandInformation {
-                        Name = LeRacisme,
-                        Description = "'Le racisme' *applause*",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = WokeMoralists,
-                        Description = "Jordan is DONE with these woke moralists.",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = DarkBrandon,
-                        Description = "He's Coming For You.",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = PetersonSex,
-                        Description = "I don't know what you're expecting, but it can't be good, right?",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = NotThisTime,
-                        Description = "Jonathan Frakes doesn't like your chances next time, either.",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = Clara,
-                        Description = "Such a silly woman.",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                   new SlashCommandInformation {
-                        Name = EML,
-                        Description = "You Know What Youre Getting",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = TheWeekend,
-                        Description = "Ladies, Gentlemen, and our friends beyond the binary, The Weekend.",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = Crackers,
-                        Description = "That's just how they feel, yanno?",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = StupidSonOfAbitch,
-                        Description = "You're a stupid son of a bitch.",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = TooSpicy,
-                        Description = "Anton has a weak stomache.",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = ImGonnaCome,
-                        Description = "He'll do it.",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = DoNotCome,
-                        Description = "Just don't.",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = ImFromArizona,
-                        Description = "and so can you!",
-                        DefaultPermission = true,
-                        Options = null
-                    },
-                    new SlashCommandInformation {
-                        Name = AntonCheckin,
-                        Description = "Live Anton Reaction",
-                        DefaultPermission = true,
-                        Options = null
-                    },
+                    new AutoResponseCommandInformation(LeRacisme,"'Le racisme' *applause*"),
+                    new AutoResponseCommandInformation(WokeMoralists,"Jordan is DONE with these woke moralists."),
+                    new AutoResponseCommandInformation(DarkBrandon, "He's Coming For You."),
+                    new AutoResponseCommandInformation(PetersonSex,"I don't know what you're expecting, but it can't be good, right?"),
+                    new AutoResponseCommandInformation(NotThisTime,"Jonathan Frakes doesn't like your chances next time, either."),
+                    new AutoResponseCommandInformation(Clara,"Such a silly woman."),
+                    new AutoResponseCommandInformation(EML, "You Know What Youre Getting"),
+                    new AutoResponseCommandInformation(TheWeekend,"Ladies, Gentlemen, and our friends beyond the binary, The Weekend."),
+                    new AutoResponseCommandInformation(Crackers,"That's just how they feel, yanno?"),
+                    new AutoResponseCommandInformation(StupidSonOfAbitch,"You're a stupid son of a bitch."),
+                    new AutoResponseCommandInformation(TooSpicy,"Anton has a weak stomache."),
+                    new AutoResponseCommandInformation(ImGonnaCome,"He'll do it."),
+                    new AutoResponseCommandInformation(DoNotCome,"Just don't."),
+                    new AutoResponseCommandInformation(ImFromArizona,"and so can you!"),
+                    new AutoResponseCommandInformation(AntonCheckin,"Live Anton Reaction")
                 }
             },
         };

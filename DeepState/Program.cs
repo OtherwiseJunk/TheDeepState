@@ -247,24 +247,10 @@ namespace DeepState
 					command = new SlashCommandBuilder();
 					command.WithName(commandInfo.Name);
 					command.WithDescription(commandInfo.Name);
-					if (commandInfo.NameLocalizations == null)
-					{
-						command.WithNameLocalizations(new Dictionary<string, string>());
-					}
-					else
-					{
-						command.WithNameLocalizations(commandInfo.NameLocalizations);
-					}
-					if (commandInfo.DescriptionLocalizations == null)
-					{
-						command.WithDescriptionLocalizations(new Dictionary<string, string>());
-					}
-					else
-					{
-						command.WithDescriptionLocalizations(commandInfo.DescriptionLocalizations);
-					}
+					command.WithNameLocalizations(commandInfo.NameLocalizations);
+					command.WithDescriptionLocalizations(commandInfo.DescriptionLocalizations);
 					command.WithDefaultPermission(commandInfo.DefaultPermission);
-					if (commandInfo.Options != null)
+					if (commandInfo.Options.Count > 0)
 					{
 						// Do things to generate command options.
 					}
