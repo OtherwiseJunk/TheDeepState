@@ -13,5 +13,7 @@ namespace DeepState.Models
         public string Description { get; set; }
         public bool DefaultPermission { get; set; }
         public List<SlashCommandOptionBuilder> Options { get; set; }
+        public Dictionary<string, string> NameLocalizations { get; set; }
+        public Dictionary<string, string> DescriptionLocalizations { get; set; }
     }
 }
