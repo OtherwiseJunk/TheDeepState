@@ -216,13 +216,17 @@ namespace DeepState.Modules
                 new Thread(async () => {
                     if(await _ffmpeg.AddWilhelmToAttachment(url, (MediaType)mediaType, fileName))
                     {
-                        _ = Context.Channel.SendFileAsync($"./{fileName}.mp4");
+                        _ = Context.Channel.SendFileAsync($"./{fileName}.mp4",messageReference: Context.Message.Reference);
                     }
                     else
                     {
-                        _ = Context.Channel.SendMessageAsync("Sorry, either the filetype of the attachment is not supported at this time, but it had");
+                        _ = Context.Channel.SendMessageAsync("Sorry, either the filetype of the attachment is not supported at this time, but it had", messageReference: Context.Message.Reference);
                     }
                 }).Start();                
+            }
+            else
+            {
+                _ = Context.Channel.SendMessageAsync("Sorry, I failed to find a single attachment with the correct media type for this command.", messageReference: Context.Message.Reference);
             }
         }
 
