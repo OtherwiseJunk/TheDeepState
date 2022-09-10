@@ -214,14 +214,7 @@ namespace DeepState.Modules
             {
                 string fileName = "output";
                 new Thread(async () => {
-                    if(await _ffmpeg.AddWilhelmToAttachment(url, (MediaType)mediaType, fileName))
-                    {
-                        _ = Context.Channel.SendFileAsync($"./{fileName}.mp4",messageReference: Context.Message.Reference);
-                    }
-                    else
-                    {
-                        _ = Context.Channel.SendMessageAsync("Sorry, either the filetype of the attachment is not supported at this time, but it had", messageReference: Context.Message.Reference);
-                    }
+                    await _ffmpeg.AddWilhelmToAttachmentAndSend(url, (MediaType)mediaType, Context, fileName);
                 }).Start();                
             }
             else

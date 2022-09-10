@@ -1,5 +1,7 @@
 ﻿using Discord;
+using Discord.Commands;
 using FFMpegCore.Extend;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -74,33 +76,50 @@ namespace DeepState.Service
             return urlMediaType;
         }
 
-        public async Task<bool> AddWilhelmToAttachment(string attachmentUrl, MediaType mediaType, string filename = "output")
+        public async Task<bool> AddWilhelmToAttachmentAndSend(string attachmentUrl, MediaType mediaType, ICommandContext Context, string filename = "output")
         {
             using (HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, attachmentUrl))
             {
-                using (HttpResponseMessage response = await _httpClient.SendAsync(request))
+                try
                 {
-                    switch (mediaType)
+                    using (HttpResponseMessage response = await _httpClient.SendAsync(request))
                     {
-                        case MediaType.Video:
-                            return false;
-                        case MediaType.AnimatedImage:
-                            return false;
-                        case MediaType.Image:
-                            return AddWilhemToImage(response.Content.ReadAsStream(), filename);
-                        case MediaType.Webp:
-                            return false;
-                        default:
-                            return false;
+                        switch (mediaType)
+                        {
+                            case MediaType.Video:
+                                return false;
+                            case MediaType.AnimatedImage:
+                                return false;
+                            case MediaType.Image:
+                                AddWilhemToImage(response.Content.ReadAsStream(), Context, filename);
+                                return true;
+                            case MediaType.Webp:
+                                return false;
+                            default:
+                                return false;
+                        }
                     }
+                }
+                catch(Exception ex)
+                {
+                    _ = Context.Message.ReplyAsync("Something went horribly wrong when I tried to get that media. Dunno why.");
+                    return false;
                 }
             }
         }
 
-        private bool AddWilhemToImage(Stream fileStream, string fileName)
+        private void AddWilhemToImage(Stream fileStream, ICommandContext Context, string fileName)
         {
             System.Drawing.Image image = MakeImageDimensionsEven(System.Drawing.Image.FromStream(fileStream));
-            return image.AddAudio("./wilhelm.ogg", $"{fileName}.mp4");            
+            try
+            {
+                image.AddAudio("./wilhelm.ogg", $"{fileName}.mp4");
+                _ = Context.Channel.SendFileAsync($"./{fileName}.mp4", messageReference: Context.Message.Reference);
+            }
+            catch(Exception ex){
+                Console.WriteLine($"Encountered an exception: {ex.Message}");
+                _ = Context.Channel.SendMessageAsync("Sorry, either the filetype of the attachment is not supported at this time, but it had", messageReference: Context.Message.Reference);
+            }
         }
 
         private System.Drawing.Image MakeImageDimensionsEven(System.Drawing.Image image)
