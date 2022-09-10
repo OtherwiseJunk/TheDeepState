@@ -212,7 +212,7 @@ namespace DeepState.Modules
 
             if (url != null)
             {
-                string fileName = "output";
+                string fileName = "Wilhelm";
                 new Thread(async () => {
                     await _ffmpeg.AddWilhelmToAttachmentAndSend(url, (MediaType)mediaType, Context, fileName);
                 }).Start();                

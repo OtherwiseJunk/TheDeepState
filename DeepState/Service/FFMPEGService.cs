@@ -114,7 +114,8 @@ namespace DeepState.Service
             try
             {
                 image.AddAudio("./wilhelm.ogg", $"{fileName}.mp4");
-                _ = Context.Channel.SendFileAsync($"./{fileName}.mp4", messageReference: Context.Message.Reference);
+                
+                _ = Context.Channel.SendFileAsync($"./{fileName}.mp4", messageReference: new MessageReference(Context.Message.Id));
             }
             catch(Exception ex){
                 Console.WriteLine($"Encountered an exception: {ex.Message}");
