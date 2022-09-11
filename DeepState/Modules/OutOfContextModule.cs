@@ -16,19 +16,20 @@ using System.Text;
 using System.Security.Cryptography;
 using DeepState.Constants;
 using DartsDiscordBots.Services;
+using Panopticon.Shared.Models;
 
 namespace DeepState.Modules
 {
 	public class OutOfContextModule : ModuleBase
 	{
-		private PanopticonService _panopticonService { get; set; }
+		private OOCService _panopticon { get; set; }
 		private ImagingService _imageService { get; set; }
 		private string OOCCaptionFormat = "{0} Originally reported by {1}";
 		private string OutOfCOntextFolder = "OutOfContext";
 
-		public OutOfContextModule(PanopticonService panopticonService, ImagingService imageService)
+		public OutOfContextModule(OOCService panopticon, ImagingService imageService)
 		{
-			_panopticonService = panopticonService;
+			_panopticon = panopticon;
 			_imageService = imageService;
 		}
 
@@ -49,7 +50,7 @@ namespace DeepState.Modules
 
 		public void SendRandomOOCItem(IGuild triggeringGuild, IMessageChannel triggeringChannel)
 		{
-			OOCItem pulledItem = _panopticonService.GetRandomRecord();
+			OOCItem pulledItem = _panopticon.GetRandomRecord();
 			if (pulledItem != null)
             {
 				IGuildUser reportingUser = triggeringGuild.GetUserAsync(pulledItem.ReportingUserId, CacheMode.AllowDownload).Result;
@@ -98,7 +99,7 @@ namespace DeepState.Modules
 						if (messageRepliedTo.Reactions.Where(r => r.Key.Name == "📷" && r.Value.IsMe).Count() == 0)
 						{
 							string url = _imageService.UploadImage(OutOfCOntextFolder, image);							
-							if(_panopticonService.AddRecord(Context.Message.Author.Id, Context.Guild.Id, url))
+							if(_panopticon.AddRecord(Context.Message.Author.Id, Context.Guild.Id, url))
                             {
 								await Context.Message.AddReactionAsync(new Emoji("✅"));
 								_ = messageRepliedTo.AddReactionAsync(new Emoji("📷"));

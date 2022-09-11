@@ -17,12 +17,12 @@ namespace DeepState.Modules
     public class FeedbackModule : ModuleBase
     {
         ILogger _log { get; set; }
-        PanopticonService _panopticon { get; set; }
+        FeedbackService _panopticon { get; set; }
         ImagingService _imaging { get; set; }
         ulong FeedbackChannelId = 967308491041693706;
         ulong LibcraftGuildId = 698639095940907048;
 
-        public FeedbackModule(PanopticonService service, ImagingService imaging, ILogger logger)
+        public FeedbackModule(FeedbackService service, ImagingService imaging, ILogger logger)
         {
             _panopticon = service;
             _log = logger;
