@@ -60,7 +60,6 @@ namespace DeepState.Service
                     token = json["access_token"].GetValue<string>();
                 }
             }
-
             return token;
         }
     }
