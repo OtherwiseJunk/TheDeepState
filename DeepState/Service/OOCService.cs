@@ -28,7 +28,7 @@ namespace DeepState.Service
                 DateStored = DateTime.Now
             };
 
-            using (HttpRequestMessage req = new(HttpMethod.Post, $"https://localhost:7118/ooc"))
+            using (HttpRequestMessage req = new(HttpMethod.Post, $"https://panopticon.cacheblasters.com/ooc"))
             {
                 req.AddJWTAuthorization(RequestJWT);
                 string jsonString = JsonSerializer.Serialize(item);
