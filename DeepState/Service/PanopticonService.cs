@@ -10,6 +10,7 @@ using System.Text.Json.Nodes;
 using Serilog;
 using DeepState.Utilities;
 using System.Net;
+using DeepState.Data.Models;
 
 namespace DeepState.Service
 {
@@ -94,14 +95,14 @@ namespace DeepState.Service
             using (HttpRequestMessage req = new(HttpMethod.Post, $"https://panopticon.cacheblasters.com/Feedback?userId={reportingUser}"))
             {
                 req.AddJWTAuthorization(RequestJWT);
-                req.Content = new StringContent($"\"{msg.Replace(Environment.NewLine,String.Empty)}\"", Encoding.UTF8, "application/json");
+                req.Content = new StringContent($"\"{msg.Replace(Environment.NewLine, String.Empty)}\"", Encoding.UTF8, "application/json");
                 using (HttpResponseMessage resp = _httpClient.SendAsync(req).Result)
                 {
-                    if(resp.StatusCode != HttpStatusCode.NoContent)
+                    if (resp.StatusCode != HttpStatusCode.NoContent)
                     {
                         _log.Error("Received a non-200 response from Panopticon request for creating feedback.");
                         _log.Error($"Response Content: {resp.Content.ReadAsStringAsync().Result}");
-                    }                    
+                    }
                 }
             }
         }
@@ -124,6 +125,56 @@ namespace DeepState.Service
                             return null;
                         default:
                             _log.Error("Received an unexpected response from Panopticon request for getting a single piece of feedback.");
+                            return null;
+                    }
+                }
+            }
+        }
+
+        public bool AddRecord(ulong reportingUserId, ulong guildId, string base64Image)
+        {
+            OOCItem item = new OOCItem
+                {
+                    ReportingUserId = reportingUserId,
+                    DiscordGuildId = guildId,
+                    ImageUrl = base64Image,
+                    DateStored = DateTime.Now
+                };
+
+            using (HttpRequestMessage req = new(HttpMethod.Post, $"https://panopticon.cacheblasters.com/ooc"))
+            {
+                req.AddJWTAuthorization(RequestJWT);
+                req.Content = new StringContent(JsonSerializer.Serialize(item));
+
+                using (HttpResponseMessage resp = _httpClient.SendAsync(req).Result)
+                {
+                    switch (resp.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            _log.Information("Successfully created new OOCRecord.");
+                            return true;
+                        default:
+                            _log.Error("Received an unexpected response from Panopticon request for creating a new OOC Item.");
+                            return false;
+                    }
+                }
+            }
+        }
+        public OOCItem? GetRandomRecord()
+        {
+            using (HttpRequestMessage req = new(HttpMethod.Post, $"https://panopticon.cacheblasters.com/ooc/rand"))
+            {
+                req.AddJWTAuthorization(RequestJWT);                
+
+                using (HttpResponseMessage resp = _httpClient.SendAsync(req).Result)
+                {
+                    switch (resp.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            _log.Information("Successfully retrieved a random OOC Item.");
+                            return JsonSerializer.Deserialize<OOCItem>(resp.Content.ReadAsStringAsync().Result);
+                        default:
+                            _log.Error("Received an unexpected response from Panopticon retrieving a random OOC Item.");
                             return null;
                     }
                 }
