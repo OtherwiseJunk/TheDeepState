@@ -3,10 +3,10 @@
     "DeepState": {
       "commandName": "Project",
       "environmentVariables": {
-        "DOPUBLIC": "${env:DOPUBLIC}",
-        "DOSECRET": "${env:DOSECRET}",
+        "DOPUBLIC": "%DOPUBLIC%",
+        "DOSECRET": "%DOSECRET%",
         "DOBUCKET": "cacheblasters",
-        "DATABASE": "${env:TESTDATABASE}",
+        "DATABASE": "%TESTDATABASE%",
         "DOURL": "https://nyc3.digitaloceanspaces.com"
       }
     },

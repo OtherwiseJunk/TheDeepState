@@ -7,17 +7,17 @@ using System.Net.Http;
 
 namespace DeepState.Tests
 {
-    public class PanopticonServiceTests
+    public class FeedbackServiceTests
     {
         HttpClient _client { get; set; }
-        PanopticonService _service { get; set; }
+        FeedbackService _service { get; set; }
 
         [SetUp]
         public void Setup()
         {
             //TODO: Mock httpClient to return values instead of hitting a live API.
             _client = new HttpClient();
-            _service = new PanopticonService(_client, new ILoggerMock());
+            _service = new FeedbackService(_client, new ILoggerMock());
         }
         [Test]
         public void VerifyPanopticonServiceRequestJWTMethodReturnsAJWT()
