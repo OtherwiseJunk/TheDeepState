@@ -4,6 +4,13 @@ on:
   pull_request:
     branches: [ main ]
 
+env:
+  AUTH0SCOPE: ${{secrets.Auth0Scope}}
+  AUTH0CLIENTID: ${{secrets.Auth0ClientID}}
+  AUTH0CLIENTSECRET: ${{secrets.Auth0ClientSecret}}
+  AUTH0GRANTTYPE: ${{secrets.Auth0GrantType}}
+  AUTH0AUDIENCE: ${{secrets.Auth0Audience}}
+
 jobs:
   build:
 
