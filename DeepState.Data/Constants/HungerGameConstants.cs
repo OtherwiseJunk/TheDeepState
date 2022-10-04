@@ -113,6 +113,9 @@ namespace DeepState.Data.Constants
 			"a HIMARS strike.",
 			"a molotov cocktail.",
 			"Motti tactics.",
+			"an Alien (Laugo).",
+			"an Alien (Grey).",
+			"an Alian (Porgs).",
 		};
 
 		public static List<string> ThingsToExplain = new List<string> {
