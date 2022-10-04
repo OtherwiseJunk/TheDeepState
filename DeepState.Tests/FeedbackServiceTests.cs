@@ -1,5 +1,7 @@
 ﻿using DeepState.Service;
 using DeepState.Tests.Mocks;
+using DeepState.Tests.Models;
+using DeepState.Tests.TestData;
 using NUnit.Framework;
 using Panopticon.Shared.Models;
 using System.Collections.Generic;
@@ -34,7 +36,7 @@ namespace DeepState.Tests
         {
             string jwt = _service.RequestJWT();
             Assert.AreEqual(jwt.Split('.').Length, 3);
-            Assert.AreEqual(_loggerMock.events.Count, 3);
+            Assert.That(_loggerMock.DoLoggedMessagesMatchExpected(FeedbackTestData.RequestJWTExpectedLoggedMessages), Is.True);            
         }
 
         [Test]
@@ -42,7 +44,7 @@ namespace DeepState.Tests
         {            
             List<Feedback> feedback = _service.GetAllFeedback();
             Assert.IsTrue(feedback.Count > 0);
-            Assert.AreEqual(_loggerMock.events.Count, 4);
+            Assert.That(_loggerMock.DoLoggedMessagesMatchExpected(FeedbackTestData.RequestAllFeedbackExpectedLoggedMessages), Is.True);
         }
     }
 }
