@@ -378,7 +378,7 @@ namespace DeepState.Utilities
 				$"{murdererName} took {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} by clonking {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} with the Sunday Edition of the New York Times.",
 				$"{murdererName} punched {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} clean in half! Shit was crazy.",
 				$"Strangled in {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} sleep by {murdererName}.",
-				$"Sacrified on an altar to Dagon, by {murdererName} seeking favor from The Old Gods.",
+				$"Sacrified on an altar to {HungerGameConstants.OldGods.GetRandom()}, by {murdererName} seeking favor from The Old Gods.",
 				$"{murdererName} accidentally crushed {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} head underfoot while {victiomPronounsByConjugation[PronounConjugations.Subjective].GetRandom()} hid in a pile of leaves.",
 				$"Ripped in half by {murdererName}. {murdererName} just kind of grabbed {victiomPronounsByConjugation[PronounConjugations.Objective].GetRandom()} by either buttcheek and tore. Fucking Brutal, yanno?",
 				$"{murdererName} jammed a beehive on {victiomPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} head and watched them run off a cliff.",
@@ -549,6 +549,7 @@ namespace DeepState.Utilities
 				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} disappointed fans and patrons.",
 				$"Survived by {victimPronounsByConjugation[PronounConjugations.PossessiveAdjective].GetRandom()} belief that Trump will be reinstated <:soontm:322880475066793986>",
 				$"Survived by {HungerGameConstants.OldGods.GetRandom()}, who will live eternally.",
+				$"Survived by {HungerGameConstants.OldGods.GetRandom()}, who die eventually.",
 				"Busted down, sexual style and goated with the sauce"
 			};
 			if (victim != null && victim.Id == HungerGameConstants.TheRepublican)

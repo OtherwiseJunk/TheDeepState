@@ -86,13 +86,14 @@ namespace DeepState
 			await Task.Delay(-1);
 		}
 		private static IServiceProvider ConfigureServices()
-		{
-			var log = new LoggerConfiguration()
-				.WriteTo.Console()
-				.CreateLogger();
-			//We don't have any services currently for DI
-			//but once we do this is where we would add them.
-			var map = new ServiceCollection()
+        {
+            var log = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+
+            //We don't have any services currently for DI
+            //but once we do this is where we would add them.
+            var map = new ServiceCollection()
 				.AddSingleton<ILogger>(log);
 
 			map.AddSingleton<IHelpConfig, HelpConfig>()
@@ -104,17 +105,16 @@ namespace DeepState
 					Environment.GetEnvironmentVariable("DOURL"),
 					Environment.GetEnvironmentVariable("DOBUCKET"))
 				)
-				.AddSingleton<OutOfContextService>()
 				.AddSingleton<HungerGamesService>()
 				.AddSingleton<UserRecordsService>()
 				.AddSingleton<ModTeamRequestService>()
 				.AddSingleton<RPGService>()
 				.AddSingleton<FFMPEGService>()
 				.AddSingleton<PanopticonService>()
-				.AddDbContext<OOCDBContext>()
+				.AddSingleton<OOCService>()
+				.AddSingleton<FeedbackService>()
 				.AddDbContext<GuildUserRecordContext>()
 				.AddDbContext<HungerGamesContext>()
-				.AddDbContextFactory<OOCDBContext>()
 				.AddDbContextFactory<GuildUserRecordContext>()
 				.AddDbContextFactory<HungerGamesContext>()
 				.AddDbContextFactory<ModTeamRequestContext>()
