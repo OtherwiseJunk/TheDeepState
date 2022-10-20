@@ -52,7 +52,7 @@ namespace DeepState.Utilities
 
 		public static string ReplaceTwitterWithFXTwitter(string message)
         {
-			return message.Replace("twitter.com", "fxtwitter.com", StringComparison.OrdinalIgnoreCase);
+			return message.Replace("twitter.com", "c.vxtwitter.com", StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static Dictionary<PronounConjugations, List<string>> GetUserPronouns(IGuildUser user, IGuild guild)

@@ -16,7 +16,7 @@ namespace DeepState.Handlers
 {
 	public static class OnMessageHandlers
 	{
-		static string PreggersDetector = "[p,𝐩,𝞺,𝚙,ｐ,𝞀,ß,*,р]+[r]+[e,е,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,*,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[g,ġ,ℊ,𝒈,𝗀,𝕘,*]+[e,*,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[r,r,*]+s*";
+		
 		static HashSet<ulong> GuildUserCacheDownloaded = new();
 		static object HashsetLock = new();
 		public static void EgoCheck(SocketMessage msg, bool isMentioningMe)
@@ -45,9 +45,16 @@ namespace DeepState.Handlers
 			}
 		}
 
+		public static async Task ReplyToAllTwitterLinksWithCVXTwitter(SocketMessage msg)
+        {
+            if (Utils.ContainsTwitterLink(msg.Content))
+            {
+				await (msg as IUserMessage).ReplyAsync(Utils.ReplaceTwitterWithFXTwitter(msg.Content), allowedMentions: AllowedMentions.None);
+            }
+        }
 		public static async Task DeletePreggersMessage(SocketMessage msg)
         {
-			if(Regex.Matches(msg.Content, PreggersDetector, RegexOptions.IgnoreCase).Count > 0)
+			if(Regex.Matches(msg.Content, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase).Count > 0)
             {
                 if (Utils.PercentileCheck(10))
                 {
