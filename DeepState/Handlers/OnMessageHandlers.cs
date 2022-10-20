@@ -49,7 +49,8 @@ namespace DeepState.Handlers
         {
             if (Utils.ContainsTwitterLink(msg.Content))
             {
-				await (msg as IUserMessage).ReplyAsync(Utils.ReplaceTwitterWithFXTwitter(msg.Content), allowedMentions: AllowedMentions.None);
+				await (msg as IUserMessage).ReplyAsync($"**{BotUtilities.GetDisplayNameForUser(msg.Author as IGuildUser)}**: {Utils.ReplaceTwitterWithFXTwitter(msg.Content)}", allowedMentions: AllowedMentions.None);
+				await msg.DeleteAsync();
             }
         }
 		public static async Task DeletePreggersMessage(SocketMessage msg)
