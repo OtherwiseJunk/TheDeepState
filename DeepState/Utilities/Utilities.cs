@@ -42,11 +42,17 @@ namespace DeepState.Utilities
 
 		public static bool IsSus(string message)
 		{
-			if (Regex.IsMatch(message, SharedConstants.SusRegex, RegexOptions.IgnoreCase))
-			{
-				return true;
-			}
-			return false;
+			return Regex.IsMatch(message, SharedConstants.SusRegex, RegexOptions.IgnoreCase);
+		}
+
+		public static bool ContainsTwitterLink(string message)
+        {
+			return Regex.IsMatch(message, SharedConstants.TwitterLinkRegex, RegexOptions.IgnoreCase);
+		}
+
+		public static string ReplaceTwitterWithFXTwitter(string message)
+        {
+			return message.Replace("twitter.com", "fxtwitter.com", StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static Dictionary<PronounConjugations, List<string>> GetUserPronouns(IGuildUser user, IGuild guild)
