@@ -3,7 +3,7 @@ using FFMpegCore.Extend;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
+using DeepState.Constants;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,11 +12,7 @@ namespace DeepState.Service
 {
     public class FFMPEGService
     {
-        public string ImageURLRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|png)";
-        public string VideoUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.mp4";
-        public string AnimateImageURLRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:gif|gifv)";
-        public string WebpUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.webp";
-        public string MediaUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:gif|gifv|webp|mp4|jpg|png)";
+        
         public HttpClient _httpClient { get; set; }
 
         public FFMPEGService(HttpClient client)
@@ -40,7 +36,7 @@ namespace DeepState.Service
         {
             contentMediaType = null;
             string url = null;
-            Match match = Regex.Match(messageContent, MediaUrlRegex);
+            Match match = Regex.Match(messageContent, SharedConstants.MediaUrlRegex);
             if(match.Success && match.Captures.Count == 1)
             {
                 url = match.Captures[0].Value;
@@ -55,19 +51,19 @@ namespace DeepState.Service
         public MediaType? GetMediaTypeFromUrl(string url)
         {
             MediaType? urlMediaType = null;
-            if (Regex.Match(url, VideoUrlRegex).Success)
+            if (Regex.Match(url, SharedConstants.VideoUrlRegex).Success)
             {
                 urlMediaType = MediaType.Video;
             }
-            if (Regex.Match(url, AnimateImageURLRegex).Success)
+            if (Regex.Match(url, SharedConstants.AnimateImageURLRegex).Success)
             {
                 urlMediaType = MediaType.AnimatedImage;
             }
-            if (Regex.Match(url, WebpUrlRegex).Success)
+            if (Regex.Match(url, SharedConstants.WebpUrlRegex).Success)
             {
                 urlMediaType = MediaType.Webp;
             }
-            if (Regex.Match(url, ImageURLRegex).Success)
+            if (Regex.Match(url, SharedConstants.ImageURLRegex).Success)
             {
                 urlMediaType = MediaType.Image;
             }

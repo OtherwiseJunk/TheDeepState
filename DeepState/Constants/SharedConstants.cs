@@ -297,9 +297,19 @@ namespace DeepState.Constants
 		};
 		#endregion
 
+		#region RegexStrings
+		public static string TwitterLinkRegex = @"/(?:http:\/\/)?(?:www\.)?twitter\.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[\w\-]*\/)*([\w\-]*)/";
+        public static string SusRegex = @"(\bs+u+s+y?\b)|(\bamo+\w{0,2}\s*us)";
+		public static string ImageURLRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|png)";
+		public static string VideoUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.mp4";
+		public static string AnimateImageURLRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:gif|gifv)";
+		public static string WebpUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.webp";
+        public static string MediaUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:gif|gifv|webp|mp4|jpg|png)";
+		public static string PreggersDetector = "[p,𝐩,𝞺,𝚙,ｐ,𝞀,ß,*,р]+[r]+[e,е,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,*,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[g,ġ,ℊ,𝒈,𝗀,𝕘,*]+[e,*,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[r,r,*]+s*";
+		#endregion
+
 		#region Strings
-		public static string KlaxonResponse = "https://www.youtube.com/watch?v=xU5mOT57ghM";
-		public static string SusRegex = @"(\bs+u+s+y?\b)|(\bamo+\w{0,2}\s*us)";
+		public static string KlaxonResponse = "https://www.youtube.com/watch?v=xU5mOT57ghM";		
 		public static string SubjectiveNonGenderedPronoun = "they";
 		public static string SubjectiveFemininePronoun = "she";
 		public static string SubjectiveMasculinePronoun = "he";
