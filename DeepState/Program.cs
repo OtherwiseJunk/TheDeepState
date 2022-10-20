@@ -293,12 +293,13 @@ namespace DeepState
 				return;
 			}
 			UserRecordsService urservice = _services.GetService<UserRecordsService>();
-			new Thread(async () => { LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
-            new Thread(async () => { OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
-			new Thread(async () => { OnMessageHandlers.DeletePreggersMessage(message); }).Start();
+			new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
+            new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
+			new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
+			new Thread(async () => { await OnMessageHandlers.ReplyToAllTwitterLinksWithCVXTwitter(message)).Start();
 
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
-			{
+			{				
 				new Thread(() => { OnMessageHandlers.EgoCheck(messageParam, Utils.IsMentioningMe(messageParam, _client.CurrentUser)); }).Start();
 				new Thread(() => { OnMessageHandlers.Imposter(messageParam, Utils.IsSus(messageParam.Content)); }).Start();
                 new Thread(() => { _ = OnMessageHandlers.MalarkeyLevelOfHandler(message); }).Start();
