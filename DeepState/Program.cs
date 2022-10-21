@@ -285,6 +285,10 @@ namespace DeepState
 			//Don't process the command if it was a system message
 			SocketUserMessage message = messageParam as SocketUserMessage;
 			IGuild guild = ((IGuildChannel)message.Channel).Guild;
+			List<ulong> ids = new(){ 
+				698639095940907048,
+				1024862866634969188
+				};
 			if (message == null) return;
 
 			if (message.Author.IsBot)
@@ -295,8 +299,11 @@ namespace DeepState
 			UserRecordsService urservice = _services.GetService<UserRecordsService>();
 			new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
             new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
-			new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
-			new Thread(async () => { await OnMessageHandlers.ReplyToAllTwitterLinksWithCVXTwitter(message); }).Start();
+            new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
+
+            if (!ids.Contains(guild.Id)) {
+				new Thread(async () => { await OnMessageHandlers.ReplyToAllTwitterLinksWithCVXTwitter(message); }).Start();
+			}
 
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))
 			{				
