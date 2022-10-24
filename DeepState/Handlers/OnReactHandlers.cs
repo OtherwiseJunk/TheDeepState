@@ -40,24 +40,35 @@ namespace DeepState.Handlers
 						await channel.SendMessageAsync($"WE GOT HIM! {channel.GetUserAsync(SharedConstants.ThePoliceUser, CacheMode.AllowDownload).Result.Mention}");
 					}
 				}
-			}
-		}
+            }
+        }
 
-		public static async Task ClearDeepStateReactionCheck(IEmote reactionEmote, ISocketMessageChannel channel, IMessage msg, SocketSelfUser currentUser)
-		{
-			//Check for the clearing reaction emote, and do no clear if the author is Deep State.
-			if (SharedConstants.ClearingEmotes.Contains(reactionEmote.Name) && msg.Author != currentUser)
+        public static async Task ClearDeepStateReactionCheck(IEmote reactionEmote, ISocketMessageChannel channel, IMessage msg, SocketSelfUser currentUser)
+        {
+            //Check for the clearing reaction emote, and do no clear if the author is Deep State.
+            if (SharedConstants.ClearingEmotes.Contains(reactionEmote.Name) && msg.Author != currentUser)
+            {
+                foreach (var reaction in msg.Reactions)
+                {
+                    if (reaction.Value.IsMe)
+                    {
+                        await msg.RemoveReactionAsync(reaction.Key, currentUser);
+                    }
+                }
+            }
+        }
+
+		public static async Task DeleteTwitterMessage(IEmote reactionEmote, IGuildUser reactingUser, IMessage msg, SocketSelfUser currentUser)
+        {
+			if (SharedConstants.ClearingEmotes.Contains(reactionEmote.Name) && msg.Author == currentUser)
 			{
-				foreach (var reaction in msg.Reactions)
-				{
-					if (reaction.Value.IsMe)
-					{
-						await msg.RemoveReactionAsync(reaction.Key, currentUser);
-					}
-				}
+				if(msg.Content.Contains("c.vxtwitter.com") && msg.Content.StartsWith($"**{BotUtilities.GetDisplayNameForUser(reactingUser)}**:"))
+                {
+					await msg.DeleteAsync();
+                }
 			}
 		}
-		public static async Task MarxEmbedPagingHandler(SocketReaction reaction, IMessage message, SocketSelfUser currentUser, string embedTitle, IServiceProvider serviceProvider)
+        public static async Task MarxEmbedPagingHandler(SocketReaction reaction, IMessage message, SocketSelfUser currentUser, string embedTitle, IServiceProvider serviceProvider)
 		{
 			//We only allow page changes for the first five minutes of a message.
 			if ((DateTime.Now - message.Timestamp.DateTime).Minutes >= 5)

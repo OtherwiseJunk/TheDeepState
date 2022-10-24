@@ -320,6 +320,7 @@ namespace DeepState
 			ISocketMessageChannel channel = (ISocketMessageChannel)cachedChannel.Value;
 			IEmote reactionEmote;
 			IMessage msg = channel.GetMessageAsync(cachedMessage.Id).Result;
+			IGuildUser reactingUser = reaction.User.Value as IGuildUser;
 			if ((reaction.Emote as Emote) != null)
 			{
 				reactionEmote = (Emote)reaction.Emote;
@@ -327,10 +328,11 @@ namespace DeepState
 			else
 			{
 				reactionEmote = (Emoji)reaction.Emote;
-			}
+            }
 
-			//One of the voting reactions, :x:, can also be used to clear DeepState reacts, so we run this regardless.
-			new Thread(() => { _ = OnReactHandlers.ClearDeepStateReactionCheck(reactionEmote, channel, msg, _client.CurrentUser); }).Start();
+            //One of the voting reactions, :x:, can also be used to clear DeepState reacts, so we run this regardless.
+            new Thread(() => { _ = OnReactHandlers.ClearDeepStateReactionCheck(reactionEmote, channel, msg, _client.CurrentUser); }).Start();
+			new Thread(() => { _ = OnReactHandlers.DeleteTwitterMessage(reactionEmote, reactingUser, msg, _client.CurrentUser); }).Start();
 			//We only want to process Msg.Author.IsBot requests here actually, so we put this before too.
 			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.HungerGameTributesEmbedTitle, PagingUtilities.TributeEmbedPagingCallback, _services); }).Start();
 			new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.OpenRequestEmbedTitle, PagingUtilities.OpenRequestsPagingCallback, _services); }).Start();
