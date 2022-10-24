@@ -287,8 +287,9 @@ namespace DeepState
 			IGuild guild = ((IGuildChannel)message.Channel).Guild;
 			List<ulong> ids = new(){ 
 				698639095940907048,
-				1024862866634969188
-				};
+				1024862866634969188,
+				746570029180518422
+			};
 			if (message == null) return;
 
 			if (message.Author.IsBot)
