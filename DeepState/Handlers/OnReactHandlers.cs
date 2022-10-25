@@ -60,7 +60,7 @@ namespace DeepState.Handlers
 
 		public static async Task DeleteTwitterMessage(IEmote reactionEmote, IGuildUser reactingUser, IMessage msg, SocketSelfUser currentUser)
         {
-			if (SharedConstants.ClearingEmotes.Contains(reactionEmote.Name) && msg.Author == currentUser)
+			if (SharedConstants.ClearingEmotes.Contains(reactionEmote.Name) && msg.Author.Id == currentUser.Id)
 			{
 				if(msg.Content.Contains("c.vxtwitter.com") && msg.Content.StartsWith($"**{BotUtilities.GetDisplayNameForUser(reactingUser)}**:"))
                 {
