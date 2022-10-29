@@ -80,10 +80,11 @@ namespace DeepState
 			await _client.LoginAsync(TokenType.Bot, token);
 			await _client.StartAsync();
 
-			new Thread( () => _ = LibcoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>() ) ).Start();
-			new Thread( () => _ = LibcoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>() ) ).Start();
-			// Block this task until the program is closed.
-			await Task.Delay(-1);
+			new Thread(() => _ = LibcoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>() ) ).Start();
+            new Thread(() => _ = LibcoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>())).Start();
+			new Thread(() => JackboxUtilities.EnsureDefaultGamesExist(_services.GetService<JackboxContext>())).Start();
+            // Block this task until the program is closed.
+            await Task.Delay(-1);
 		}
 		private static IServiceProvider ConfigureServices()
         {

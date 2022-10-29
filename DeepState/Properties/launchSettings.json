@@ -6,7 +6,7 @@
         "DOPUBLIC": "%DOPUBLIC%",
         "DOSECRET": "%DOSECRET%",
         "DOBUCKET": "cacheblasters",
-        "DATABASE": "%TESTDATABASE%",
+        "DATABASE": "%DATABASE%",
         "DOURL": "https://nyc3.digitaloceanspaces.com"
       }
     },

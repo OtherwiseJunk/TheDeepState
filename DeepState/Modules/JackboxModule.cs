@@ -1,6 +1,5 @@
 ﻿using DartsDiscordBots.Modules.Jackbox.Interfaces;
 using DartsDiscordBots.Modules.Jackbox.Models;
-using DartsDiscordBots.Services;
 using DartsDiscordBots.Services.Interfaces;
 using DartsDiscordBots.Utilities;
 using Discord;
@@ -20,7 +19,7 @@ namespace DeepState.Models
 		IJackboxService _jb { get; set; }
 		IMessageReliabilityService _messenger { get; set; }
 		
-		const string AllVersions = "1,2,3,4,5,6,7,8";
+		const string AllVersions = "1,2,3,4,5,6,7,8,9";
 
 		public JackboxModule(IJackboxService jackboxService, IMessageReliabilityService messenger)
 		{
