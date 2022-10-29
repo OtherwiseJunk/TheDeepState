@@ -31,6 +31,7 @@ namespace DeepState.Utilities
                         VotingEmoji = game.VotingEmoji,
                         HasAudience = game.HasAudience
                     });
+                    context.SaveChanges();
                 }
             }
         }
