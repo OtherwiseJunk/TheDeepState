@@ -8,7 +8,7 @@ namespace DeepState.Utilities
 {
     public static class TwitterUtilities
     {
-        public static async Task<Embed> GetTweetContents(long tweetId)
+        public static async Task<Embed> GetTweetContents(long tweetId, string sendingDiscordUser)
         {
             var twitter = await GetTwitterClient();
             var tweet = (await twitter.TweetsV2.GetTweetAsync(tweetId)).Tweet;
@@ -16,7 +16,8 @@ namespace DeepState.Utilities
             EmbedBuilder eb = new();
             eb.Title = $"{author.Name} - ({author.Username})";
             eb.Description = tweet.Text.Uwuify();
-            eb.ThumbnailUrl = author.ProfileImageUrl;            
+            eb.ThumbnailUrl = author.ProfileImageUrl;
+            eb.WithFooter($"Original discord message sent by: {sendingDiscordUser}");
 
             return eb.Build();
         }

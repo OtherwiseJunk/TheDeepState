@@ -51,9 +51,10 @@ namespace DeepState.Handlers
 			var match = Regex.Match(msg.Content, SharedConstants.DumbTwitterUserDetector);
 			if (match.Success && match.Length == msg.Content.Length)
             {
-				string tweetId = msg.Content.Split('/').Last();
-				var embed = (await TwitterUtilities.GetTweetContents(long.Parse(tweetId)));
+				long tweetId = long.Parse(msg.Content.Split('/').Last());
+				var embed = (await TwitterUtilities.GetTweetContents(tweetId, BotUtilities.GetDisplayNameForUser((IGuildUser)msg.Author)));
 				await msg.Channel.SendMessageAsync(embed: embed);
+				_ = msg.DeleteAsync();
             }
         }
 
