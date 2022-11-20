@@ -298,13 +298,17 @@ namespace DeepState
 				//We don't want to process messages from bots. Screw bots, all my homies hate bots.
 				return;
 			}
-			UserRecordsService urservice = _services.GetService<UserRecordsService>();
+			UserRecordsService urservice = _services.GetService<UserRecordsService>();			
 			new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
             new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
             new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
 
             if (!ids.Contains(guild.Id)) {
 				new Thread(async () => { await OnMessageHandlers.ReplyToAllTwitterLinksWithCVXTwitter(message); }).Start();
+			}
+            else
+            {
+				new Thread(async () => { await OnMessageHandlers.UWUIfyDumbUserTweets(message); }).Start();
 			}
 
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))

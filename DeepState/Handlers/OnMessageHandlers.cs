@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using DeepState.Data.Services;
 using static DartsDiscordBots.Constants.SharedConstants;
+using DeepState.Utilities;
 
 namespace DeepState.Handlers
 {
@@ -44,6 +45,17 @@ namespace DeepState.Handlers
 				}				
 			}
 		}
+
+		public static async Task UWUIfyDumbUserTweets(SocketMessage msg) 
+        {
+			var match = Regex.Match(msg.Content, SharedConstants.DumbTwitterUserDetector);
+			if (match.Success && match.Length == msg.Content.Length)
+            {
+				string tweetId = msg.Content.Split('/').Last();
+				var embed = (await TwitterUtilities.GetTweetContents(long.Parse(tweetId)));
+				await msg.Channel.SendMessageAsync(embed: embed);
+            }
+        }
 
 		public static async Task ReplyToAllTwitterLinksWithCVXTwitter(SocketMessage msg)
         {
