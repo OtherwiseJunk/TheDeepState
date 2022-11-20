@@ -18,6 +18,7 @@ namespace DeepState.Utilities
             eb.Description = tweet.Text.Uwuify();
             eb.ThumbnailUrl = author.ProfileImageUrl;
             eb.WithFooter($"Original discord message sent by: {sendingDiscordUser}");
+            eb.WithUrl($"https://twitter.com/{author.Username}/status/{tweetId}");
 
             return eb.Build();
         }
