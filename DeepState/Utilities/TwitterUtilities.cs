@@ -12,15 +12,19 @@ namespace DeepState.Utilities
         {
             var twitter = await GetTwitterClient();
             var tweet = (await twitter.TweetsV2.GetTweetAsync(tweetId)).Tweet;
-            var author = (await twitter.UsersV2.GetUserByIdAsync(tweet.AuthorId)).User;
-            EmbedBuilder eb = new();
-            eb.Title = $"{author.Name} - ({author.Username})";
-            eb.Description = tweet.Text.Uwuify();
-            eb.ThumbnailUrl = author.ProfileImageUrl;
-            eb.WithFooter($"Original discord message sent by: {sendingDiscordUser}");
-            eb.WithUrl($"https://twitter.com/{author.Username}/status/{tweetId}");
+            if(tweet != null)
+            {
+                var author = (await twitter.UsersV2.GetUserByIdAsync(tweet.AuthorId)).User;
+                EmbedBuilder eb = new();
+                eb.Title = $"{author.Name} - ({author.Username})";
+                eb.Description = tweet.Text.Uwuify();
+                eb.ThumbnailUrl = author.ProfileImageUrl;
+                eb.WithFooter($"Original discord message sent by: {sendingDiscordUser}");
+                eb.WithUrl($"https://twitter.com/{author.Username}/status/{tweetId}");
 
-            return eb.Build();
+                return eb.Build();
+            }
+            return null;
         }
 
         public static async Task<TwitterClient> GetTwitterClient()

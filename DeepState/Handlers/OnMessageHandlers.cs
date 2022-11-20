@@ -58,8 +58,11 @@ namespace DeepState.Handlers
                 }
 				long tweetId = long.Parse(content.Split('/').Last());
 				var embed = (await TwitterUtilities.GetTweetContents(tweetId, BotUtilities.GetDisplayNameForUser((IGuildUser)msg.Author)));
-				await msg.Channel.SendMessageAsync(embed: embed);
-				_ = msg.DeleteAsync();
+				if(embed != null)
+                {
+					await msg.Channel.SendMessageAsync(embed: embed);
+					_ = msg.DeleteAsync();
+				}				
             }
         }
 
