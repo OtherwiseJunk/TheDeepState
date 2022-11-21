@@ -278,26 +278,30 @@ namespace DeepState.Modules
         }
 
         [Command("uwuify"), Alias("uwu")]
-        public async Task Uwuify([Remainder]string message)
+        public async Task Uwuify([Remainder] string message)
         {
             string displayName = BotUtilities.GetDisplayNameForUser((IGuildUser)Context.Message.Author);
+            Embed embed = null;
 
             if (TwitterUtilities.MessageExclusivelyContainsTweetURL(message))
             {
-                Embed embed = await TwitterUtilities.GetUwuifiedTwitterEmbed(message, displayName);
-                if (embed != null)
-                {
-                    await Context.Message.Channel.SendMessageAsync(embed: embed);
-                    _ = Context.Message.DeleteAsync();
-                }
+                embed = await TwitterUtilities.GetUwuifiedTwitterEmbed(message, displayName);
+
+            }
+
+            if (embed != null)
+            {
+                _ = Context.Message.Channel.SendMessageAsync(embed: embed);
             }
             else
             {
-                _ = Context.Message.ReplyAsync($"**{displayName}**: "+ message.Uwuify());
+                _ = Context.Message.ReplyAsync($"**{displayName}**: " + message.Uwuify());
             }
+
+            _ = Context.Message.DeleteAsync();
         }
 
-		[Command("nationaldebt"), Alias("debt", "nd")]
+        [Command("nationaldebt"), Alias("debt", "nd")]
 		[Summary("Query the official .gov API to get the current national debt.")]
 		public async Task GetNationalDebt()
 		{
