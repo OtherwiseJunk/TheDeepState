@@ -1,3 +1,4 @@
+using DeepState.Utilities;
 using NUnit.Framework;
 using Utils = DeepState.Utilities.Utilities;
 
@@ -56,6 +57,22 @@ namespace DeepState.Tests
         public void TwitterReplacedWithFXTwitter(string inputString, string expectedString)
         {
             Assert.AreEqual(Utils.ReplaceTwitterWithFXTwitter(inputString), expectedString);
+        }
+        #endregion
+
+        #region Twitter Utilities Checks
+        [Test]
+        [TestCase("https://c.vxtwitter.com/realDonaldTrump/status/332308211321425920?s=21", 332308211321425920)]
+        [TestCase("https://c.vxtwitter.com/realDonaldTrump/status/332308211321425920", 332308211321425920)]
+        [TestCase("https://vxtwitter.com/realDonaldTrump/status/332308211321425920?s=21", 332308211321425920)]
+        [TestCase("https://vxtwitter.com/realDonaldTrump/status/332308211321425920", 332308211321425920)]
+        [TestCase("https://fxtwitter.com/realDonaldTrump/status/332308211321425920?s=21", 332308211321425920)]
+        [TestCase("https://fxtwitter.com/realDonaldTrump/status/332308211321425920", 332308211321425920)]
+        [TestCase("https://twitter.com/realDonaldTrump/status/332308211321425920?s=21", 332308211321425920)]
+        [TestCase("https://twitter.com/realDonaldTrump/status/332308211321425920", 332308211321425920)]
+        public void ValidateCorrectTweetIDIsExtracted(string inputString, long expectedId)
+        {
+            Assert.AreEqual(TwitterUtilities.GetTweetId(inputString), expectedId);
         }
         #endregion
     }

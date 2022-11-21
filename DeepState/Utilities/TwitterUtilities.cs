@@ -36,7 +36,7 @@ namespace DeepState.Utilities
             return new TwitterClient(key, secret, await twitter.Auth.CreateBearerTokenAsync());
         }
 
-        private static long GetTweetId(string twitterUrl)
+        public static long GetTweetId(string twitterUrl)
         {
             if (twitterUrl.Split('?').Length == 2)
             {
