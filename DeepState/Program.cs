@@ -289,8 +289,7 @@ namespace DeepState
 			List<ulong> ids = new(){ 
 				698639095940907048,
 				1024862866634969188,
-				746570029180518422,
-				95887290571685888
+				746570029180518422
 			};
 			if (message == null) return;
 
@@ -304,7 +303,7 @@ namespace DeepState
             new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
             new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
 
-            if (!ids.Contains(guild.Id)) {
+            if (!ids.Contains(guild.Id) && !message.Content.StartsWith(BotProperties.CommandPrefix)) {
 				new Thread(async () => { await OnMessageHandlers.ReplyToAllTwitterLinksWithCVXTwitter(message); }).Start();
 			}
             else
