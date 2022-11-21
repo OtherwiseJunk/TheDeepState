@@ -51,19 +51,13 @@ namespace DeepState.Handlers
 			var match = Regex.Match(msg.Content, SharedConstants.DumbTwitterUserDetector);
 			if (match.Success && match.Length == msg.Content.Length)
             {
-				string content = msg.Content;
-				if(content.Split('?').Length == 2)
-                {
-					content = content.Split('?')[0];
-                }
-				long tweetId = long.Parse(content.Split('/').Last());
-				var embed = (await TwitterUtilities.GetTweetContents(tweetId, BotUtilities.GetDisplayNameForUser((IGuildUser)msg.Author)));
-				if(embed != null)
-                {
+				Embed embed = await TwitterUtilities.GetUwuifiedTwitterEmbed(msg.Content, BotUtilities.GetDisplayNameForUser((IGuildUser)msg.Author));
+				if (embed != null)
+				{
 					await msg.Channel.SendMessageAsync(embed: embed);
 					_ = msg.DeleteAsync();
-				}				
-            }
+				}
+			}
         }
 
 		public static async Task ReplyToAllTwitterLinksWithCVXTwitter(SocketMessage msg)

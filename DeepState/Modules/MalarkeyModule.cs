@@ -277,6 +277,26 @@ namespace DeepState.Modules
             AutoResponse("https://cdn.discordapp.com/attachments/701194133074608198/939019260754272296/LiveAntonReaction.png");
         }
 
+        [Command("uwuify"), Alias("uwu")]
+        public async Task Uwuify([Remainder]string message)
+        {
+            string displayName = BotUtilities.GetDisplayNameForUser((IGuildUser)Context.Message.Author);
+            Match isTweet = Regex.Match(message, SharedConstants.TwitterStatusDetector);
+            if (isTweet.Success && isTweet.NextMatch().Length == message.Length)
+            {
+                Embed embed = await TwitterUtilities.GetUwuifiedTwitterEmbed(message, displayName);
+                if (embed != null)
+                {
+                    await Context.Message.Channel.SendMessageAsync(embed: embed);
+                    _ = Context.Message.DeleteAsync();
+                }
+            }
+            else
+            {
+                _ = Context.Message.ReplyAsync($"**{displayName}**: "+ message.Uwuify());
+            }
+        }
+
 		[Command("nationaldebt"), Alias("debt", "nd")]
 		[Summary("Query the official .gov API to get the current national debt.")]
 		public async Task GetNationalDebt()
