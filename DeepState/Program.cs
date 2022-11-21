@@ -309,7 +309,7 @@ namespace DeepState
 			}
             else
             {
-				new Thread(async () => { await OnMessageHandlers.UWUIfyDumbUserTweets(message); }).Start();
+				new Thread(async () => { await OnMessageHandlers.UWUIfyFlaggedUserTweets(message); }).Start();
 			}
 
 			if (!SharedConstants.NoAutoReactsChannel.Contains(message.Channel.Id))

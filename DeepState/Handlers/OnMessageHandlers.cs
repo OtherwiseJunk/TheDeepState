@@ -46,10 +46,9 @@ namespace DeepState.Handlers
 			}
 		}
 
-		public static async Task UWUIfyDumbUserTweets(SocketMessage msg) 
+		public static async Task UWUIfyFlaggedUserTweets(SocketMessage msg) 
         {
-			var match = Regex.Match(msg.Content, SharedConstants.DumbTwitterUserDetector);
-			if (match.Success && match.Length == msg.Content.Length)
+			if (TwitterUtilities.MessageExclusivelyContainsFlaggedUserTweetURL(msg.Content))
             {
 				Embed embed = await TwitterUtilities.GetUwuifiedTwitterEmbed(msg.Content, BotUtilities.GetDisplayNameForUser((IGuildUser)msg.Author));
 				if (embed != null)

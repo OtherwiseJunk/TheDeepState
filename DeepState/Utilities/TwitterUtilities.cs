@@ -1,7 +1,9 @@
 ﻿using DartsDiscordBots.Utilities;
+using DeepState.Constants;
 using Discord;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tweetinvi;
 
@@ -49,6 +51,18 @@ namespace DeepState.Utilities
         {
             long tweetId = TwitterUtilities.GetTweetId(twitterUrl);
             return await TwitterUtilities.GetTweetContents(tweetId, sendingUserDisplayname);
+        }
+
+        public static bool MessageExclusivelyContainsTweetURL(string message)
+        {
+            Match match = Regex.Match(message, SharedConstants.TwitterStatusDetector);
+            return match.Success && match.Length == message.Length;
+        }
+
+        public static bool MessageExclusivelyContainsFlaggedUserTweetURL(string message)
+        {
+            Match match = Regex.Match(message, SharedConstants.FlaggedTwitterUserDetector);
+            return match.Success && match.Length == message.Length;
         }
     }
 }

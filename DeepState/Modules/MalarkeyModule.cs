@@ -281,8 +281,8 @@ namespace DeepState.Modules
         public async Task Uwuify([Remainder]string message)
         {
             string displayName = BotUtilities.GetDisplayNameForUser((IGuildUser)Context.Message.Author);
-            Match isTweet = Regex.Match(message, SharedConstants.TwitterStatusDetector);
-            if (isTweet.Success && isTweet.NextMatch().Length == message.Length)
+
+            if (TwitterUtilities.MessageExclusivelyContainsTweetURL(message))
             {
                 Embed embed = await TwitterUtilities.GetUwuifiedTwitterEmbed(message, displayName);
                 if (embed != null)
