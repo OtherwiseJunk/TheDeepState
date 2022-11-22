@@ -32,6 +32,7 @@ using DartsDiscordBots.Modules.NFT;
 using DartsDiscordBots.Utilities;
 using System.Collections.Generic;
 using DartsDiscordBots.Modules.ServerManagement;
+using DartsDiscordBots.Modules.ServerManagement.Interfaces;
 
 namespace DeepState
 {
@@ -115,6 +116,7 @@ namespace DeepState
 				.AddSingleton<PanopticonService>()
 				.AddSingleton<OOCService>()
 				.AddSingleton<FeedbackService>()
+				.AddSingleton<IServerManagmentService, ServerManagementService>()
 				.AddDbContext<GuildUserRecordContext>()
 				.AddDbContext<HungerGamesContext>()
 				.AddDbContextFactory<GuildUserRecordContext>()
@@ -122,6 +124,7 @@ namespace DeepState
 				.AddDbContextFactory<ModTeamRequestContext>()
 				.AddDbContextFactory<JackboxContext>()
 				.AddDbContextFactory<RPGContext>();
+				
 				
 			map.AddHttpClient<PanopticonService>();
 			map.AddHttpClient<FFMPEGService>();
