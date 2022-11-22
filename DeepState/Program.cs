@@ -31,6 +31,7 @@ using DartsDiscordBots.Modules.Jackbox.Interfaces;
 using DartsDiscordBots.Modules.NFT;
 using DartsDiscordBots.Utilities;
 using System.Collections.Generic;
+using DartsDiscordBots.Modules.ServerManagement;
 
 namespace DeepState
 {
@@ -150,6 +151,7 @@ namespace DeepState
 			await _commands.AddModuleAsync<RPGModule>(_services);
 			await _commands.AddModuleAsync<NFTModule>(_services);
 			await _commands.AddModuleAsync<FeedbackModule>(_services);
+			await _commands.AddModuleAsync<ServerManagementModule>(_services);
 
 #if !DEBUG
 			
