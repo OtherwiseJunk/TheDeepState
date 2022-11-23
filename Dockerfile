@@ -26,6 +26,7 @@ ARG TOKEN
 ENV DEEPSTATE=$TOKEN
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY /VoiceDependencies/ /app/
 RUN apt-get update
 RUN apt-get install -y libfreetype6
 RUN apt-get install -y libfontconfig1
