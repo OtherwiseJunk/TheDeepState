@@ -83,7 +83,7 @@ namespace DeepState.Tests
         }
 
         [Test]
-        [TestCase("https://twitter.com/TolarianCollege/status/1583098494579265536", true)]
+        [TestCase("https://twitter.com/realDonaldTrump/status/1583098494579265536", true)]
         [TestCase("http://twitter.com/realDonaldTrump/status/1583098494579265536", true)]
         [TestCase("https://www.twitter.com/realDonaldTrump/status/1583098494579265536", true)]
         [TestCase("http://www.twitter.com/realDonaldTrump/status/1583098494579265536", true)]
@@ -99,7 +99,7 @@ namespace DeepState.Tests
         [TestCase("http://c.vxtwitter.com/realDonaldTrump/status/1583098494579265536", true)]
         [TestCase("https://c.vxtwitter.com/realDonaldTrump/status/1583098494579265536?s=21", true)]
         [TestCase("http://c.vxtwitter.com/realDonaldTrump/status/1583098494579265536?s=21", true)]
-        [TestCase("http://c.vxtwitter.com/realDonaldTrump/status/1583098494579265536 dsad", false)]
+        [TestCase("http://c.vxtwitter.com/ReaLDonaldTrump/status/1583098494579265536 dsad", false)]
         [TestCase("https://c.vxtwitter.com/realDonaldTrump/status/1583098494579265536?s=21 dsad", false)]
         [TestCase("https://fxtwitter.com/realDonaldTrump/status/1583098494579265536", true)]
         [TestCase("http://fxtwitter.com/realDonaldTrump/status/1583098494579265536", true)]
@@ -127,7 +127,7 @@ namespace DeepState.Tests
         [TestCase("http://twitter.com/elonmusk/status/1583098494579265536?s=21 dsad", false)]
         [TestCase("https://c.vxtwitter.com/elonmusk/status/1583098494579265536", true)]
         [TestCase("http://c.vxtwitter.com/elonmusk/status/1583098494579265536", true)]
-        [TestCase("https://c.vxtwitter.com/elonmusk/status/1583098494579265536?s=21", true)]
+        [TestCase("https://c.vxtwitter.com/EloNmuSk/status/1583098494579265536?s=21", true)]
         [TestCase("http://c.vxtwitter.com/elonmusk/status/1583098494579265536?s=21", true)]
         [TestCase("http://c.vxtwitter.com/elonmusk/status/1583098494579265536 dsad", false)]
         [TestCase("https://c.vxtwitter.com/elonmusk/status/1583098494579265536?s=21 dsad", false)]
@@ -143,6 +143,38 @@ namespace DeepState.Tests
         [TestCase("http://vxtwitter.com/elonmusk/status/1583098494579265536?s=21", true)]
         [TestCase("http://vxtwitter.com/elonmusk/status/1583098494579265536 dsad", false)]
         [TestCase("https://vxtwitter.com/elonmusk/status/1583098494579265536?s=21 dsad", false)]
+
+        [TestCase("https://twitter.com/kanyewest/status/1583098494579265536", true)]
+        [TestCase("http://twitter.com/kanyewest/status/1583098494579265536", true)]
+        [TestCase("https://www.twitter.com/kanyewest/status/1583098494579265536", true)]
+        [TestCase("http://www.twitter.com/kanyewest/status/1583098494579265536", true)]
+        [TestCase("https://twitter.com/kanyewest/status/1583098494579265536?s=21", true)]
+        [TestCase("http://twitter.com/kanyewest/status/1583098494579265536?s=21", true)]
+        [TestCase("https://www.twitter.com/kanyewest/status/1583098494579265536?s=21", true)]
+        [TestCase("http://www.twitter.com/kAnYewEst/status/1583098494579265536?s=21", true)]
+        [TestCase("https://www.twitter.com/kanyewest/status/1583098494579265536 dsad", false)]
+        [TestCase("http://www.twitter.com/kanyewest/status/1583098494579265536 dsad", false)]
+        [TestCase("https://twitter.com/kanyewest/status/1583098494579265536?s=21 dsad", false)]
+        [TestCase("http://twitter.com/kanyewest/status/1583098494579265536?s=21 dsad", false)]
+        [TestCase("https://c.vxtwitter.com/kanyewest/status/1583098494579265536", true)]
+        [TestCase("http://c.vxtwitter.com/kanyewest/status/1583098494579265536", true)]
+        [TestCase("https://c.vxtwitter.com/kanyewest/status/1583098494579265536?s=21", true)]
+        [TestCase("http://c.vxtwitter.com/kanyewest/status/1583098494579265536?s=21", true)]
+        [TestCase("http://c.vxtwitter.com/kanyewest/status/1583098494579265536 dsad", false)]
+        [TestCase("https://c.vxtwitter.com/kanyewest/status/1583098494579265536?s=21 dsad", false)]
+        [TestCase("https://fxtwitter.com/kanyewest/status/1583098494579265536", true)]
+        [TestCase("http://fxtwitter.com/kanyewest/status/1583098494579265536", true)]
+        [TestCase("https://fxtwitter.com/kanyewest/status/1583098494579265536?s=21", true)]
+        [TestCase("http://fxtwitter.com/kanyewest/status/1583098494579265536?s=21", true)]
+        [TestCase("http://fxtwitter.com/kanyewest/status/1583098494579265536 dsad", false)]
+        [TestCase("https://fxtwitter.com/kanyewest/status/1583098494579265536?s=21 dsad", false)]
+        [TestCase("https://vxtwitter.com/kanyewest/status/1583098494579265536", true)]
+        [TestCase("http://vxtwitter.com/kanyewest/status/1583098494579265536", true)]
+        [TestCase("https://vxtwitter.com/kanyewest/status/1583098494579265536?s=21", true)]
+        [TestCase("http://vxtwitter.com/kanyewest/status/1583098494579265536?s=21", true)]
+        [TestCase("http://vxtwitter.com/kanyewest/status/1583098494579265536 dsad", false)]
+        [TestCase("https://vxtwitter.com/kanyewest/status/1583098494579265536?s=21 dsad", false)]
+
         [TestCase("https://twitter.com/TolarianCollege/status/1583098494579265536", false)]
         [TestCase("http://twitter.com/TolarianCollege/status/1583098494579265536", false)]
         [TestCase("https://www.twitter.com/TolarianCollege/status/1583098494579265536", false)]
@@ -175,7 +207,9 @@ namespace DeepState.Tests
         [TestCase("https://vxtwitter.com/TolarianCollege/status/1583098494579265536?s=21 dsad", false)]
         public void MessageExclusivelyContainsFlaggedUserTweet(string input, bool expectedResult)
         {
-
+            Match match = Regex.Match(input, SharedConstants.FlaggedTwitterUserDetector, RegexOptions.IgnoreCase);
+            bool result = match.Success && match.Length == input.Length;
+            Assert.AreEqual(result, expectedResult);
         }
         #endregion
 

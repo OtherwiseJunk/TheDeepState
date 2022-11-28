@@ -61,7 +61,7 @@ namespace DeepState.Utilities
 
         public static bool MessageExclusivelyContainsFlaggedUserTweetURL(string message)
         {
-            Match match = Regex.Match(message, SharedConstants.FlaggedTwitterUserDetector);
+            Match match = Regex.Match(message, SharedConstants.FlaggedTwitterUserDetector,RegexOptions.IgnoreCase);
             return match.Success && match.Length == message.Length;
         }
     }
