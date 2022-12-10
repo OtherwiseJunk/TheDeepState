@@ -306,7 +306,7 @@ namespace DeepState.Constants
 		public static string WebpUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.webp";
         public static string MediaUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:gif|gifv|webp|mp4|jpg|png)";
 		public static string PreggersDetector = "[p,𝐩,𝞺,𝚙,ｐ,𝞀,ß,*,р]+[r]+[e,е,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,*,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[g,ġ,ℊ,𝒈,𝗀,𝕘,*]+[e,*,ô,ó,o,é,è,ė,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ]+[r,r,*]+s*";
-		public static string FlaggedTwitterUserDetector = @"https?://(c.vx|vx|fx|www.)?twitter.com/(realdonaldtrump|elonmusk|kanyewest)+/status/\d+\??(\w*=?[\w\d]*&?)*";
+		public static string FlaggedTwitterUserDetector = @"https?://(c.vx|vx|fx|www.)?twitter.com/(realdonaldtrump|elonmusk|kanyewest)+/status/\d+\??(\w*=?[\w\d-]*&?)*";
 		public static string TwitterStatusDetector = @"http(s)?://[c.]*[fx]*[vx]*twitter.com/.+/status/\d+[?]*.+";
 		#endregion
 
