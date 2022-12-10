@@ -90,7 +90,7 @@ namespace DeepState.Tests
         [TestCase("https://twitter.com/realDonaldTrump/status/1583098494579265536?s=21", true)]
         [TestCase("https://twitter.com/realDonaldTrump/status/1583098494579265536?s=", true)]
         [TestCase("https://twitter.com/realDonaldTrump/status/1583098494579265536?s", true)]
-        [TestCase("https://twitter.com/realDonaldTrump/status/1583098494579265536?s=21&t=21", true)]
+        [TestCase("https://twitter.com/realDonaldTrump/status/1583098494579265536?s=21&t=21-", true)]
         [TestCase("https://twitter.com/realDonaldTrump/status/1583098494579265536?s=21&t=", true)]
         [TestCase("https://twitter.com/realDonaldTrump/status/1583098494579265536?s=21&t", true)]
         [TestCase("http://twitter.com/realDonaldTrump/status/1583098494579265536?s=21&", true)]
