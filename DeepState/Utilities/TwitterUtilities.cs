@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tweetinvi;
+using Tweetinvi.Core.Extensions;
 
 namespace DeepState.Utilities
 {
@@ -20,7 +21,7 @@ namespace DeepState.Utilities
                 var author = (await twitter.UsersV2.GetUserByIdAsync(tweet.AuthorId)).User;
                 EmbedBuilder eb = new();
                 eb.Title = $"{author.Name} - ({author.Username})".Uwuify();
-                eb.Description = tweet.Text.Uwuify();
+                eb.Description =  tweet.Text.HTMLDecode().Uwuify();
                 eb.ThumbnailUrl = author.ProfileImageUrl;
                 eb.WithFooter($"Original discord message sent by: {sendingDiscordUser}".Uwuify());
                 eb.WithUrl($"https://twitter.com/{author.Username}/status/{tweetId}");
