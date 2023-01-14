@@ -1,4 +1,4 @@
-using DeepState.Constants;
+﻿using DeepState.Constants;
 using DeepState.Utilities;
 using NUnit.Framework;
 using System.Text.RegularExpressions;
@@ -213,6 +213,12 @@ namespace DeepState.Tests
             Match match = Regex.Match(input, SharedConstants.FlaggedTwitterUserDetector, RegexOptions.IgnoreCase);
             bool result = match.Success && match.Length == input.Length;
             Assert.AreEqual(result, expectedResult);
+        }
+
+        [TestCase("𝖯reggers")]        
+        public void Preggers(string input)
+        {
+            Assert.IsTrue(Regex.Match(input, SharedConstants.PreggersDetector).Success);
         }
         #endregion
 
