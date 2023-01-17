@@ -12,7 +12,7 @@ namespace DeepState.Utilities
 {
     public static class TwitterUtilities
     {
-        private static async Task<Embed> GetTweetContents(long tweetId, string sendingDiscordUser)
+        private static async Task<Embed> GetTweetContentsEmbed(long tweetId, string sendingDiscordUser)
         {
             var twitter = await GetTwitterClient();
             var tweet = (await twitter.TweetsV2.GetTweetAsync(tweetId)).Tweet;
@@ -25,6 +25,14 @@ namespace DeepState.Utilities
                 eb.ThumbnailUrl = author.ProfileImageUrl;
                 eb.WithFooter($"Original discord message sent by: {sendingDiscordUser}".Uwuify());
                 eb.WithUrl($"https://twitter.com/{author.Username}/status/{tweetId}");
+                if(tweet.Attachments.MediaKeys.Length > 0)
+                {
+                    Console.WriteLine("Logging all media keys...");
+                    foreach(string mediaKey in tweet.Attachments.MediaKeys)
+                    {
+                        Console.WriteLine(mediaKey);
+                    }
+                }
 
                 return eb.Build();
             }
@@ -51,7 +59,7 @@ namespace DeepState.Utilities
         public static async Task<Embed> GetUwuifiedTwitterEmbed(string twitterUrl, string sendingUserDisplayname)
         {
             long tweetId = TwitterUtilities.GetTweetId(twitterUrl);
-            return await TwitterUtilities.GetTweetContents(tweetId, sendingUserDisplayname);
+            return await TwitterUtilities.GetTweetContentsEmbed(tweetId, sendingUserDisplayname);
         }
 
         public static bool MessageExclusivelyContainsTweetURL(string message)
