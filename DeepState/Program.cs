@@ -200,8 +200,15 @@ namespace DeepState
             _client.ButtonExecuted += OnButtonClicked;
             _client.Ready += InstallSlashCommands;
             _client.SlashCommandExecuted += HandleAutoResponseCommands;
+            _client.MessageUpdated += OnEdit;
 
         }
+
+        private async Task OnEdit(Cacheable<IMessage, ulong> cacheableMessage, SocketMessage message, ISocketMessageChannel channel)
+        {
+            new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
+        }
+
         private async Task HandleAutoResponseCommands(SocketSlashCommand command)
         {
             string response = null;
@@ -325,7 +332,7 @@ namespace DeepState
             UserRecordsService urservice = _services.GetService<UserRecordsService>();
             new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
             new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
-            new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
+            new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();            
 
             if (!ids.Contains(guild.Id) && !message.Content.StartsWith(BotProperties.CommandPrefix))
             {
