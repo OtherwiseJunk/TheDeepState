@@ -25,14 +25,6 @@ namespace DeepState.Utilities
                 eb.ThumbnailUrl = author.ProfileImageUrl;
                 eb.WithFooter($"Original discord message sent by: {sendingDiscordUser}".Uwuify());
                 eb.WithUrl($"https://twitter.com/{author.Username}/status/{tweetId}");
-                if(tweet.Attachments.MediaKeys.Length > 0)
-                {
-                    Console.WriteLine("Logging all media keys...");
-                    foreach(string mediaKey in tweet.Attachments.MediaKeys)
-                    {
-                        Console.WriteLine(mediaKey);
-                    }
-                }
 
                 return eb.Build();
             }
