@@ -305,8 +305,9 @@ namespace DeepState.Constants
 		public static string AnimateImageURLRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:gif|gifv)";
 		public static string WebpUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.webp";
         public static string MediaUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:gif|gifv|webp|mp4|jpg|png)";
-		public static string ERegex = "[e,е,ô,ó,é,è,ė,ê,ë,æ,@,ò,ö,ě,ĕ,*,ē,ẽ,ę,ȩ,:,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ,3,a,e,*,ô,ó,é,е,è,ė,a,ê,ë,@,ò,ö,ě,ĕ,ē,ẽ,ę,ȩ,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,:,3,ȇ,ể,ẹ,ḙ,in,ḛ,ệ]";
-		public static string PreggersDetector = $"[p,ρ,𝖯,𝐩,p,P,𝞺,𝚙,ｐ,𝞀,ß,:,*,р,🅱️]+[r,®️,:]+{ERegex}+[g,ġ,8,6,9,ℊ,:,𝒈,𝗀,𝕘,*]+{ERegex}*[r,:,r,®️,]+s*";
+        public static string ERegex = "[e,е,ô,ó,é,è,ė,ê,ë,æ,ě,ĕ,ẽ,ę,ȩ,:,ɇ,ế,ề,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ,@,ò,ö,ē,3,in]";
+		public static string RRegex = "[r,r,®️,:,]";
+        public static string PreggersDetector = $"[p,ρ,𝖯,𝐩,p,P,𝞺,𝚙,ｐ,𝞀,ß,:,*,р,🅱️]+{RRegex}+{ERegex}+[g,ġ,8,6,9,ℊ,:,𝒈,𝗀,𝕘,*]+{ERegex.Replace("]", ",a]")}*{RRegex}s*";
 		public static string FlaggedTwitterUserDetector = @"https?://(c.vx|vx|fx|www.)?twitter.com/(realdonaldtrump|elonmusk|kanyewest)+/status/\d+\??(\w*=?[\w\d-]*&?)*";
 		public static string TwitterStatusDetector = @"http(s)?://[c.]*[fx]*[vx]*twitter.com/.+/status/\d+[?]*.+";
 		#endregion
