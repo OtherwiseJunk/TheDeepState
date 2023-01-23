@@ -306,7 +306,7 @@ namespace DeepState.Constants
 		public static string WebpUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.webp";
         public static string MediaUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:gif|gifv|webp|mp4|jpg|png)";        
 		public static string G = "[g,ġ,8,6,9,ℊ,:,;,𝒈,𝗀,𝕘,𝓰,*]";
-		public static string E = "[e,е,ô,𝓮,ó,é,è,ė,ê,ë,æ,ě,ĕ,ẽ,ę,ȩ,:,;,ɇ,ế,ề,ε,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ,@,ò,ɘ,ö,ē,3,ϵ,З]";
+		public static string E = "[e,е,ô,𝓮,ó,é,è,ė,ê,£,ë,æ,ě,ĕ,ẽ,ę,ȩ,:,;,ɇ,ế,ề,ε,ḗ,ḕ,ễ,ḝ,ẻ,ȅ,ȇ,ể,ẹ,ḙ,ḛ,ệ,@,ò,ɘ,ö,ē,3,ϵ,З]";
 		public static string P = "[p,ρ,𝖯,𝐩,p,P,𝞺,𝚙,ｐ,𝞀,ß,𝓹,:,;,р,🅱]";
 		public static string R = "[r,r,®️,:,;,𝓻,г]";
 		public static string PreggersDetector = $"{P}+{R}+{E}+{G}+{E.Replace("]", ",a]")}*{R}*";
