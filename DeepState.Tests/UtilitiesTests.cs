@@ -237,6 +237,7 @@ namespace DeepState.Tests
         [TestCase("prЗggЗrs")]
         [TestCase("𝓹𝓻𝓮𝓰𝓰𝓮𝓻𝓼")]
         [TestCase("pгeggeгs")]
+        [TestCase("pr;3gg;3rs")]
         public void Preggers(string input)
         {
             Assert.IsTrue(Regex.Match(input, SharedConstants.PreggersDetector).Success);
