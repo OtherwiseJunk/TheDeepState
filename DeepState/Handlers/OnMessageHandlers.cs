@@ -71,6 +71,9 @@ namespace DeepState.Handlers
         {
 			if(Regex.Matches(msg.Content, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase).Count > 0)
             {
+				string content = $"{msg.Author.Username} in {(msg.Channel as IGuildChannel).Guild.Name}/{msg.Channel.Name} as [{DateTime.Now.ToString("MM/dd/yyyy hh:mm tt")}]: {msg.Content}";
+				Console.WriteLine("Detected someone trying to say preggers, I think...");
+				Console.WriteLine(content);
                 if (Utils.PercentileCheck(10))
                 {
 					_ = msg.Channel.SendMessageAsync("https://c.tenor.com/BH_8JPewRk4AAAAd/free-guy-ryan-reynolds.gif");
