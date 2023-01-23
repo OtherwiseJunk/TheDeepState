@@ -69,6 +69,7 @@ namespace DeepState.Handlers
         }
 		public static async Task DeletePreggersMessage(SocketMessage msg)
         {
+			Console.WriteLine("NOMRALIZING: " + msg.Content.Normalize(System.Text.NormalizationForm.FormD));
 			if(Regex.Matches(msg.Content.Normalize(System.Text.NormalizationForm.FormD), SharedConstants.PreggersDetector, RegexOptions.IgnoreCase).Count > 0)
             {
 				string content = $"{msg.Author.Username} in {(msg.Channel as IGuildChannel).Guild.Name}/{msg.Channel.Name} as [{DateTime.Now.ToString("MM/dd/yyyy hh:mm tt")}]: {msg.Content}";
