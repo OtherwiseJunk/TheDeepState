@@ -1,19 +1,36 @@
-﻿using DeepState.Utilities;
+﻿using DartsDiscordBots.Utilities;
+using DeepState.Utilities;
+using Discord;
 using Panopticon.Shared.Models;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
+using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 
 namespace DeepState.Service
 {
     public class OOCService : PanopticonService
     {
+        private string OOCCaptionFormat = "{0} Originally reported by {1}";
+        private List<string> OOCQuipFormats = new List<string>
+        {
+            "Another Libcraft Banger.",
+            "Still can't believe they said this...",
+            "SMDH, really?",
+            "Ok, friend, whatever you say.",
+            "Ban them tbh.",
+            "A Libcraft Classic.",
+            "This awful take brought to you by Libcraft.",
+            "They're a genius!",
+            "Libcraft actually believes this.",
+            "Yikes Sweety, let's unpack this...",
+            "Yikes Sweaty, let's unpack this..."
+        };
         public OOCService(HttpClient client, ILogger logger) : base(client, logger)
         {
         }
@@ -49,6 +66,23 @@ namespace DeepState.Service
                 }
             }
         }
+
+        internal EmbedBuilder BuildOOCEmbed(IGuild triggeringGuild, IMessageChannel triggeringChannel, OOCItem pulledItem)
+        {
+            IGuildUser reportingUser = triggeringGuild.GetUserAsync(pulledItem.ReportingUserId, CacheMode.AllowDownload).Result;
+            string reportingUsername = DDBUtils.GetDisplayNameForUser(reportingUser);
+
+            byte[] nameHash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(reportingUsername));
+
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle(String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername));
+            embed.WithImageUrl(pulledItem.ImageUrl);
+            embed.WithColor(new Color(nameHash[0], nameHash[1], nameHash[2]));
+            embed.AddField("Date Stored", $"{pulledItem.DateStored.ToString("yyyy-MM-dd")} (yyyy-MM-dd)");
+
+            return embed;
+        }
+
         public OOCItem? GetRandomRecord()
         {
             using (HttpRequestMessage req = new(HttpMethod.Get, $"https://panopticon.cacheblasters.com/ooc/rand"))

@@ -38,7 +38,8 @@ namespace DeepState.Constants
 		public const ulong TestChannel = 176357319687405569;
 		public const ulong LCShitpostChannelId = 855227586212134922;
 		public const ulong UkraineInfoThread = 941783493476753408;
-		public const ulong UkraineMemeThread = 946913420219932712;
+        public const ulong UkraineMemeThread = 946913420219932712;
+		public const ulong LibcraftOutOfContext = 777400598789095445;
 		#endregion
 
 		#region Channel Lists
