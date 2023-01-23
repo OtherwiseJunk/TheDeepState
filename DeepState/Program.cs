@@ -65,7 +65,7 @@ namespace DeepState
                 IMessageChannel oocChannel = await libcraft.GetChannelAsync(SharedConstants.LibcraftOutOfContext) as IMessageChannel;
                 EmbedBuilder embed = ooc.BuildOOCEmbed(libcraft, oocChannel, ooc.GetRandomRecord());
 
-                _ = oocChannel.SendMessageAsync(embed: embed.Build());
+                _ = oocChannel.SendMessageAsync("Heard from a reliable source that you're jonesing for some OOC. I gotchu.", embed: embed.Build());
             }, s => s.ToRunEvery(2).Hours().At(0));
         }
         public static void Main(string[] args)
