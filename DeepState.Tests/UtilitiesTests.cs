@@ -243,6 +243,8 @@ namespace DeepState.Tests
         [TestCase("prageru")]
         [TestCase("prager u")]
         [TestCase("pring,")]
+        [TestCase("spring,")]
+        [TestCase("pring")]
         public void NotPreggers(string input)
         {
             Assert.IsFalse(Regex.Match(input, SharedConstants.PreggersDetector).Success);
