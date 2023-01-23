@@ -69,7 +69,7 @@ namespace DeepState.Handlers
         }
 		public static async Task DeletePreggersMessage(SocketMessage msg)
         {
-			if(Regex.Matches(msg.Content, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase).Count > 0)
+			if(Regex.Matches(msg.Content.Normalize(System.Text.NormalizationForm.FormD), SharedConstants.PreggersDetector, RegexOptions.IgnoreCase).Count > 0)
             {
 				string content = $"{msg.Author.Username} in {(msg.Channel as IGuildChannel).Guild.Name}/{msg.Channel.Name} as [{DateTime.Now.ToString("MM/dd/yyyy hh:mm tt")}]: {msg.Content}";
 				Console.WriteLine("Detected someone trying to say preggers, I think...");
