@@ -55,7 +55,6 @@ namespace DeepState
             _commands.Log += Log;
             _client.ReactionAdded += OnReact;
             JobManager.Initialize();
-            //We want this to run at 8 AM ET, but it looks like the host is GMT, so we need to set this to 12
             JobManager.AddJob(() => HungerGameUtilities.DailyEvent((HungerGamesService)_services.GetService(typeof(HungerGamesService)), (UserRecordsService)_services.GetService(typeof(UserRecordsService)), _client), s => s.ToRunEvery(1).Days().At(8, 0));
             JobManager.AddJob(() => ((RPGService)_services.GetService(typeof(RPGService))).LongRest(), s => s.ToRunEvery(1).Days().At(8, 0));
             JobManager.AddJob(async () =>
@@ -72,6 +71,7 @@ namespace DeepState
 
                 _ = oocChannel.SendMessageAsync("Heard from a reliable source that you're jonesing for some OOC. I gotchu.", embed: embed.Build());
             }, s => s.ToRunEvery(2).Hours().At(0));
+            JobManager.JobException += info => Console.WriteLine($"Unhandled Schedule Task Error: {info.Name} - {info.Exception.Message}");
         }
         public static void Main(string[] args)
     => new Program().MainAsync().GetAwaiter().GetResult();
