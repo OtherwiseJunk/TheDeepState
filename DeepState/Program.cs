@@ -71,7 +71,12 @@ namespace DeepState
 
                 _ = oocChannel.SendMessageAsync("Heard from a reliable source that you're jonesing for some OOC. I gotchu.", embed: embed.Build());
             }, s => s.ToRunEvery(2).Hours().At(0));
-            JobManager.JobException += info => Console.WriteLine($"Unhandled Schedule Task Error: {info.Name} - {info.Exception.Message}");
+            JobManager.JobException += info =>
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Unhandled Schedule Task Error: {info.Name} - {info.Exception.Message}");
+                Console.ForegroundColor = ConsoleColor.White;
+            };
         }
         public static void Main(string[] args)
     => new Program().MainAsync().GetAwaiter().GetResult();
