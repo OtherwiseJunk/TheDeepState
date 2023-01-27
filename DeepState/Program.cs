@@ -58,15 +58,15 @@ namespace DeepState
             //We want this to run at 8 AM ET, but it looks like the host is GMT, so we need to set this to 12
             JobManager.AddJob(() => HungerGameUtilities.DailyEvent((HungerGamesService)_services.GetService(typeof(HungerGamesService)), (UserRecordsService)_services.GetService(typeof(UserRecordsService)), _client), s => s.ToRunEvery(1).Days().At(8, 0));
             JobManager.AddJob(() => ((RPGService)_services.GetService(typeof(RPGService))).LongRest(), s => s.ToRunEvery(1).Days().At(8, 0));
-            JobManager.AddJob(async () =>
+            JobManager.AddJob(() =>
             {
                 OOCService ooc = _services.GetService(typeof(OOCService)) as OOCService;
                 IGuild libcraft = _client.GetGuild(SharedConstants.LibcraftGuildId);
-                IMessageChannel oocChannel = await libcraft.GetChannelAsync(SharedConstants.LibcraftOutOfContext) as IMessageChannel;
+                IMessageChannel oocChannel = libcraft.GetChannelAsync(SharedConstants.LibcraftOutOfContext) as IMessageChannel;
                 EmbedBuilder embed = ooc.BuildOOCEmbed(libcraft, oocChannel, ooc.GetRandomRecord());
 
                 _ = oocChannel.SendMessageAsync("Heard from a reliable source that you're jonesing for some OOC. I gotchu.", embed: embed.Build());
-            }, s => s.ToRunEvery(2).Hours().At(0));
+            }, s => s.ToRunEvery(2).Hours() );
         }
         public static void Main(string[] args)
     => new Program().MainAsync().GetAwaiter().GetResult();
@@ -215,7 +215,7 @@ namespace DeepState
 
         private async Task OnEdit(Cacheable<IMessage, ulong> cacheableMessage, SocketMessage message, ISocketMessageChannel channel)
         {
-            new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
+            new Thread(async () => { if (message != null && message.Content != null) { await OnMessageHandlers.DeletePreggersMessage(message); } }).Start();
         }
 
         private async Task HandleAutoResponseCommands(SocketSlashCommand command)
