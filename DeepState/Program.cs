@@ -55,15 +55,18 @@ namespace DeepState
             _commands.Log += Log;
             _client.ReactionAdded += OnReact;
             JobManager.Initialize();
-            //We want this to run at 8 AM ET, but it looks like the host is GMT, so we need to set this to 12
             JobManager.AddJob(() => HungerGameUtilities.DailyEvent((HungerGamesService)_services.GetService(typeof(HungerGamesService)), (UserRecordsService)_services.GetService(typeof(UserRecordsService)), _client), s => s.ToRunEvery(1).Days().At(8, 0));
             JobManager.AddJob(() => ((RPGService)_services.GetService(typeof(RPGService))).LongRest(), s => s.ToRunEvery(1).Days().At(8, 0));
             JobManager.AddJob(() =>
             {
+                Console.WriteLine("Attempting an automatic OOC post.");
                 OOCService ooc = _services.GetService(typeof(OOCService)) as OOCService;
+                Console.WriteLine($"OOC Service null? {ooc == null}");
                 IGuild libcraft = _client.GetGuild(SharedConstants.LibcraftGuildId);
                 IMessageChannel oocChannel = libcraft.GetChannelAsync(SharedConstants.LibcraftOutOfContext) as IMessageChannel;
+                Console.WriteLine($"Channel null? {oocChannel == null}");
                 EmbedBuilder embed = ooc.BuildOOCEmbed(libcraft, oocChannel, ooc.GetRandomRecord());
+                Console.WriteLine($"Embed null? {embed == null}");
 
                 _ = oocChannel.SendMessageAsync("Heard from a reliable source that you're jonesing for some OOC. I gotchu.", embed: embed.Build());
             }, s => s.ToRunEvery(2).Hours() );
