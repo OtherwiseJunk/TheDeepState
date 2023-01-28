@@ -35,6 +35,7 @@ using DartsDiscordBots.Modules.ServerManagement;
 using DartsDiscordBots.Modules.ServerManagement.Interfaces;
 using Victoria;
 using DartsDiscordBots.Modules.Audio;
+using DartsDiscordBots.Modules.LockedTomb;
 
 namespace DeepState
 {
@@ -185,6 +186,7 @@ namespace DeepState
             await _commands.AddModuleAsync<FeedbackModule>(_services);
             await _commands.AddModuleAsync<ServerManagementModule>(_services);
             await _commands.AddModuleAsync<AudioModule>(_services);
+            await _commands.AddModuleAsync<LockedTombModule>(_services);
 
 #if !DEBUG
 			
