@@ -46,7 +46,7 @@ namespace DeepState.Modules
 			_ = message.DeleteAsync();
 		}
 
-		[Command("ooc"), Alias("libcraftmoment"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 }), RequireChannel(new ulong[] { 718986327642734654, SharedConstants.LibcraftOutOfContext, 716841087137873920, 176357319687405569, 701194133074608198, 831675528431403039 })]
+		[Command("ooc"), Alias("libcraftmoment", "libcraftfacts","libfacts","hippofacts"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 }), RequireChannel(new ulong[] { 718986327642734654, SharedConstants.LibcraftOutOfContext, 716841087137873920, 176357319687405569, 701194133074608198, 831675528431403039 })]
 		[Summary("Returns a random entry from the databse of base64 image strings.")]
 		public async Task RetrieveRandomOutOfContext()
 		{
