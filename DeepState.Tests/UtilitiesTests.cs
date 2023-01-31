@@ -244,6 +244,7 @@ namespace DeepState.Tests
         [TestCase("prĒggers")]
         [TestCase("preggerŠ")]
         [TestCase("🇵🇷🇪🇬🇬🇪🇷🇿")]
+        [TestCase("🇵 🇷 🇪 🇬 🇬 🇪 🇷 🇿")]
         [TestCase("pręggęrs")]
         [TestCase("prᲕggᲕrs")]
         public void Preggers(string input)
