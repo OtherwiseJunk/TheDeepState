@@ -306,10 +306,10 @@ namespace DeepState.Constants
 		public static string AnimateImageURLRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:gif|gifv)";
 		public static string WebpUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.webp";
         public static string MediaUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:gif|gifv|webp|mp4|jpg|png)";        
-		public static string G = "[gġ869ℊ:;𝒈𝗀𝕘𝓰]";
-		public static string E = "[eеô𝓮óéèėê£ëæěĕẽęȩ:;ɇếềεḗḕễḝẻȅȇểẹḙḛệ@òɘöē3ʒϵЗĒ]";
-		public static string P = "[pρ₽𝖯𝐩pP𝞺𝚙ｐ𝞀ß𝓹:;р🅱]";
-		public static string R = "[rr®️:;𝓻г]";
+		public static string G = "[gġ8🇬6🥚9ℊ:;𝒈𝗀𝕘𝓰]";
+		public static string E = "[eе🇪ô𝓮óéèėᲕęê£ëæěĕẽęȩ:;ɇếềεḗḕễḝẻȅȇểẹḙḛệ@òɘöē3ʒϵЗĒ]";
+		public static string P = "[🇵pρ₽𝖯𝐩pP𝞺𝚙ｐ𝞀ß𝓹:;р🅱]";
+		public static string R = "[🇷rr🇪🇷®️:;𝓻г]";
 		public static string PreggersDetector = $"{P}+{R}+{E}+{G}+{E.Replace("]", "a]")}*{R}+";
 		public static string FlaggedTwitterUserDetector = @"https?://(c.vx|vx|fx|www.)?twitter.com/(realdonaldtrump|elonmusk|kanyewest)+/status/\d+\??(\w*=?[\w\d-]*&?)*";
 		public static string TwitterStatusDetector = @"http(s)?://[c.]*[fx]*[vx]*twitter.com/.+/status/\d+[?]*.+";
