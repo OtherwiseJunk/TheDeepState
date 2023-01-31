@@ -249,7 +249,7 @@ namespace DeepState.Tests
         [TestCase("prᲕggᲕrs")]
         public void Preggers(string input)
         {
-            Assert.IsTrue(Regex.Match(input, SharedConstants.PreggersDetector).Success);
+            Assert.IsTrue(Regex.Match(input.Replace(" ", string.Empty), SharedConstants.PreggersDetector).Success);
         }
 
         [TestCase("program")]
@@ -264,7 +264,7 @@ namespace DeepState.Tests
         [TestCase("pregame")]
         public void NotPreggers(string input)
         {
-            Assert.IsFalse(Regex.Match(input, SharedConstants.PreggersDetector).Success);
+            Assert.IsFalse(Regex.Match(input.Replace(" ", string.Empty), SharedConstants.PreggersDetector).Success);
         }
         #endregion
 

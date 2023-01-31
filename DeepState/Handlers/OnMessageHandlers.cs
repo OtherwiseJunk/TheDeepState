@@ -69,7 +69,7 @@ namespace DeepState.Handlers
         }
 		public static async Task DeletePreggersMessage(SocketMessage msg)
         {
-			MatchCollection matches = Regex.Matches(msg.Content.Normalize(System.Text.NormalizationForm.FormD), SharedConstants.PreggersDetector, RegexOptions.IgnoreCase);
+			MatchCollection matches = Regex.Matches(msg.Content.Normalize(System.Text.NormalizationForm.FormD).Replace(" ",String.Empty), SharedConstants.PreggersDetector, RegexOptions.IgnoreCase);
 
 			if (matches.Count > 0 || msg.Content.StartsWith("🇵🇷🥚"))
             {
