@@ -10,19 +10,26 @@ using System.Threading.Tasks;
 
 namespace DeepState.Data.Services
 {
-    internal class BestOfService : IBestOfService
+    public class BestOfService : IBestOfService
     {
         public IDbContextFactory<BestOfContext> dataContextFactory { get; set; }
         public BestOfService(IDbContextFactory<BestOfContext> contextFactory) { }
 
         public bool IsBestOf(ulong messageId)
         {
-            return false;
+            using(BestOfContext context = dataContextFactory.CreateDbContext())
+            {
+                return context.BestOfs.FirstOrDefault(x => x.MessageId == messageId) != null;
+            }
         }
 
         public void CreateBestOf(BestOf bestOf)
         {
-            Console.Write("Created BestOf");
+            using (BestOfContext context = dataContextFactory.CreateDbContext())
+            {
+                context.BestOfs.Add(bestOf);
+                context.SaveChanges();
+            }
         }
     }
 }

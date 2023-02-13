@@ -144,6 +144,7 @@ namespace DeepState
                 .AddSingleton<OOCService>()
                 .AddSingleton<FeedbackService>()
                 .AddSingleton<AudioService>()
+                .AddSingleton<BestOfService>()
                 .AddSingleton<IServerManagmentService, ServerManagementService>()
                 .AddDbContext<GuildUserRecordContext>()
                 .AddDbContext<HungerGamesContext>()
@@ -151,7 +152,8 @@ namespace DeepState
                 .AddDbContextFactory<HungerGamesContext>()
                 .AddDbContextFactory<ModTeamRequestContext>()
                 .AddDbContextFactory<JackboxContext>()
-                .AddDbContextFactory<RPGContext>();
+                .AddDbContextFactory<RPGContext>()
+                .AddDbContextFactory<BestOfContext>();
 
 
             map.AddHttpClient<PanopticonService>();
