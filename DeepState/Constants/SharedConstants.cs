@@ -194,6 +194,14 @@ namespace DeepState.Constants
 		#endregion
 
 		#region Emote Lists
+		public static List<string> LibcraftBestOfVotingEmotes = new List<string>
+		{
+            "<:emoji:707407221792702525>",
+			"<:EMOJI:833155878742917172>",
+			"<:emoji:959945207938437151>",
+            "<:emoji:1025117260148383865>"
+        };
+
 		public static List<string> HeadPats = new List<string>
 		{
 			"<:GorePat2:905366033534156800>",
