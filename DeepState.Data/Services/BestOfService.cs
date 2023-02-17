@@ -13,7 +13,9 @@ namespace DeepState.Data.Services
     public class BestOfService : IBestOfService
     {
         public IDbContextFactory<BestOfContext> dataContextFactory { get; set; }
-        public BestOfService(IDbContextFactory<BestOfContext> contextFactory) { }
+        public BestOfService(IDbContextFactory<BestOfContext> contextFactory) {
+            dataContextFactory = contextFactory;
+        }
 
         public bool IsBestOf(ulong messageId)
         {
@@ -26,7 +28,7 @@ namespace DeepState.Data.Services
         public void CreateBestOf(BestOf bestOf)
         {
             using (BestOfContext context = dataContextFactory.CreateDbContext())
-            {
+            {                
                 context.BestOfs.Add(bestOf);
                 context.SaveChanges();
             }
