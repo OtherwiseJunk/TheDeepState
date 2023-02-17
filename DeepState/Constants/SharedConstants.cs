@@ -193,8 +193,11 @@ namespace DeepState.Constants
 		};
 		#endregion
 
-		#region Emote Lists
-		public static List<string> HeadPats = new List<string>
+		#region Emote Collections
+		public static Dictionary<string, ulong> LibcraftBestOfVotingEmotes = new Dictionary<string, ulong> { { "emoji", 707407221792702525 }, { "bog", 763615501992591361 } };
+
+
+        public static List<string> HeadPats = new List<string>
 		{
 			"<:GorePat2:905366033534156800>",
 			"<a:d9pat:944698428829605948>",
@@ -337,10 +340,12 @@ namespace DeepState.Constants
 		public static string NongenderedPronounRolename = @"they/them";
 		public const string AdminsOnlyGroup = "AdminsOnly";
 		public const string HungerGamesRegistrationDateGroup = "HGRegistrationPeriod";
-		#endregion
 
-		#region String Formats
-		public static string EmoteNameandId(string name, ulong? id) => $"<:{name}:{id}>";
+		public static ulong LibcraftBestOfChannel = 1074504783576182794;
+        #endregion
+
+        #region String Formats
+        public static string EmoteNameandId(string name, ulong? id) => $"<:{name}:{id}>";
 		#endregion
 
 		#region Enums
