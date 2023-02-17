@@ -36,6 +36,7 @@ using DartsDiscordBots.Modules.ServerManagement.Interfaces;
 using Victoria;
 using DartsDiscordBots.Modules.Audio;
 using DartsDiscordBots.Modules.LockedTomb;
+using Amazon.Runtime.Internal.Transform;
 
 namespace DeepState
 {
@@ -77,6 +78,7 @@ namespace DeepState
         public async Task MainAsync()
         {
             Console.WriteLine($"DEEPSTATE has been INITIALIZED");
+            Console.WriteLine($"{Environment.GetEnvironmentVariable("DATABASE")}");
 
             await InstallCommandsAsync();
 
@@ -99,7 +101,9 @@ namespace DeepState
 
             new Thread(() => _ = LibcoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>())).Start();
             new Thread(() => _ = LibcoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>())).Start();
+#if !DEBUG
             new Thread(() => JackboxUtilities.EnsureDefaultGamesExist(_services.GetService<JackboxContext>())).Start();
+#endif
             // Block this task until the program is closed.
             await Task.Delay(-1);
         }
@@ -151,9 +155,13 @@ namespace DeepState
                 .AddDbContextFactory<GuildUserRecordContext>()
                 .AddDbContextFactory<HungerGamesContext>()
                 .AddDbContextFactory<ModTeamRequestContext>()
+#if !DEBUG
                 .AddDbContextFactory<JackboxContext>()
+#endif
                 .AddDbContextFactory<RPGContext>()
                 .AddDbContextFactory<BestOfContext>();
+
+			
 
 
             map.AddHttpClient<PanopticonService>();
@@ -170,9 +178,7 @@ namespace DeepState
         }
         public async Task InstallCommandsAsync()
         {
-#if !DEBUG
-			
-#endif
+
             await _commands.AddModuleAsync<MalarkeyModule>(_services);
             await _commands.AddModuleAsync<HelpModule>(_services);
             await _commands.AddModuleAsync<IndecisionModule>(_services);
@@ -181,8 +187,7 @@ namespace DeepState
             await _commands.AddModuleAsync<OutOfContextModule>(_services);
             await _commands.AddModuleAsync<UserRecordsModule>(_services);
             await _commands.AddModuleAsync<HungerGamesModule>(_services);
-            await _commands.AddModuleAsync<ModTeamRequestModule>(_services);
-            await _commands.AddModuleAsync<JackboxModule>(_services);
+            await _commands.AddModuleAsync<ModTeamRequestModule>(_services);            
             await _commands.AddModuleAsync<RPGModule>(_services);
             await _commands.AddModuleAsync<NFTModule>(_services);
             await _commands.AddModuleAsync<FeedbackModule>(_services);
@@ -191,7 +196,7 @@ namespace DeepState
             await _commands.AddModuleAsync<LockedTombModule>(_services);
 
 #if !DEBUG
-			
+			await _commands.AddModuleAsync<JackboxModule>(_services);
 #endif
             _client.MessageReceived += (async (SocketMessage messageParam) =>
             {
@@ -391,7 +396,7 @@ namespace DeepState
             new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.OpenRequestEmbedTitle, PagingUtilities.OpenRequestsPagingCallback, _services); }).Start();
             new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.ClosedRequestEmbedTitle, PagingUtilities.ClosedRequestsPagingCallback, _services); }).Start();
             new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.LibcoinBalancesEmbedTitle, PagingUtilities.LibcoinLeaderboardPagingCallback, _services); }).Start();
-            new Thread(() => { _ = LibcoinUtilities.BestOfChecker(msg, _services.GetService<BestOfService>(), 95887290571685888, 176357319687405569, 1, new Dictionary<string,string> { { "Dart", "243114787003695104" }, { "gengarsmug", "1027665901769723986" } }); }).Start();
+            new Thread(() => { _ = ORH.BestOfChecker(msg, _services.GetService<BestOfService>(), 698639095940907048, 1074504783576182794, 10, new Dictionary<string,ulong> { { "emoji", 707407221792702525 }, { "bog", 763615501992591361 } }); }).Start();
             new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.LibcoinActiveUserListTitle, PagingUtilities.ActiveUsersPaginingCallback, _services); }).Start();
             new Thread(() => { _ = LibcoinUtilities.LibcoinReactHandler(reaction, msg.Channel as ISocketMessageChannel, msg); }).Start();
 
