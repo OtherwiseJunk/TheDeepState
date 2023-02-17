@@ -396,7 +396,7 @@ namespace DeepState
             new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.OpenRequestEmbedTitle, PagingUtilities.OpenRequestsPagingCallback, _services); }).Start();
             new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.ClosedRequestEmbedTitle, PagingUtilities.ClosedRequestsPagingCallback, _services); }).Start();
             new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.LibcoinBalancesEmbedTitle, PagingUtilities.LibcoinLeaderboardPagingCallback, _services); }).Start();
-            new Thread(() => { _ = ORH.BestOfChecker(msg, _services.GetService<BestOfService>(), 698639095940907048, 1074504783576182794, 10, new Dictionary<string,ulong> { { "emoji", 707407221792702525 }, { "bog", 763615501992591361 } }); }).Start();
+            new Thread(() => { _ = ORH.BestOfChecker(msg, _services.GetService<BestOfService>(), 698639095940907048, 1074504783576182794, 10, SharedConstants.LibcraftBestOfVotingEmotes); }).Start();
             new Thread(() => { _ = ORH.EmbedPagingHandler(reaction, msg, _client.CurrentUser, PagedEmbedConstants.LibcoinActiveUserListTitle, PagingUtilities.ActiveUsersPaginingCallback, _services); }).Start();
             new Thread(() => { _ = LibcoinUtilities.LibcoinReactHandler(reaction, msg.Channel as ISocketMessageChannel, msg); }).Start();
 
