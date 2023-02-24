@@ -57,7 +57,7 @@ namespace DeepState
             _commands.Log += Log;
             _client.ReactionAdded += OnReact;
             JobManager.Initialize();
-            JobManager.AddJob(() => HungerGameUtilities.DailyEvent((HungerGamesService)_services.GetService(typeof(HungerGamesService)), (UserRecordsService)_services.GetService(typeof(UserRecordsService)), _client), s => s.ToRunEvery(1).Days().At(8, 0));
+            JobManager.AddJob(() => HungerGameUtilities.DailyEvent((HungerGamesDataService)_services.GetService(typeof(HungerGamesDataService)), (UserRecordsService)_services.GetService(typeof(UserRecordsService)), _client), s => s.ToRunEvery(1).Days().At(8, 0));
             JobManager.AddJob(() => ((RPGService)_services.GetService(typeof(RPGService))).LongRest(), s => s.ToRunEvery(1).Days().At(8, 0));
             JobManager.AddJob(async () =>
             {
@@ -139,7 +139,7 @@ namespace DeepState
                     Environment.GetEnvironmentVariable("DOURL"),
                     Environment.GetEnvironmentVariable("DOBUCKET"))
                 )
-                .AddSingleton<HungerGamesService>()
+                .AddSingleton<HungerGamesDataService>()
                 .AddSingleton<UserRecordsService>()
                 .AddSingleton<ModTeamRequestService>()
                 .AddSingleton<RPGService>()

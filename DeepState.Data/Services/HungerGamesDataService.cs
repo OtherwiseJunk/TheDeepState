@@ -9,11 +9,11 @@ using System.Linq;
 
 namespace DeepState.Data.Services
 {
-	public class HungerGamesService
+	public class HungerGamesDataService
 	{
 		IDbContextFactory<HungerGamesContext> _contextFactory { get; set; }
 		UserRecordsService _userRecordService { get; set; }
-		public HungerGamesService(IDbContextFactory<HungerGamesContext> contextFactory, UserRecordsService userRecordsService)
+		public HungerGamesDataService(IDbContextFactory<HungerGamesContext> contextFactory, UserRecordsService userRecordsService)
 		{
 			_contextFactory = contextFactory;
 			_userRecordService = userRecordsService;

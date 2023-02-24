@@ -30,7 +30,7 @@ namespace DeepState.Utilities
 		}
 		public static Embed TributeEmbedPagingCallback(IMessage msg, IServiceProvider serviceProvider, int currentPage, bool incrementPage)
 		{
-			HungerGamesService service = ((HungerGamesService)serviceProvider.GetService(typeof(HungerGamesService)));
+			HungerGamesDataService service = ((HungerGamesDataService)serviceProvider.GetService(typeof(HungerGamesDataService)));
 			IChannel channel = msg.Channel;
 			IGuild guild = ((IGuildChannel)channel).Guild;
 			List<HungerGamesTribute> tributes;

@@ -66,7 +66,7 @@ namespace DeepState.Utilities
 			return embed.Build();
 		}
 
-		public static HungerGamesGameState BuildGameStateFromConfig(HungerGamesServerConfiguration config, IDiscordClient client, HungerGamesService hgService)
+		public static HungerGamesGameState BuildGameStateFromConfig(HungerGamesServerConfiguration config, IDiscordClient client, HungerGamesDataService hgService)
 		{
 			HungerGamesGameState state = new HungerGamesGameState();
 			state.Guild = client.GetGuildAsync(config.DiscordGuildId).Result;
@@ -81,36 +81,38 @@ namespace DeepState.Utilities
 			return state;
 		}
 
-		public static async Task DailyEvent(HungerGamesService hgService, UserRecordsService urService, IDiscordClient client)
+		public static async Task DailyEvent(HungerGamesDataService hgService, UserRecordsService urService, IDiscordClient client)
 		{
 			DateTime now = DateTime.Now;
 
 			IMessageChannel libcraftBotChannel = null;
 			foreach (HungerGamesServerConfiguration config in hgService.GetAllConfigurations())
 			{
-				HungerGamesGameState state = BuildGameStateFromConfig(config, client, hgService);
-				Console.WriteLine($"Today is {now}, and the game has deterinned the event stage for {state.Guild.Name} is {Enum.GetName(state.CurrentStage)}");
+				HungerGamesGameState gameState = BuildGameStateFromConfig(config, client, hgService);
+				Console.WriteLine($"Today is {now}, and the game has deterinned the event stage for {gameState.Guild.Name} is {Enum.GetName(gameState.CurrentStage)}");
 				
 
-				if (state.Guild.Id == LibcraftGuildId)
+				if (gameState.Guild.Id == LibcraftGuildId)
                 {
-                    libcraftBotChannel = (IMessageChannel)await state.Guild.GetChannelAsync(LCBotCommandsChannel);
+                    libcraftBotChannel = (IMessageChannel)await gameState.Guild.GetChannelAsync(LCBotCommandsChannel);
                 }
 
                 new Thread(() =>
 				{
-					switch (state.CurrentStage)
+					switch (gameState.CurrentStage)
 					{
 						case EventStage.FirstDayRegistrationPeriod:
-							Console.WriteLine($"Firing First Day Registration Period for {state.Guild.Name}");
-							if (libcraftBotChannel != null)
+							Console.WriteLine($"Firing First Day Registration Period for {gameState.Guild.Name}");
+							Console.WriteLine("Removing all HG roles from users in this server");
+							RemoveTributeAndCorpseRolesFromAllUsers(gameState);
+                            if (libcraftBotChannel != null)
 							{
-								if(state.HungerGamesRole != null)
-                                {
-									libcraftBotChannel.SendMessageAsync($"{state.HungerGamesRole.Mention} Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
+								if (gameState.HungerGamesRole != null)
+								{
+									libcraftBotChannel.SendMessageAsync($"{gameState.HungerGamesRole.Mention} Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
 								}
-                                else
-                                {
+								else
+								{
 									libcraftBotChannel.SendMessageAsync("Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
 								}
 								libcraftBotChannel.SendMessageAsync("Registration for Hunger Games now open. Live fast, die young, leave a beautiful corpse and all that stuff you meatbags ramble on about.");
@@ -118,31 +120,32 @@ namespace DeepState.Utilities
 							}
 							break;
 						case EventStage.RegistrationPeriod:
-							Console.WriteLine($"Firing Registration Period for {state.Guild.Name}");
-							int numberOfTributes = state.Tributes.Where(t => t.IsAlive).ToList().Count;
-							double potSize = hgService.GetPrizePool(state.Guild.Id);
+							Console.WriteLine($"Firing Registration Period for {gameState.Guild.Name}");
+							int numberOfTributes = gameState.Tributes.Where(t => t.IsAlive).ToList().Count;
+							double potSize = hgService.GetPrizePool(gameState.Guild.Id);
 							int daysRemaining = 4 - (now.Day % 10);
 							DateTime timeOfGame = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day + daysRemaining, 8, 0, 0);
-							state.TributeChannel.SendMessageAsync(BuildLeadUpHype(timeOfGame, numberOfTributes, potSize));
+							gameState.TributeChannel.SendMessageAsync(BuildLeadUpHype(timeOfGame, numberOfTributes, potSize));
 							break;
 						case EventStage.FirstActiveGameDay:
-							Console.WriteLine($"Firing First Day Active Game Day for {state.Guild.Name}");
-							state.TributeChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
-							RunGame(state, now, config, hgService, urService);
+							Console.WriteLine($"Firing First Day Active Game Day for {gameState.Guild.Name}");
+							gameState.TributeChannel.SendMessageAsync($"```{string.Join(' ', Enumerable.Repeat(Environment.NewLine, 250))}```" + "**LET THE GAMES BEGIN**");
+							RunGame(gameState, now, config, hgService, urService);
 							break;
 						case EventStage.ActiveGame:
-							Console.WriteLine($"Firing Active Game Day for {state.Guild.Name}");
-							RunGame(state, now, config, hgService, urService);
+							Console.WriteLine($"Firing Active Game Day for {gameState.Guild.Name}");
+							RunGame(gameState, now, config, hgService, urService);
 							break;
 					}
 				}).Start();
+
 			}
 		}
 
-		private static void RunGame(HungerGamesGameState state, DateTime now, HungerGamesServerConfiguration config, HungerGamesService hgService, UserRecordsService urService)
+		private static void RunGame(HungerGamesGameState state, DateTime now, HungerGamesServerConfiguration config, HungerGamesDataService hgService, UserRecordsService urService)
 		{
 			int daysRemaining = CalculateDaysRemaining(now);
-			RolltheDaysDeaths(config, daysRemaining, state.Tributes, state.Guild, state.TributeChannel, state.CorpseChannel, hgService, state.TributeRole, state.CorpseRole);
+			RolltheDaysDeaths(config, daysRemaining, state, hgService);
 			state.Tributes = hgService.GetTributeList(config.DiscordGuildId);
 			bool doesOneLivingTributeRemain = state.Tributes.Where(t => t.IsAlive).Count() == 1;
 
@@ -187,11 +190,11 @@ namespace DeepState.Utilities
 			return sb.ToString();
 		}
 
-		private static void RolltheDaysDeaths(HungerGamesServerConfiguration config, int daysRemaining, List<HungerGamesTribute> tributes, IGuild guild, IMessageChannel tributeAnnouncementChannel, IMessageChannel corpseAnnouncementChannel, HungerGamesService hgService, IRole tributeRole, IRole? corpseRole)
+		private static void RolltheDaysDeaths(HungerGamesServerConfiguration config, int daysRemaining, HungerGamesGameState gameState, HungerGamesDataService hgService)
 		{
 			Random rand = Utils.CreateSeededRandom();
 			HungerGamesTribute victim;
-			int tributesRemaining = tributes.Where(t => t.IsAlive).Count();
+			int tributesRemaining = gameState.Tributes.Where(t => t.IsAlive).Count();
 			int numberOfVictims = DetermineNumberOfVictimsForDay(daysRemaining, tributesRemaining);
 
 			Console.WriteLine($"[HUNGERGAMES] There will be {numberOfVictims} victims today.");
@@ -204,36 +207,36 @@ namespace DeepState.Utilities
 					Console.WriteLine($"[HUNGERGAMES] Waiting {sleepTime} miliseconds before attempting to KILL AGAIN.");
 					Thread.Sleep(sleepTime);
 				}
-				List<HungerGamesTribute> nullUsers = tributes.Where(t => t.IsAlive).Where(t => !guild.GetUsersAsync().Result.Select(u => u.Id).Contains(t.DiscordUserId)).ToList();
+				List<HungerGamesTribute> livingCompetitors = gameState.Tributes.Where(t => t.IsAlive).Where(t => !gameState.Guild.GetUsersAsync().Result.Select(u => u.Id).Contains(t.DiscordUserId)).ToList();
 				int district = rand.Next(1, 12);
-				if (nullUsers.Count > 0)
+				if (livingCompetitors.Count > 0)
 				{
-					victim = nullUsers.GetRandom();
+					victim = livingCompetitors.GetRandom();
 				}
 				else
 				{
-					victim = tributes.Where(t => t.IsAlive).ToList().GetRandom();
+					victim = gameState.Tributes.Where(t => t.IsAlive).ToList().GetRandom();
 				}
 
-				IGuildUser victimUser = guild.GetUserAsync(victim.DiscordUserId, CacheMode.AllowDownload).Result;
+				IGuildUser victimUser = gameState.Guild.GetUserAsync(victim.DiscordUserId, CacheMode.AllowDownload).Result;
 				string victimName = DDBUtils.GetDisplayNameForUser(victimUser);
 
-				Dictionary<PronounConjugations, List<string>> pronouns = Utils.GetUserPronouns(victimUser, guild);
-				string goreyDetails = GetCauseOfDeathDescription(victim.DiscordUserId, victimName, guild, tributes, pronouns);
+				Dictionary<PronounConjugations, List<string>> pronouns = Utils.GetUserPronouns(victimUser, gameState.Guild);
+				string goreyDetails = GetCauseOfDeathDescription(victim.DiscordUserId, victimName, gameState.Guild, gameState.Tributes, pronouns);
 				string obituary = GetObituary(pronouns, victimUser);
 
 				Embed announcementEmbed = BuildTributeDeathEmbed(victimUser, goreyDetails, obituary, district);
-				IUserMessage msg = tributeAnnouncementChannel.SendMessageAsync(embed: announcementEmbed).Result;
+				IUserMessage msg = gameState.TributeChannel.SendMessageAsync(embed: announcementEmbed).Result;
 				msg.PinAsync();
-				hgService.KillTribute(victim.DiscordUserId, guild.Id, goreyDetails, obituary, district);
-				tributes = hgService.GetTributeList(config.DiscordGuildId);
+				hgService.KillTribute(victim.DiscordUserId, gameState.Guild.Id, goreyDetails, obituary, district);
+				gameState.Tributes = hgService.GetTributeList(config.DiscordGuildId);
 				if (victimUser != null)
 				{
 					new Thread(() =>
 					{
 						_ = victimUser.CreateDMChannelAsync().Result.SendMessageAsync($"Sad to say, you've bought the farm! {msg.GetJumpUrl()}");
 						//wait 10 minutes, then remove Tribute role from the corpse. Allows for RP.
-						if (tributes.Count(t => t.IsAlive) > 1)
+						if (gameState.Tributes.Count(t => t.IsAlive) > 1)
 						{
 							Thread.Sleep(60 * 10 * 1000);
 						}
@@ -242,14 +245,14 @@ namespace DeepState.Utilities
 							//If you're the last to die, you get 60 seconds to do your thing and then you're OUT.
 							Thread.Sleep(60 * 1000);
 						}
-						victimUser.RemoveRoleAsync(tributeRole);
-						if (corpseRole != null)
+						victimUser.RemoveRoleAsync(gameState.TributeRole);
+						if (gameState.CorpseRole != null)
 						{
-							victimUser.AddRoleAsync(corpseRole);
+							victimUser.AddRoleAsync(gameState.CorpseRole);
 						}
-						if (corpseAnnouncementChannel != null)
+						if (gameState.CorpseChannel != null)
 						{
-							corpseAnnouncementChannel.SendMessageAsync("Hey ghosts, welcome your new dead friend!", embed: announcementEmbed);
+							gameState.CorpseChannel.SendMessageAsync("Hey ghosts, welcome your new dead friend!", embed: announcementEmbed);
 						}
 					}).Start();
 				}
@@ -258,7 +261,23 @@ namespace DeepState.Utilities
 			}
 		}
 
-		public static void RunHungerGamesCleanup(IGuild guild, IMessageChannel announcementChannel, IRole tributeRole, IRole? corpseRole, IRole? championRole, List<HungerGamesTribute> tributes, HungerGamesService hgService, UserRecordsService urService)
+		private static void RemoveTributeAndCorpseRolesFromAllUsers(HungerGamesGameState gameState)
+		{
+			foreach(IGuildUser user in gameState.Guild.GetUsersAsync().Result)
+			{
+                if (gameState.TributeRole is not null && user.RoleIds.Contains(gameState.TributeRole.Id))
+				{
+					user.RemoveRoleAsync(gameState.TributeRole);
+				}
+				if (gameState.CorpseRole is not null && user.RoleIds.Contains(gameState.CorpseRole.Id))
+				{
+                    user.RemoveRoleAsync(gameState.CorpseRole);
+                }
+            }
+			
+		}
+
+		public static void RunHungerGamesCleanup(IGuild guild, IMessageChannel announcementChannel, IRole tributeRole, IRole? corpseRole, IRole? championRole, List<HungerGamesTribute> tributes, HungerGamesDataService hgService, UserRecordsService urService)
 		{
 			Console.WriteLine("We have a winner! Starting closing ceremonies.");
 			Random rand = Utils.CreateSeededRandom();
@@ -619,7 +638,6 @@ namespace DeepState.Utilities
 			return EventStage.CompletedGame;
 		}
 	}
-
 	public enum EventStage
 	{
 		FirstDayRegistrationPeriod,

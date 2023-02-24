@@ -22,11 +22,11 @@ namespace DeepState.Modules
 	[Group("hungergames"), Alias("hg", "hungry", "hunger")]
 	public class HungerGamesModule : ModuleBase
 	{
-		public HungerGamesService _hgService { get; set; }
+		public HungerGamesDataService _hgService { get; set; }
 		public UserRecordsService _urService { get; set; }
 		public IMessageReliabilityService _messenger { get; set; }
 
-		public HungerGamesModule(HungerGamesService service, IMessageReliabilityService messenger, UserRecordsService urService)
+		public HungerGamesModule(HungerGamesDataService service, IMessageReliabilityService messenger, UserRecordsService urService)
 		{
 			_hgService = service;
 			_urService = urService;
