@@ -129,21 +129,19 @@ namespace DeepState.Modules
 			bool tributeRoleExists = RoleExists(HGC.TributeRoleName, Context);
 			bool championRoleExists = RoleExists(HGC.ChampionRoleName, Context);
 			bool corpseRoleExists = RoleExists(HGC.CorpseRoleName, Context);
+            string tributeStatus = tributeRoleExists ? $"{tributeRoleExists}" : $"False, please create a role with the name `{HGC.TributeRoleName}`";
+            string championStatus = championRoleExists ? $"{championRoleExists}" : $"False, please create a role with the name `{HGC.ChampionRoleName}`";
+            string corpseStatus = corpseRoleExists ? $"{corpseRoleExists}" : $"False, please create a role with the name `{HGC.CorpseRoleName}`";
 
-			await Context.Channel.SendMessageAsync(@$"Tribute Role Exists? {tributeRoleExists}
-Champion Role Exists? {championRoleExists}
-Corpse Role Exists? {corpseRoleExists}");
+            await Context.Channel.SendMessageAsync(@$"Tribute Role Exists? {tributeStatus}
+Champion Role Exists? {championStatus}
+Corpse Role Exists? {corpseStatus}");
 		}
 
 		public bool RoleExists(string RoleName, ICommandContext context)
 		{
-			IRole role = context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == RoleName.ToLower());
-			if (role != null)
-			{
-				return true;
-			}
-			return false;
-		}
+			return context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower() == RoleName.ToLower()) != null;
+        }
 
 		[Command("roleup")]
 		[RequireOwner]
