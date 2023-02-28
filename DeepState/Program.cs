@@ -36,7 +36,6 @@ using DartsDiscordBots.Modules.ServerManagement.Interfaces;
 using Victoria;
 using DartsDiscordBots.Modules.Audio;
 using DartsDiscordBots.Modules.LockedTomb;
-using Amazon.Runtime.Internal.Transform;
 
 namespace DeepState
 {
@@ -71,7 +70,7 @@ namespace DeepState
                 Console.WriteLine($"Embed null? {embed == null}");
 
                 _ = oocChannel.SendMessageAsync("Heard from a reliable source that you're jonesing for some OOC. I gotchu.", embed: embed.Build());
-            }, s => s.ToRunEvery(2).Hours().At(0) );
+            }, s => s.ToRunEvery(2).Hours().At(0));
         }
         public static void Main(string[] args)
     => new Program().MainAsync().GetAwaiter().GetResult();
@@ -119,9 +118,9 @@ namespace DeepState
             var map = new ServiceCollection()
                 .AddSingleton<ILogger>(log);
             map.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig()
-                {
-                    GatewayIntents = GatewayIntents.All
-                }))
+            {
+                GatewayIntents = GatewayIntents.All
+            }))
                .AddLavaNode(node =>
                 {
                     node.Hostname = "lavalink.cacheblasters.com";
@@ -161,7 +160,7 @@ namespace DeepState
                 .AddDbContextFactory<RPGContext>()
                 .AddDbContextFactory<BestOfContext>();
 
-			
+
 
 
             map.AddHttpClient<PanopticonService>();
@@ -187,7 +186,7 @@ namespace DeepState
             await _commands.AddModuleAsync<OutOfContextModule>(_services);
             await _commands.AddModuleAsync<UserRecordsModule>(_services);
             await _commands.AddModuleAsync<HungerGamesModule>(_services);
-            await _commands.AddModuleAsync<ModTeamRequestModule>(_services);            
+            await _commands.AddModuleAsync<ModTeamRequestModule>(_services);
             await _commands.AddModuleAsync<RPGModule>(_services);
             await _commands.AddModuleAsync<NFTModule>(_services);
             await _commands.AddModuleAsync<FeedbackModule>(_services);
@@ -353,7 +352,7 @@ namespace DeepState
             UserRecordsService urservice = _services.GetService<UserRecordsService>();
             new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
             new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
-            new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();            
+            new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
 
             if (!ids.Contains(guild.Id) && !message.Content.StartsWith(BotProperties.CommandPrefix))
             {
@@ -404,7 +403,7 @@ namespace DeepState
                 return;
             }
 
-            if (SharedConstants.NoAutoReactsChannel.Contains(msg.Channel.Id))
+            if (!SharedConstants.NoAutoReactsChannel.Contains(msg.Channel.Id))
             {
                 new Thread(() => { _ = ORH.BestOfChecker(msg, _services.GetService<BestOfService>(), SharedConstants.LibcraftGuildId, SharedConstants.LibcraftBestOfChannel, 13, SharedConstants.LibcraftBestOfVotingEmotes); }).Start();
             }
