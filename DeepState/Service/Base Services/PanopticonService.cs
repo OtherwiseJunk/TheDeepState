@@ -1,16 +1,11 @@
-﻿using Panopticon.Shared.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Serilog;
-using DeepState.Utilities;
-using System.Net;
-using DeepState.Data.Models;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace DeepState.Service
 {
@@ -23,6 +18,7 @@ namespace DeepState.Service
         internal string Auth0GrantType { get; set; }
         internal string Auth0Scope { get; set; }
         internal ILogger _log { get; set; }
+        private static JwtSecurityToken JWT { get; set; }
 
         internal JsonSerializerOptions JsonOptions = new JsonSerializerOptions
         {
@@ -42,8 +38,13 @@ namespace DeepState.Service
 
         public string RequestJWT()
         {
+            if(JWT is not null && JWT.ValidTo > DateTime.UtcNow)
+            {
+                _log.Information("Reusing existing JWT...");
+                return JWT.ToString();
+            }
             _log.Information("Requesting Panopticon JWT...");
-            string token = "";
+            JwtSecurityTokenHandler tokenHandler = new();
 
             using (HttpRequestMessage msg = new(HttpMethod.Post, "https://dev-apsgkx34.us.auth0.com/oauth/token"))
             {
@@ -55,11 +56,11 @@ namespace DeepState.Service
                 using (HttpResponseMessage resp = _httpClient.SendAsync(msg).Result)
                 {
                     _log.Information($"Panopticon JWT Status Code: {resp.StatusCode}");
-                    JsonNode json = JsonSerializer.Deserialize<JsonNode>(resp.Content.ReadAsStringAsync().Result);
-                    token = json["access_token"].GetValue<string>();
+                    string jsonToken = JsonSerializer.Deserialize<JsonNode>(resp.Content.ReadAsStringAsync().Result)["access_token"].GetValue<string>();
+                    tokenHandler.ReadJwtToken(jsonToken);
+                    return jsonToken;
                 }
             }
-            return token;
         }
     }
 }
