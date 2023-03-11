@@ -342,6 +342,12 @@ namespace DeepState.Constants
 		public const string HungerGamesRegistrationDateGroup = "HGRegistrationPeriod";
 
 		public static ulong LibcraftBestOfChannel = 1074504783576182794;
+
+		public static List<ulong> LibcraftBestOfExclusionList = new List<ulong>
+		{
+			716841087137873920,
+			772627203568566272
+		};
         #endregion
 
         #region String Formats
