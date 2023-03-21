@@ -36,6 +36,7 @@ using DartsDiscordBots.Modules.ServerManagement.Interfaces;
 using Victoria;
 using DartsDiscordBots.Modules.Audio;
 using DartsDiscordBots.Modules.LockedTomb;
+using System.Linq;
 
 namespace DeepState
 {
@@ -344,12 +345,20 @@ namespace DeepState
             };
             if (message == null) return;
 
+            UserRecordsService urservice = _services.GetService<UserRecordsService>();
             if (message.Author.IsBot)
             {
                 //We don't want to process messages from bots. Screw bots, all my homies hate bots.
+
+                //Well, except in these specific cases
+                if(message.Channel.Id == SharedConstants.LibcraftBestOfChannel && message.Author.Id == 799039246668398633)
+                {
+                    string[] footerComponents = message.Embeds.First().Footer.Value.Text.Split('-');
+                    ulong bestOfUserId = ulong.Parse(footerComponents[2]);
+                    urservice.Grant(bestOfUserId, guild.Id, 10);
+                }
                 return;
-            }
-            UserRecordsService urservice = _services.GetService<UserRecordsService>();
+            }            
             new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
             new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
             new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
@@ -405,7 +414,7 @@ namespace DeepState
 
             if (!SharedConstants.NoAutoReactsChannel.Contains(msg.Channel.Id) && !SharedConstants.LibcraftBestOfExclusionList.Contains(msg.Channel.Id)) 
             {
-                new Thread(() => { _ = ORH.BestOfChecker(msg, _services.GetService<BestOfService>(), SharedConstants.LibcraftGuildId, SharedConstants.LibcraftBestOfChannel, 10, SharedConstants.LibcraftBestOfVotingEmotes); }).Start();
+                new Thread(() => { _ = ORH.BestOfChecker(msg, _services.GetService<BestOfService>(), SharedConstants.LibcraftGuildId, SharedConstants.LibcraftBestOfChannel, 10, SharedConstants.LibcraftBestOfVotingEmotes, reactingUser); }).Start();
             }
 
             new Thread(() => { _ = OnReactHandlers.KlaxonCheck(reactionEmote, channel, msg); }).Start();
