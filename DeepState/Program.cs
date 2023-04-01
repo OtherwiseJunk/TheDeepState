@@ -412,6 +412,8 @@ namespace DeepState
                 return;
             }
 
+            new Thread(() => { _ = OnReactHandlers.SelfReactCheck(reaction, channel, msg); }).Start();
+
             if (!SharedConstants.NoAutoReactsChannel.Contains(msg.Channel.Id) && !SharedConstants.LibcraftBestOfExclusionList.Contains(msg.Channel.Id)) 
             {
                 new Thread(() => { _ = ORH.BestOfChecker(msg, _services.GetService<BestOfService>(), SharedConstants.LibcraftGuildId, SharedConstants.LibcraftBestOfChannel, 10, SharedConstants.LibcraftBestOfVotingEmotes, reactingUser); }).Start();
