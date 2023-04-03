@@ -194,7 +194,23 @@ namespace DeepState.Constants
 		#endregion
 
 		#region Emote Collections
-		public static Dictionary<string, ulong> LibcraftBestOfVotingEmotes = new Dictionary<string, ulong> { { "emoji", 707407221792702525 }, { "bog", 763615501992591361 } };
+		public static Dictionary<string, ulong> LibcraftBestOfVotingEmotes = new Dictionary<string, ulong> { 
+			{ "emoji", 707407221792702525 }, 
+			{ "bog", 763615501992591361 },
+			{ "true", 923420410350039060 },
+			{ "woah", 814576121541951510 },
+			{ "deepfriedemoji", 961468023611457556 },
+			{ "lfg", 919629651985449053 },
+			{ "concernemoji", 1027664042011140297 },
+			{ "bidenjeb", 763596795925364737 },
+			{ "a:HAHAHAHAHAHAHAHAHAHAHAHAHAHAHA", 905987165614407772 },
+			{ "gwog", 904087583569633291 },
+			{ "thonicle", 828448936884305940 },
+			{ "bogdrigo", 874165323291562034 },
+			{ "gengar_smug", 646174407592640523 },
+			{ "based", 930329422148538431 },
+			{ "a:laughing", 669517192370454539 }
+		};
 
 
         public static List<string> HeadPats = new List<string>
