@@ -31,10 +31,9 @@ namespace DeepState.Handlers
 		{
 			if (msg.Reactions.Count == 1)
 			{
-				if (msg.Reactions.First().Value.ReactionCount == 1 && reaction.UserId == msg.Author.Id && channel.Id != SharedConstants.SelfCareChannelId)
+				if (reaction.UserId == msg.Author.Id && channel.Id != SharedConstants.SelfCareChannelId)
 				{
 					await msg.AddReactionAsync(Emote.Parse(SharedConstants.YouAreWhiteID));
-					await channel.SendMessageAsync($"{msg.Author.Mention} {SharedConstants.SelfReactResponses.GetRandom()}", messageReference: new MessageReference(msg.Id), allowedMentions: AllowedMentions.All);
 					if (msg.Author.Id == SharedConstants.TheCheatingUser)
 					{
 						await channel.SendMessageAsync($"WE GOT HIM! {channel.GetUserAsync(SharedConstants.ThePoliceUser, CacheMode.AllowDownload).Result.Mention}");
