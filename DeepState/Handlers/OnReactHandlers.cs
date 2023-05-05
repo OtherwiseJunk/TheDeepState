@@ -45,14 +45,24 @@ namespace DeepState.Handlers
         public static async Task ClearDeepStateReactionCheck(IEmote reactionEmote, ISocketMessageChannel channel, IMessage msg, SocketSelfUser currentUser)
         {
             //Check for the clearing reaction emote, and do no clear if the author is Deep State.
-            if (SharedConstants.ClearingEmotes.Contains(reactionEmote.Name) && msg.Author != currentUser)
+            if (!SharedConstants.ClearingEmotes.Contains(reactionEmote.Name) || msg.Author == currentUser) return;
+
+            foreach (var reaction in msg.Reactions)
             {
-                foreach (var reaction in msg.Reactions)
+                string name = reaction.Key.Name;
+                if (SharedConstants.YouAreWhiteID.Contains(name)  )
                 {
-                    if (reaction.Value.IsMe)
-                    {
-                        await msg.RemoveReactionAsync(reaction.Key, currentUser);
-                    }
+                    await msg.AddReactionAsync(Emote.Parse(SharedConstants.GengarSmug));
+                    continue;
+                }
+				if (SharedConstants.GengarSmug.Contains(name))
+				{
+					continue;
+				}
+
+                if (reaction.Value.IsMe)
+                {
+                    await msg.RemoveReactionAsync(reaction.Key, currentUser);
                 }
             }
         }

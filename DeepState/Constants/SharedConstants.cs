@@ -27,10 +27,12 @@ namespace DeepState.Constants
 		public static string SusID = "<:sus:811454356914044968>";
 		public static string GodIWishThatWereMeID = "<:godiwishthatwereme:929146317958152213>";
 		public static string RageID = "<:rage:929155553735876668>";
-		#endregion
+		public static string GengarSmug = "<:gengarsmug:1027665901769723986>";
+		public static string GastlyFloat = "<a:gastlyfloat:393798161556045835>";
+        #endregion
 
-		#region Channel Ids
-		public const ulong SelfCareChannelId = 736092567497867284;
+        #region Channel Ids
+        public const ulong SelfCareChannelId = 736092567497867284;
 		public const ulong SeriousDiscussionChannelId = 732019626367516682;
 		public const ulong DiscordSuggestionsChannelId = 740033615617982514;
 		public const ulong RequestsChannelId = 858490606145634354;
