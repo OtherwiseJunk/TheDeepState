@@ -9,6 +9,7 @@ namespace DeepState.Constants
 
 		#region Guild Ids
 		public const ulong LibcraftGuildId = 698639095940907048;
+		public const ulong BoomercraftGuildId = 959476461218172960;
 		#endregion
 
 		#region Emote Ids
