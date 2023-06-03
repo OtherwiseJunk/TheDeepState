@@ -32,7 +32,7 @@ namespace DeepState.Modules
             EmbedBuilder builder = new();
             builder.Title = "Your shiny new Electric Bastionland character";
             builder.ThumbnailUrl = _imagingService.CreateAndUploadCharacterImage();
-            builder.Description = "I'm sure nothing bad will happy to your precious new character...";
+            builder.Description = "I'm sure nothing bad will happen to your precious new character...";
             builder.AddField("Strength", str);
             builder.AddField("Dexterity", dex);
             builder.AddField("Charisma", cha);
