@@ -22,8 +22,8 @@ namespace DeepState.Modules
 	{
 		public RPGService _rpgService { get; set; }
 		public UserRecordsService _userService { get; set; }
-		public ImagingService _imagingService { get; set; }
-		public RPGModule(RPGService rpgService, UserRecordsService userService, ImagingService imagingService)
+		public RandomCharacterImageService _imagingService { get; set; }
+		public RPGModule(RPGService rpgService, UserRecordsService userService, RandomCharacterImageService imagingService)
 		{
 			_rpgService = rpgService;
 			_userService = userService;
@@ -58,28 +58,17 @@ namespace DeepState.Modules
 			{
 				try
 				{
-					using (WebClient wc = new WebClient())
-					{
-						string guidId = Guid.NewGuid().ToString();
-						string svgFile = $"{guidId}.svg";
-						wc.DownloadFile($"https://avatars.dicebear.com/api/avataaars/{guidId}.svg", svgFile);
-						var svgDoc = SvgDocument.Open<SvgDocument>(svgFile, null);
-						Stream stream = new MemoryStream();
-						svgDoc.Draw().Save(stream, System.Drawing.Imaging.ImageFormat.Png);
-
-
-						string avatarUrl = _imagingService.UploadImage(RPGConstants.AvatarFolder, stream);
-						character = _rpgService.CreateNewCharacter((IGuildUser)Context.User, avatarUrl);
-						_userService.Deduct(Context.User.Id, Context.Guild.Id, RPGConstants.NewCharacterCost);
-						if (flags == "f" || flags == "fite")
-						{
-							await Context.Channel.SendMessageAsync("Today your character woke up and chose _violence_.");
-							_rpgService.ToggleCharacterPvPFlag((IGuildUser)Context.Message.Author);
-							character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
-						}
-						await Context.Message.ReplyAsync($"Ok I rolled you up a new character! {RPGConstants.NewCharacterCost} Libcoin has been deducted from your account.", embed: _rpgService.BuildCharacterEmbed(character));
-					}
-				}
+                    string avatarUrl = _imagingService.CreateAndUploadCharacterImage();
+                    character = _rpgService.CreateNewCharacter((IGuildUser)Context.User, avatarUrl);
+                    _userService.Deduct(Context.User.Id, Context.Guild.Id, RPGConstants.NewCharacterCost);
+                    if (flags == "f" || flags == "fite")
+                    {
+                        await Context.Channel.SendMessageAsync("Today your character woke up and chose _violence_.");
+                        _rpgService.ToggleCharacterPvPFlag((IGuildUser)Context.Message.Author);
+                        character = _rpgService.GetCharacter((IGuildUser)Context.Message.Author);
+                    }
+                    await Context.Message.ReplyAsync($"Ok I rolled you up a new character! {RPGConstants.NewCharacterCost} Libcoin has been deducted from your account.", embed: _rpgService.BuildCharacterEmbed(character));
+                }
 				catch (Exception ex)
 				{
 					Console.WriteLine("Shit broke");

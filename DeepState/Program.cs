@@ -150,6 +150,7 @@ namespace DeepState
                 .AddSingleton<AudioService>()
                 .AddSingleton<BestOfService>()
                 .AddSingleton<IServerManagmentService, ServerManagementService>()
+                .AddSingleton<RandomCharacterImageService>()
                 .AddDbContext<GuildUserRecordContext>()
                 .AddDbContext<HungerGamesContext>()
                 .AddDbContextFactory<GuildUserRecordContext>()
@@ -194,6 +195,7 @@ namespace DeepState
             await _commands.AddModuleAsync<ServerManagementModule>(_services);
             await _commands.AddModuleAsync<AudioModule>(_services);
             await _commands.AddModuleAsync<LockedTombModule>(_services);
+            await _commands.AddModuleAsync<CharacterGeneratorModule>(_services);
 
 #if !DEBUG
 			await _commands.AddModuleAsync<JackboxModule>(_services);
