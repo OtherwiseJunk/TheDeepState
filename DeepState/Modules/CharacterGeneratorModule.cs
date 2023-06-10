@@ -5,6 +5,8 @@ using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
 using DeepState.Constants.CharacterGeneration;
+using System;
+using System.Linq;
 
 namespace DeepState.Modules
 {
@@ -18,8 +20,13 @@ namespace DeepState.Modules
         }
 
         [Command("electricbastionland"), Alias("eb")]
-        public async Task GenerateElectricBastionlandCharacter()
+        public async Task GenerateElectricBastionlandCharacter(string avatarType = AvatarConstants.Adventurer)
         {
+            if (!AvatarConstants.AvatarTypes.Contains(avatarType.ToLower()))
+            {
+                _ = Context.Message.ReplyAsync("Sorry, that I don't have that avatar type in my list. Run `>cg al` to see the accepted list of avatar types.");
+                return;
+            }
             Dice d6 = new(6);
             int str = d6.Roll(3).Total;
             int dex = d6.Roll(3).Total;
@@ -31,7 +38,7 @@ namespace DeepState.Modules
 
             EmbedBuilder builder = new();
             builder.Title = "Your shiny new Electric Bastionland character";
-            builder.ThumbnailUrl = _imagingService.CreateAndUploadCharacterImage();
+            builder.ThumbnailUrl = _imagingService.CreateAndUploadCharacterImage(avatarType);
             builder.Description = "I'm sure nothing bad will happen to your precious new character...";
             builder.AddField("Strength", str);
             builder.AddField("Dexterity", dex);
@@ -45,6 +52,12 @@ namespace DeepState.Modules
             builder.AddField(career.HPQuestion, career.HPAnswers[hp - 1]);
 
             await Context.Message.ReplyAsync(embed: builder.Build());
+        }
+
+        [Command("AvatarList"), Alias("al"), RequireOwner]
+        public async Task GetAvatarList()
+        {
+            _ = Context.Message.ReplyAsync($"Sure, here's a list of all the avatar types character gen creation commands can accept: {string.Join(Environment.NewLine, AvatarConstants.AvatarTypes)}");
         }
     }
 }

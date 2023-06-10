@@ -1,13 +1,10 @@
 ﻿using DartsDiscordBots.Services;
+using DeepState.Constants.CharacterGeneration;
 using DeepState.Data.Constants;
 using Svg;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DeepState.Service
 {
@@ -20,13 +17,13 @@ namespace DeepState.Service
             _imagingService = imagingService;
         }
 
-        public string CreateAndUploadCharacterImage()
+        public string CreateAndUploadCharacterImage(string avatarFlavor = AvatarConstants.Avataaars)
         {
             using (WebClient wc = new WebClient())
             {
                 string guidId = Guid.NewGuid().ToString();
                 string svgFile = $"{guidId}.svg";
-                wc.DownloadFile($"https://avatars.dicebear.com/api/avataaars/{guidId}.svg", svgFile);
+                wc.DownloadFile($"https://api.dicebear.com/6.x/{avatarFlavor}/svg?seed={guidId}", svgFile);
                 var svgDoc = SvgDocument.Open<SvgDocument>(svgFile, null);
                 Stream stream = new MemoryStream();
                 svgDoc.Draw().Save(stream, System.Drawing.Imaging.ImageFormat.Png);
