@@ -21,7 +21,7 @@ namespace DeepState.Modules
         private FailedCareer[] failedCareers;
         public CharacterGeneratorModule(RandomCharacterImageService randomCharacterImageService) {
             _imagingService = randomCharacterImageService;
-            using (StreamReader reader = new StreamReader("./FailedCareers.json"))
+            using (StreamReader reader = new StreamReader("FailedCareers.json"))
             {
                 failedCareers = JsonSerializer.Deserialize < FailedCareer[]>(reader.ReadToEnd());
             }
