@@ -3,28 +3,18 @@ using DeepState.Models.RPGSystemModels.ElectricBastionland;
 using DeepState.Service;
 using Discord;
 using Discord.Commands;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
-using System.Web.Helpers;
+using DeepState.Constants.CharacterGeneration;
 
 namespace DeepState.Modules
 {
     [Group("chargen"), Alias("cg")]
     internal class CharacterGeneratorModule : ModuleBase
-    {       
+    {
         private RandomCharacterImageService _imagingService;
-        private FailedCareer[] failedCareers;
-        public CharacterGeneratorModule(RandomCharacterImageService randomCharacterImageService) {
+        public CharacterGeneratorModule(RandomCharacterImageService randomCharacterImageService)
+        {
             _imagingService = randomCharacterImageService;
-            using (StreamReader reader = new StreamReader("FailedCareers.json"))
-            {
-                failedCareers = JsonSerializer.Deserialize < FailedCareer[]>(reader.ReadToEnd());
-            }
         }
 
         [Command("electricbastionland"), Alias("eb")]
@@ -36,8 +26,8 @@ namespace DeepState.Modules
             int cha = d6.Roll(3).Total;
             int hp = d6.Roll();
             int money = d6.Roll();
-            int failedCareerRoll = new Dice(failedCareers.Length).Roll();
-            FailedCareer career = failedCareers[failedCareerRoll - 1];
+            int failedCareerRoll = new Dice(ElectricBastionlandConstants.FailedCareers.Length).Roll();
+            FailedCareer career = ElectricBastionlandConstants.FailedCareers[failedCareerRoll - 1];
 
             EmbedBuilder builder = new();
             builder.Title = "Your shiny new Electric Bastionland character";
@@ -54,7 +44,7 @@ namespace DeepState.Modules
             builder.AddField(career.MoneyQuestion, career.MoneyAnswers[money - 1]);
             builder.AddField(career.HPQuestion, career.HPAnswers[hp - 1]);
 
-            _ = Context.Message.ReplyAsync(embed: builder.Build());
+            await Context.Message.ReplyAsync(embed: builder.Build());
         }
     }
 }
