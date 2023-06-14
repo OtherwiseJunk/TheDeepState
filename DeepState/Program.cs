@@ -282,6 +282,9 @@ namespace DeepState
                 case SlashCommands.AntonCheckin:
                     response = "https://cdn.discordapp.com/attachments/701194133074608198/939019260754272296/LiveAntonReaction.png";
                     break;
+                case SlashCommands.IDidEverythingRight:
+                    response = "https://cdn.discordapp.com/attachments/883466654443507773/1118376851329536010/I_Did_Everything_Right_And_They_Indicted_Me.mp4";
+                    break;
             }
             if (response != null)
             {

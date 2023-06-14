@@ -24,6 +24,7 @@ namespace DeepState.Constants
         public const string DoNotCome = "donotcome";
         public const string ImFromArizona = "imfromarizona";
         public const string AntonCheckin = "antoncheckin";
+        public const string IDidEverythingRight = "idideverythingright";
 
         public static Dictionary<ulong, List<SlashCommandInformation>> SlashCommandsToInstall = new Dictionary<ulong, List<SlashCommandInformation>> {
             {
@@ -43,7 +44,8 @@ namespace DeepState.Constants
                     new AutoResponseCommandInformation(ImGonnaCome,"He'll do it."),
                     new AutoResponseCommandInformation(DoNotCome,"Just don't."),
                     new AutoResponseCommandInformation(ImFromArizona,"and so can you!"),
-                    new AutoResponseCommandInformation(AntonCheckin,"Live Anton Reaction")
+                    new AutoResponseCommandInformation(AntonCheckin,"Live Anton Reaction"),
+                    new AutoResponseCommandInformation(IDidEverythingRight,"I did EVERYTHING RIGHT and I got INDICTED!")
                 }
             },
         };
