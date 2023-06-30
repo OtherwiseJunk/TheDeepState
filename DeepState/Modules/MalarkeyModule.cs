@@ -95,6 +95,12 @@ namespace DeepState.Modules
             AutoResponse("https://cdn.discordapp.com/attachments/959323818860621885/959325464093138964/gamer_country.mp4");
         }
 
+        [Command("idideverythingright"), Alias("trumpdidnothingwrong")]
+        public async Task TrumpDidEverythingWrong()
+        {
+            AutoResponse("https://cdn.discordapp.com/attachments/883466654443507773/1118376851329536010/I_Did_Everything_Right_And_They_Indicted_Me.mp4");
+        }
+
         [Command("wokemoralists"), Alias("lobsters", "cleanyourroom", "peterson")]
         public async Task WokeMoralists()
         {
