@@ -73,15 +73,23 @@ namespace DeepState.Handlers
 
 			if (matches.Count > 0 || msg.Content.StartsWith("🇵🇷🥚"))
             {
-				string content = $"{msg.Author.Username} in {(msg.Channel as IGuildChannel).Guild.Name}/{msg.Channel.Name} as [{DateTime.Now.ToString("MM/dd/yyyy hh:mm tt")}]: {msg.Content}";
-				Console.WriteLine("Detected someone trying to say preggers, I think...");
-				Console.WriteLine(content);
-                if (Utils.PercentileCheck(10))
-                {
-					_ = msg.Channel.SendMessageAsync("https://c.tenor.com/BH_8JPewRk4AAAAd/free-guy-ryan-reynolds.gif");
+				DateTime now = DateTime.Now;
+				if(now.Month == 12 && now.Day == 11)
+				{
+					EgoCheck(msg, true);
                 }
-                _ = msg.Channel.SendMessageAsync("Gwalms.........");
-				_ = msg.DeleteAsync();
+				else
+				{
+                    string content = $"{msg.Author.Username} in {(msg.Channel as IGuildChannel).Guild.Name}/{msg.Channel.Name} as [{DateTime.Now.ToString("MM/dd/yyyy hh:mm tt")}]: {msg.Content}";
+                    Console.WriteLine("Detected someone trying to say preggers, I think...");
+                    Console.WriteLine(content);
+                    if (Utils.PercentileCheck(10))
+                    {
+                        _ = msg.Channel.SendMessageAsync("https://c.tenor.com/BH_8JPewRk4AAAAd/free-guy-ryan-reynolds.gif");
+                    }
+                    _ = msg.Channel.SendMessageAsync("Gwalms.........");
+                    _ = msg.DeleteAsync();
+                }				
             }
         }
 		public static async Task RandomReactCheck(SocketMessage msg)
