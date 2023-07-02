@@ -1,4 +1,4 @@
-﻿using DeepState.Utilities;
+﻿using DeepState.Extensions;
 using Panopticon.Shared.Models;
 using Serilog;
 using System;

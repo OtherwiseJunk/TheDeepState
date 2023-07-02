@@ -1,5 +1,5 @@
 ﻿using DartsDiscordBots.Utilities;
-using DeepState.Utilities;
+using DeepState.Extensions;
 using Discord;
 using Panopticon.Shared.Models;
 using Serilog;
@@ -67,7 +67,7 @@ namespace DeepState.Service
             }
         }
 
-        internal EmbedBuilder BuildOOCEmbed(IGuild triggeringGuild, IMessageChannel triggeringChannel, OOCItem pulledItem)
+        internal EmbedBuilder BuildOOCEmbed(string title,IGuild triggeringGuild, IMessageChannel triggeringChannel, OOCItem pulledItem)
         {
             IGuildUser reportingUser = triggeringGuild.GetUserAsync(pulledItem.ReportingUserId, CacheMode.AllowDownload).Result;
             string reportingUsername = DDBUtils.GetDisplayNameForUser(reportingUser);
@@ -75,10 +75,11 @@ namespace DeepState.Service
             byte[] nameHash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(reportingUsername));
 
             EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle(String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername));
+            embed.WithTitle($"{title}{String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername)}");
             embed.WithImageUrl(pulledItem.ImageUrl);
             embed.WithColor(new Color(nameHash[0], nameHash[1], nameHash[2]));
             embed.AddField("Date Stored", $"{pulledItem.DateStored.ToString("yyyy-MM-dd")} (yyyy-MM-dd)");
+            embed.WithFooter($"{pulledItem.ItemID}");
 
             return embed;
         }
@@ -100,6 +101,49 @@ namespace DeepState.Service
                         default:
                             _log.Error("Received an unexpected response from Panopticon retrieving a random OOC Item.");
                             return null;
+                    }
+                }
+            }
+        }
+
+        public string[] GetAllURLs()
+        {
+            using (HttpRequestMessage req = new(HttpMethod.Get, $"https://panopticon.cacheblasters.com/ooc/allUrl"))
+            {
+                req.AddJWTAuthorization(RequestJWT);
+
+                using (HttpResponseMessage resp = _httpClient.SendAsync(req).Result)
+                {
+                    switch (resp.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            _log.Information("Successfully retrieved a random OOC Item.");
+                            string oocJSON = resp.Content.ReadAsStringAsync().Result;
+                            return JsonSerializer.Deserialize<string[]>(oocJSON, JsonOptions);
+                        default:
+                            _log.Error("Received an unexpected response from Panopticon retrieving the list of OOC Item URLs.");
+                            return null;
+                    }
+                }
+            }
+        }
+
+        public bool DeleteRecord(int id)
+        {
+            using (HttpRequestMessage req = new(HttpMethod.Delete, $"https://panopticon.cacheblasters.com/ooc/{id}"))
+            {
+                req.AddJWTAuthorization(RequestJWT);
+                using (HttpResponseMessage resp = _httpClient.SendAsync(req).Result)
+                {
+                    switch (resp.StatusCode)
+                    {
+                        case HttpStatusCode.NoContent:
+                            _log.Information($"Successfully deleted OOC Item {id}.");
+                            return true;
+                        default:
+                            _log.Error($"Received an unexpected response from Panopticon request deleting OOC Item {id}.");
+                            _log.Error($"{resp.StatusCode} response body: {resp.Content.ReadAsStringAsync().Result}");
+                            return false;
                     }
                 }
             }

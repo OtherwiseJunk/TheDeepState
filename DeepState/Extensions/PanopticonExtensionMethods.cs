@@ -5,9 +5,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DeepState.Utilities
+namespace DeepState.Extensions
 {
-    public static class ExtensionMethods
+    public static class PanopticonExtensionMethods
     {
         public static void AddJWTAuthorization(this HttpRequestMessage req, Func<string> callback)
         {
