@@ -77,7 +77,7 @@ namespace DeepState.Service
             EmbedBuilder embed = new EmbedBuilder();
             if(pulledItem.ReportingUserId == 69)
             {
-                embed.WithTitle($"{title} Submitted by OtherwiseJunk because they fucking BIFFED IT and had to import everything again. Point and laugh.");
+                embed.WithTitle($"{title}Submitted by OtherwiseJunk because they fucking BIFFED IT and had to import everything again. Point and laugh.");
             }
             else
             {
