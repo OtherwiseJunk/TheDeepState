@@ -113,6 +113,28 @@ namespace DeepState.Service
             }
         }
 
+        public OOCItem? GetSpecificRecord(int oocId)
+        {
+            using (HttpRequestMessage req = new(HttpMethod.Get, $"https://panopticon.cacheblasters.com/ooc/{oocId}"))
+            {
+                req.AddJWTAuthorization(RequestJWT);
+
+                using (HttpResponseMessage resp = _httpClient.SendAsync(req).Result)
+                {
+                    switch (resp.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            _log.Information("Successfully retrieved a random OOC Item.");
+                            string oocJSON = resp.Content.ReadAsStringAsync().Result;
+                            return JsonSerializer.Deserialize<OOCItem>(oocJSON, JsonOptions);
+                        default:
+                            _log.Error("Received an unexpected response from Panopticon retrieving a random OOC Item.");
+                            return null;
+                    }
+                }
+            }
+        }
+
         public string[] GetAllURLs()
         {
             using (HttpRequestMessage req = new(HttpMethod.Get, $"https://panopticon.cacheblasters.com/ooc/allUrl"))

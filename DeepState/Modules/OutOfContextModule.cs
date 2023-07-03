@@ -41,6 +41,21 @@ namespace DeepState.Modules
             }
         }
 
+        public void SendSpecificOOCItem(IGuild triggeringGuild, IMessageChannel triggeringChannel, int oocId)
+        {
+            OOCItem pulledItem = _panopticon.GetSpecificRecord(oocId);
+            if (pulledItem != null)
+            {
+                EmbedBuilder embed = _panopticon.BuildOOCEmbed(OutOfContextTitle, triggeringGuild, triggeringChannel, pulledItem);
+
+                _ = triggeringChannel.SendMessageAsync(embed: embed.Build());
+            }
+            else
+            {
+                Context.Message.ReplyAsync("My apologies Citizen, I didn't find that record.");
+            }
+        }
+
         public void DeleteTriggeringMessage(IMessage message)
         {
             //Wait a minute, then delete triggering message
@@ -96,12 +111,36 @@ namespace DeepState.Modules
             }
             if (_panopticon.DeleteRecord(Int32.Parse(embed.Footer.Value.Text)))
             {
-                await Context.Channel.SendMessageAsync("Ok, I've deleted that OOC, citizen");
+                await Context.Channel.SendMessageAsync("Ok, I've deleted that OOC, Citizen");
             }
             else
             {
                 await Context.Channel.SendMessageAsync("Sorry Citizen, I wasn't able to delete that message for some reason. Please try again.");
             }
+        }
+
+        [Command("ooc"), Alias("libcraftmoment", "libcraftfacts", "libfacts", "hippofacts"),
+            RequireGuild(
+                new ulong[] {
+                    95887290571685888,
+                    SharedConstants.LibcraftGuildId
+                }
+            ),
+            RequireChannel(
+                new ulong[]  {
+                    718986327642734654,
+                    SharedConstants.LibcraftOutOfContext,
+                    716841087137873920,
+                    176357319687405569,
+                    701194133074608198,
+                    831675528431403039
+                }
+            )
+        ]
+        [Summary("Returns a random entry from the databse of base64 image strings.")]
+        public async Task RetrieveSpecificOutOfContext(int oocId)
+        {
+            new Thread(() => { SendSpecificOOCItem(Context.Guild, Context.Channel, oocId); }).Start();
         }
 
         [Command("ooc"), Alias("libcraftmoment", "libcraftfacts", "libfacts", "hippofacts"),
