@@ -75,7 +75,14 @@ namespace DeepState.Service
             byte[] nameHash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(reportingUsername));
 
             EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle($"{title}{String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername)}");
+            if(pulledItem.ReportingUserId == 69)
+            {
+                embed.WithTitle($"{title} Submitted by OtherwiseJunk because they fucking BIFFED IT and had to import everything again. Point and laugh.");
+            }
+            else
+            {
+                embed.WithTitle($"{title}{String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername)}");
+            }            
             embed.WithImageUrl(pulledItem.ImageUrl);
             embed.WithColor(new Color(nameHash[0], nameHash[1], nameHash[2]));
             embed.AddField("Date Stored", $"{pulledItem.DateStored.ToString("yyyy-MM-dd")} (yyyy-MM-dd)");
