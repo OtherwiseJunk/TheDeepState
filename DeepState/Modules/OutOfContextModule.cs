@@ -11,8 +11,6 @@ using System.Net;
 using DeepState.Constants;
 using DartsDiscordBots.Services;
 using Panopticon.Shared.Models;
-using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
-using System.Collections.Generic;
 using DeepState.Extensions;
 
 namespace DeepState.Modules
