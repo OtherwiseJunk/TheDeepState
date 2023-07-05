@@ -75,7 +75,14 @@ namespace DeepState.Service
             byte[] nameHash = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(reportingUsername));
 
             EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle($"{title}{String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername)}");
+            if(pulledItem.ReportingUserId == 69)
+            {
+                embed.WithTitle($"{title}Submitted by OtherwiseJunk because they fucking BIFFED IT and had to import everything again. Point and laugh.");
+            }
+            else
+            {
+                embed.WithTitle($"{title}{String.Format(OOCCaptionFormat, OOCQuipFormats.GetRandom(), reportingUsername)}");
+            }            
             embed.WithImageUrl(pulledItem.ImageUrl);
             embed.WithColor(new Color(nameHash[0], nameHash[1], nameHash[2]));
             embed.AddField("Date Stored", $"{pulledItem.DateStored.ToString("yyyy-MM-dd")} (yyyy-MM-dd)");
@@ -87,6 +94,28 @@ namespace DeepState.Service
         public OOCItem? GetRandomRecord()
         {
             using (HttpRequestMessage req = new(HttpMethod.Get, $"https://panopticon.cacheblasters.com/ooc/rand"))
+            {
+                req.AddJWTAuthorization(RequestJWT);
+
+                using (HttpResponseMessage resp = _httpClient.SendAsync(req).Result)
+                {
+                    switch (resp.StatusCode)
+                    {
+                        case HttpStatusCode.OK:
+                            _log.Information("Successfully retrieved a random OOC Item.");
+                            string oocJSON = resp.Content.ReadAsStringAsync().Result;
+                            return JsonSerializer.Deserialize<OOCItem>(oocJSON, JsonOptions);
+                        default:
+                            _log.Error("Received an unexpected response from Panopticon retrieving a random OOC Item.");
+                            return null;
+                    }
+                }
+            }
+        }
+
+        public OOCItem? GetSpecificRecord(int oocId)
+        {
+            using (HttpRequestMessage req = new(HttpMethod.Get, $"https://panopticon.cacheblasters.com/ooc/{oocId}"))
             {
                 req.AddJWTAuthorization(RequestJWT);
 
