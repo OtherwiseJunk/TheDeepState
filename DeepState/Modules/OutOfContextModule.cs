@@ -153,12 +153,12 @@ namespace DeepState.Modules
             {
                 await Context.Channel.SendMessageAsync(CommandErrorConstants.RequiredMessageReferenceMissingError);
             }
-            IMessage messageRepliedTo = await Context.Channel.GetMessageAsync(Context.Message.ReferencedMessage.Id);
-            if (!Context.Message.HasSpecificAttachmentCount(1))
+            IUserMessage messageRepliedTo = await Context.Channel.GetMessageAsync(Context.Message.ReferencedMessage.Id) as IUserMessage;
+            if (!messageRepliedTo.HasSpecificAttachmentCount(1))
             {
                 await Context.Channel.SendMessageAsync(CommandErrorConstants.AttachmentCountError(1));
             }
-            if (!Context.Message.HasMySpecificReaction("📷"))
+            if (!messageRepliedTo.HasMySpecificReaction("📷"))
             {
                 await Context.Channel.SendMessageAsync("Sorry, another Citizen has already reported that.");
             }
