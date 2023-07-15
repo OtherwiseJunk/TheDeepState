@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
+using Fizzler;
 
 namespace DeepState.Service
 {
@@ -18,7 +19,7 @@ namespace DeepState.Service
         internal string Auth0GrantType { get; set; }
         internal string Auth0Scope { get; set; }
         internal ILogger _log { get; set; }
-        private static JwtSecurityToken JWT { get; set; }
+        private static string JWT { get; set; }
 
         internal JsonSerializerOptions JsonOptions = new JsonSerializerOptions
         {
@@ -40,14 +41,16 @@ namespace DeepState.Service
         {
             _log.Information("====Starting JWT Request Function====");
             _log.Information($"Is JWT Null? {JWT is null}");
-            if (JWT is not null) _log.Information($"JWT is valid until ${JWT.ValidTo.ToString("dd MMM HH:mm:ss")} and it is currently ${DateTime.UtcNow.ToString("dd MMM HH:mm:ss")}");
-            if(JWT is not null && JWT.ValidTo > DateTime.UtcNow)
+            JwtSecurityTokenHandler tokenHandler = new();
+            JwtSecurityToken token = tokenHandler.ReadJwtToken(JWT);
+            if (JWT is not null) _log.Information($"JWT is valid until ${token.ValidTo.ToString("dd MMM HH:mm:ss")} and it is currently ${DateTime.UtcNow.ToString("dd MMM HH:mm:ss")}");
+            if(JWT is not null && token.ValidTo > DateTime.UtcNow)
             {
                 _log.Information("Reusing existing JWT...");
-                return JWT.RawEncryptedKey;
+                return JWT;
             }
             _log.Information("Requesting Panopticon JWT...");
-            JwtSecurityTokenHandler tokenHandler = new();
+            
 
             using (HttpRequestMessage msg = new(HttpMethod.Post, "https://dev-apsgkx34.us.auth0.com/oauth/token"))
             {
@@ -60,7 +63,7 @@ namespace DeepState.Service
                 {
                     _log.Information($"Panopticon JWT Status Code: {resp.StatusCode}");
                     string jsonToken = JsonSerializer.Deserialize<JsonNode>(resp.Content.ReadAsStringAsync().Result)["access_token"].GetValue<string>();
-                    JWT = tokenHandler.ReadJwtToken(jsonToken);
+                    JWT = jsonToken;
                     return jsonToken;
                 }
             }
