@@ -44,7 +44,7 @@ namespace DeepState.Service
             if(JWT is not null && JWT.ValidTo > DateTime.UtcNow)
             {
                 _log.Information("Reusing existing JWT...");
-                return JWT.ToString();
+                return JWT.RawEncryptedKey;
             }
             _log.Information("Requesting Panopticon JWT...");
             JwtSecurityTokenHandler tokenHandler = new();
