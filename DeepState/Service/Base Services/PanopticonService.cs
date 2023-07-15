@@ -41,10 +41,15 @@ namespace DeepState.Service
         {
             _log.Information("====Starting JWT Request Function====");
             _log.Information($"Is JWT Null? {JWT is null}");
-            JwtSecurityTokenHandler tokenHandler = new();
-            JwtSecurityToken token = tokenHandler.ReadJwtToken(JWT);
-            if (JWT is not null) _log.Information($"JWT is valid until ${token.ValidTo.ToString("dd MMM HH:mm:ss")} and it is currently ${DateTime.UtcNow.ToString("dd MMM HH:mm:ss")}");
-            if(JWT is not null && token.ValidTo > DateTime.UtcNow)
+
+            JwtSecurityToken token = null;
+            if (JWT is not null)
+            {
+                JwtSecurityTokenHandler tokenHandler = new();
+                token = tokenHandler.ReadJwtToken(JWT);
+                _log.Information($"JWT is valid until ${token.ValidTo.ToString("dd MMM HH:mm:ss")} and it is currently ${DateTime.UtcNow.ToString("dd MMM HH:mm:ss")}");
+            }
+            if (token is not null && token.ValidTo > DateTime.UtcNow)
             {
                 _log.Information("Reusing existing JWT...");
                 return JWT;
