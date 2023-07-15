@@ -38,6 +38,9 @@ namespace DeepState.Service
 
         public string RequestJWT()
         {
+            _log.Information("====Starting JWT Request Function====");
+            _log.Information($"Is JWT Null? {JWT is null}");
+            if (JWT is not null) _log.Information($"JWT is valid until ${JWT.ValidTo.ToString("dd MMM HH:mm:ss")} and it is currently ${DateTime.UtcNow.ToString("dd MMM HH:mm:ss")}");
             if(JWT is not null && JWT.ValidTo > DateTime.UtcNow)
             {
                 _log.Information("Reusing existing JWT...");
@@ -57,7 +60,7 @@ namespace DeepState.Service
                 {
                     _log.Information($"Panopticon JWT Status Code: {resp.StatusCode}");
                     string jsonToken = JsonSerializer.Deserialize<JsonNode>(resp.Content.ReadAsStringAsync().Result)["access_token"].GetValue<string>();
-                    tokenHandler.ReadJwtToken(jsonToken);
+                    JWT = tokenHandler.ReadJwtToken(jsonToken);
                     return jsonToken;
                 }
             }
