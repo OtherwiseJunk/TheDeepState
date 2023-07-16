@@ -320,7 +320,7 @@ namespace DeepState.Modules
 		public EmbedBuilder KillCharacter(Character corpse, Character murderer, bool wasCorpseAttacker, ulong guildIdForPayout, EmbedBuilder embed)
 		{
 			int corpseGold = corpse.Gold;
-			int libcoinPayout = corpseGold * 2;
+			int libcoinPayout = corpseGold * 200;
 
 			if (wasCorpseAttacker)
 			{
