@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace DeepState.Service
+namespace DeepState.Services
 {
     public class FeedbackService : PanopticonService
     {

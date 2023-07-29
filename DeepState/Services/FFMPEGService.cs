@@ -8,7 +8,7 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace DeepState.Service
+namespace DeepState.Services
 {
     public class FFMPEGService
     {

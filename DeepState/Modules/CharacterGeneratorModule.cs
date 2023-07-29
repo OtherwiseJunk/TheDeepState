@@ -1,6 +1,6 @@
 ﻿using DartsDiscordBots.Utilities;
 using DeepState.Models.RPGSystemModels.ElectricBastionland;
-using DeepState.Service;
+using DeepState.Services;
 using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;

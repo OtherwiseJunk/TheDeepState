@@ -6,7 +6,7 @@ using System;
 using System.IO;
 using System.Net;
 
-namespace DeepState.Service
+namespace DeepState.Services
 {
     public class RandomCharacterImageService
     {

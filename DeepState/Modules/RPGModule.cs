@@ -4,7 +4,7 @@ using DeepState.Data.Constants;
 using DeepState.Data.Models.RPGModels;
 using DeepState.Data.Services;
 using DeepState.Modules.Preconditions;
-using DeepState.Service;
+using DeepState.Services;
 using Discord;
 using Discord.Commands;
 using Svg;

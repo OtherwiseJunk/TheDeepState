@@ -8,7 +8,7 @@ using Serilog;
 using System.IdentityModel.Tokens.Jwt;
 using Fizzler;
 
-namespace DeepState.Service
+namespace DeepState.Services
 {
     public class PanopticonService
     {

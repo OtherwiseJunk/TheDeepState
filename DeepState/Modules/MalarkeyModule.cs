@@ -7,7 +7,7 @@ using TraceLd.MineStatSharp;
 using DartsDiscordBots.Permissions;
 using DeepState.Utilities;
 using DartsDiscordBots.Utilities;
-using DeepState.Service;
+using DeepState.Services;
 using System.IO;
 using SkiaSharp;
 using System.Threading;

@@ -12,7 +12,7 @@ using System.Text;
 using System.Text.Json;
 using DDBUtils = DartsDiscordBots.Utilities.BotUtilities;
 
-namespace DeepState.Service
+namespace DeepState.Services
 {
     public class OOCService : PanopticonService
     {

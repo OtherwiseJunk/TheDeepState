@@ -16,7 +16,7 @@ using DartsDiscordBots.Modules.Chat;
 using DartsDiscordBots.Services.Interfaces;
 using DartsDiscordBots.Services;
 using DeepState.Data.Context;
-using DeepState.Service;
+using DeepState.Services;
 using System.Threading;
 using DeepState.Data.Services;
 using DeepState.Handlers;
