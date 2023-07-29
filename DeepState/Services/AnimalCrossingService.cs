@@ -13,7 +13,7 @@ namespace DeepState.Services
 {
     public class AnimalCrossingService : IAnimalCrossingService
     {
-        AnimalCrossingDataService _acData;
+        IAnimalCrossingDataService _acData;
         public AnimalCrossingService(IAnimalCrossingDataService acDataService) {
             _acData = acDataService;
         }
