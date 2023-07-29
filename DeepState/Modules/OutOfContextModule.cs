@@ -135,7 +135,7 @@ namespace DeepState.Modules
                 }
             )
         ]
-        [Summary("Returns a random entry from the databse of base64 image strings.")]
+        [Summary("Returns a specific entry from the out of context archives")]
         public async Task RetrieveSpecificOutOfContext(int oocId)
         {
             new Thread(() => { SendSpecificOOCItem(Context.Guild, Context.Channel, oocId); }).Start();
