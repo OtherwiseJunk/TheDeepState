@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepState.Tests", "DeepState.Tests\DeepState.Tests.csproj", "{D40A245F-E735-4A51-ABFB-39F3C0ACD37A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Deepstate.Games", "Deepstate.Games\Deepstate.Games.csproj", "{D4A78170-7D2C-462E-A18A-BBDD1A16B730}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +34,10 @@ Global
 		{D40A245F-E735-4A51-ABFB-39F3C0ACD37A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D40A245F-E735-4A51-ABFB-39F3C0ACD37A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D40A245F-E735-4A51-ABFB-39F3C0ACD37A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4A78170-7D2C-462E-A18A-BBDD1A16B730}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4A78170-7D2C-462E-A18A-BBDD1A16B730}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4A78170-7D2C-462E-A18A-BBDD1A16B730}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4A78170-7D2C-462E-A18A-BBDD1A16B730}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
