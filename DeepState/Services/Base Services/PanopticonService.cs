@@ -67,7 +67,8 @@ namespace DeepState.Services
                 using (HttpResponseMessage resp = _httpClient.SendAsync(msg).Result)
                 {
                     _log.Information($"Panopticon JWT Status Code: {resp.StatusCode}");
-                    string jsonToken = JsonSerializer.Deserialize<JsonNode>(resp.Content.ReadAsStringAsync().Result)["access_token"].GetValue<string>();
+                    string json = resp.Content.ReadAsStringAsync().Result;
+                    string jsonToken = JsonSerializer.Deserialize<JsonNode>(json)["access_token"].GetValue<string>();
                     JWT = jsonToken;
                     return jsonToken;
                 }

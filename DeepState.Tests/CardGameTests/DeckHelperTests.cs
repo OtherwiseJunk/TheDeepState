@@ -1,5 +1,8 @@
 ﻿using Deepstate.Games.CardGames.Helpers;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DeepState.Tests.CardGameTests
 {
@@ -15,7 +18,7 @@ namespace DeepState.Tests.CardGameTests
         [Test]
         public void BuildDeckShouldReturnADeckOf52DistinctCards()
         {
-            Assert.AreEqual(helper.BuildDeck().ToList().Distinct().Count(), 52);
+            Assert.AreEqual(helper.BuildDeck().Distinct().Count(), 52);
         }
     }
 }
