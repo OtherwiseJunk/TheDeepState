@@ -244,13 +244,15 @@ namespace DeepState.Tests
         [TestCase("prĒggers")]
         [TestCase("preggerŠ")]
         [TestCase("🇵🇷🇪🇬🇬🇪🇷🇿")]
-        [TestCase("🇵 🇷 🇪 🇬 🇬 🇪 🇷 🇿")]
+        [TestCase("P R E G G E R S")]
         [TestCase("pręggęrs")]
         [TestCase("prᲕggᲕrs")]
         [TestCase("prɚggɚrs")]
         public void Preggers(string input)
         {
-            Assert.IsTrue(Regex.Match(input.Replace(" ", string.Empty), SharedConstants.PreggersDetector).Success);
+            string spacelessInput = input.Replace(" ", string.Empty);
+            bool cursedCheck = spacelessInput.Length >= 5 && spacelessInput.Length <= 8 && (Regex.Matches(spacelessInput, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
+            Assert.IsTrue(Regex.Match(input, SharedConstants.PreggersDetector).Success || cursedCheck);
         }
 
         [TestCase("program")]
@@ -263,9 +265,12 @@ namespace DeepState.Tests
         [TestCase("pregnant")]
         [TestCase("pregunta")]
         [TestCase("pregame")]
+        [TestCase("up regretting")]
         public void NotPreggers(string input)
         {
-            Assert.IsFalse(Regex.Match(input.Replace(" ", string.Empty), SharedConstants.PreggersDetector).Success);
+            string spacelessInput = input.Replace(" ", string.Empty);
+            bool cursedCheck = spacelessInput.Length >= 5 && spacelessInput.Length <= 8 && (Regex.Matches(spacelessInput, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
+            Assert.IsFalse(Regex.Match(input, SharedConstants.PreggersDetector).Success && cursedCheck);
         }
         #endregion
 

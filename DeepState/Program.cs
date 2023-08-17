@@ -37,6 +37,7 @@ using Victoria;
 using DartsDiscordBots.Modules.Audio;
 using DartsDiscordBots.Modules.LockedTomb;
 using System.Linq;
+using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 
 namespace DeepState
 {
@@ -225,8 +226,20 @@ namespace DeepState
             _client.SlashCommandExecuted += HandleAutoResponseCommands;
             _client.MessageUpdated += OnEdit;
 
+
         }
 
+        private async void CheckDatEmbed()
+        {
+            var libcraft = _client.GetGuild(698639095940907048);
+            ITextChannel oocChannel = libcraft.GetChannel(777400598789095445) as ITextChannel;
+            var message = await oocChannel.GetMessageAsync(1140102426515480647);
+            message.Embeds.ForEach((IEmbed embed) =>
+            {
+                Console.WriteLine("Embed from Libcraft OOC");
+                Console.WriteLine(embed.Image);
+            });
+        }
         private async Task OnEdit(Cacheable<IMessage, ulong> cacheableMessage, SocketMessage message, ISocketMessageChannel channel)
         {
             new Thread(async () => { if (message != null && message.Content != null) { await OnMessageHandlers.DeletePreggersMessage(message); } }).Start();
@@ -350,6 +363,11 @@ namespace DeepState
                 760308671170215968
             };
             if (message == null) return;
+
+            if(message.Content == "awfuck" && message.Author.Username == "_dart")
+            {
+                CheckDatEmbed();
+            }
 
             UserRecordsService urservice = _services.GetService<UserRecordsService>();
             if (message.Author.IsBot)
