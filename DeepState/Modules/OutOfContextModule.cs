@@ -1,5 +1,5 @@
 ﻿using DartsDiscordBots.Permissions;
-using DeepState.Service;
+using DeepState.Services;
 using Discord;
 using Discord.Commands;
 using System;

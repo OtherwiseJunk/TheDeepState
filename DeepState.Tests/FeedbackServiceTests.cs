@@ -1,4 +1,4 @@
-﻿using DeepState.Service;
+﻿using DeepState.Services;
 using DeepState.Tests.Mocks;
 using DeepState.Tests.Models;
 using DeepState.Tests.TestData;

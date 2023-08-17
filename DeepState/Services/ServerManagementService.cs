@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace DeepState.Service
+namespace DeepState.Services
 {
     internal class ServerManagementService : IServerManagmentService
     {
