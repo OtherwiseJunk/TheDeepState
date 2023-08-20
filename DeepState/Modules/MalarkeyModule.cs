@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Commands;
-using System;
 using System.Threading.Tasks;
 using DeepState.Constants;
 using TraceLd.MineStatSharp;
@@ -8,8 +7,6 @@ using DartsDiscordBots.Permissions;
 using DeepState.Utilities;
 using DartsDiscordBots.Utilities;
 using DeepState.Services;
-using System.IO;
-using SkiaSharp;
 using System.Threading;
 using System.Net.Http;
 using DeepState.Models;
@@ -17,10 +14,7 @@ using Newtonsoft.Json;
 using System.Globalization;
 using Utils = DeepState.Utilities.Utilities;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using FFMpegCore.Extend;
-using System.Text.RegularExpressions;
 
 namespace DeepState.Modules
 {
@@ -79,7 +73,7 @@ namespace DeepState.Modules
             }
             else
             {
-                 serverStatus = ms.CurrentPlayers == ms.MaximumPlayers ? ServerIsFullSnark.GetRandom() : ServerIsntFullSnark.GetRandom();
+                serverStatus = ms.CurrentPlayers == ms.MaximumPlayers ? ServerIsFullSnark.GetRandom() : ServerIsntFullSnark.GetRandom();
             }
 
             eb.WithTitle($"{serverAddress} Status");
@@ -107,7 +101,7 @@ namespace DeepState.Modules
             AutoResponse("https://vxtwitter.com/bradenisbased/status/1544448370500161543");
         }
 
-        [Command("darkbrandon"), Alias("letsgobrandon","theonetruebrandon", "darkbrandom")]
+        [Command("darkbrandon"), Alias("letsgobrandon", "theonetruebrandon", "darkbrandom")]
         public async Task LetsGoDarkBrandon()
         {
             AutoResponse("https://cdn.discordapp.com/attachments/999910404316733500/1001980262994956309/dark_brandon.mp4");
@@ -155,7 +149,7 @@ namespace DeepState.Modules
             }).Start();
         }
 
-        [Command("eml"),Alias("notaferret")]
+        [Command("eml"), Alias("notaferret")]
         [Summary("Live EML Reaction")]
         public async Task EMLReaction()
         {
@@ -210,25 +204,26 @@ namespace DeepState.Modules
         {
             string url = _ffmpeg.GetSingleAcceptableAttachmentUrl(Context.Message.Attachments.ToList(), out MediaType? mediaType);
             if (url == null) { url = _ffmpeg.GetSingleAcceptableContentUrl(contentUrl, out mediaType); }
-            if(Context.Message.ReferencedMessage != null)
+            if (Context.Message.ReferencedMessage != null)
             {
                 if (url == null) { url = _ffmpeg.GetSingleAcceptableAttachmentUrl(Context.Message.ReferencedMessage.Attachments.ToList(), out mediaType); }
                 if (url == null) { url = _ffmpeg.GetSingleAcceptableContentUrl(Context.Message.ReferencedMessage.Content, out mediaType); }
-            }            
+            }
 
             if (url != null)
             {
                 string fileName = "output";
-                new Thread(async () => {
-                    if(await _ffmpeg.AddWilhelmToAttachment(url, (MediaType)mediaType, fileName))
+                new Thread(async () =>
+                {
+                    if (await _ffmpeg.AddWilhelmToAttachment(url, (MediaType)mediaType, fileName))
                     {
-                        _ = Context.Channel.SendFileAsync($"./{fileName}.mp4",messageReference: Context.Message.Reference);
+                        _ = Context.Channel.SendFileAsync($"./{fileName}.mp4", messageReference: Context.Message.Reference);
                     }
                     else
                     {
                         _ = Context.Channel.SendMessageAsync("Sorry, either the filetype of the attachment is not supported at this time, but it had", messageReference: Context.Message.Reference);
                     }
-                }).Start();                
+                }).Start();
             }
             else
             {
@@ -308,37 +303,37 @@ namespace DeepState.Modules
         }
 
         [Command("nationaldebt"), Alias("debt", "nd")]
-		[Summary("Query the official .gov API to get the current national debt.")]
-		public async Task GetNationalDebt()
-		{
-			using (HttpClient client = new HttpClient())
-			{
-				Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-				NationalDebtData nationalDebtData = JsonConvert.DeserializeObject<NationalDebtData>(client.GetAsync("https://www.treasurydirect.gov/NP_WS/debt/current?format=json").Result.Content.ReadAsStringAsync().Result);
-				EmbedBuilder embed = new EmbedBuilder();
-				embed.Title = "Good Morning Senator, here's some bullshit";
-				embed.AddField("Effective Date", nationalDebtData.effectiveDate);
-				embed.AddField("Total Debt", nationalDebtData.totalDebt.ToString("C"));
-				embed.AddField("Public Debt", nationalDebtData.publicDebt.ToString("C"));
-				embed.AddField("Government Holdings", nationalDebtData.governmentHoldings.ToString("C"));
+        [Summary("Query the official .gov API to get the current national debt.")]
+        public async Task GetNationalDebt()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+                NationalDebtData nationalDebtData = JsonConvert.DeserializeObject<NationalDebtData>(client.GetAsync("https://www.treasurydirect.gov/NP_WS/debt/current?format=json").Result.Content.ReadAsStringAsync().Result);
+                EmbedBuilder embed = new EmbedBuilder();
+                embed.Title = "Good Morning Senator, here's some bullshit";
+                embed.AddField("Effective Date", nationalDebtData.effectiveDate);
+                embed.AddField("Total Debt", nationalDebtData.totalDebt.ToString("C"));
+                embed.AddField("Public Debt", nationalDebtData.publicDebt.ToString("C"));
+                embed.AddField("Government Holdings", nationalDebtData.governmentHoldings.ToString("C"));
 
                 await Context.Channel.SendMessageAsync(embed: embed.Build());
             }
         }
 
-		[Command("ididitlikethis"), Alias("likethis")]
-		[Summary("That's how I did it yanno, just like this.")]
-		public async Task IDidItLikeThis()
-		{
-			if(Context.Message.Author.Id == SharedConstants.TheDungeonMaster)
-			{
-				_ = Context.Message.ReplyAsync("https://y.yarn.co/5bf8015a-95c4-46d0-9d50-3da21e0d8357_text.gif");
-			}
-			else
-			{
-				_ = Context.Message.ReplyAsync("https://cdn.discordapp.com/attachments/883466654443507773/904792562777354280/video0.mov");
-			}
-		}
+        [Command("ididitlikethis"), Alias("likethis")]
+        [Summary("That's how I did it yanno, just like this.")]
+        public async Task IDidItLikeThis()
+        {
+            if(Context.Message.Author.Id == SharedConstants.TheDungeonMaster)
+            {
+                _ = Context.Message.ReplyAsync("https://y.yarn.co/5bf8015a-95c4-46d0-9d50-3da21e0d8357_text.gif");
+            }
+            else
+            {
+                _ = Context.Message.ReplyAsync("https://cdn.discordapp.com/attachments/883466654443507773/904792562777354280/video0.mov");
+            }
+        }
 
         public void AutoResponse(string response)
         {
