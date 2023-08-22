@@ -204,6 +204,10 @@ namespace DeepState
             {
                 try
                 {
+                    if(messageParam.Channel.Id == SharedConstants.SelfCareChannelId)
+                    {
+                        return;
+                    }
                     _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix);
                 }
                 catch (Exception ex)
