@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using DartsDiscordBots.Utilities;
 
 namespace Deepstate.Games.CardGames.Helpers
 {
@@ -10,7 +7,9 @@ namespace Deepstate.Games.CardGames.Helpers
     {
         public int[] BuildDeck()
         {
-            return Enumerable.Range(0, 51).ToArray();
+            List<int> deck = Enumerable.Range(0, 52).ToList();
+            deck.Shuffle();
+            return deck.ToArray();
         }
     }
 }

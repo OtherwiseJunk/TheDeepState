@@ -27,5 +27,10 @@ namespace DeepState.Tests.Mocks
             }
             return success;
         }
+
+        public void ClearEvents()
+        {
+            events.Clear();
+        }
     }
 }
