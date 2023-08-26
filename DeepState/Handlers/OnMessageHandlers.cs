@@ -1,12 +1,10 @@
 ﻿using Discord.WebSocket;
 using System;
 using Utils = DeepState.Utilities.Utilities;
-using System.Threading;
 using System.Threading.Tasks;
 using DeepState.Constants;
 using DartsDiscordBots.Utilities;
 using Discord;
-using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using DeepState.Data.Services;
@@ -46,6 +44,13 @@ namespace DeepState.Handlers
 			}
 		}
 
+		public static async Task ImageServiceTest(SocketMessage msg)
+		{
+			msg.Author.GetAvatarUrl(size: 512);
+			//ImagingService.OverlayImage()
+
+        }
+
 		public static async Task UWUIfyFlaggedUserTweets(SocketMessage msg) 
         {
 			if (TwitterUtilities.MessageExclusivelyContainsFlaggedUserTweetURL(msg.Content))
@@ -69,9 +74,9 @@ namespace DeepState.Handlers
         }
 		public static async Task DeletePreggersMessage(SocketMessage msg)
         {
-			MatchCollection matches = Regex.Matches(msg.Content.Normalize(System.Text.NormalizationForm.FormD), SharedConstants.PreggersDetector, RegexOptions.IgnoreCase);
-			string spacelessContent = msg.Content.Replace(" ", String.Empty);
-			bool cursedCheck = spacelessContent.Length >= 5 && spacelessContent.Length <= 8 && (Regex.Matches(spacelessContent, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
+            MatchCollection matches = Regex.Matches(msg.Content.Normalize(System.Text.NormalizationForm.FormD), SharedConstants.PreggersDetector, RegexOptions.IgnoreCase);
+            string spacelessContent = msg.Content.Replace(" ", String.Empty);
+            bool cursedCheck = spacelessContent.Length >= 5 && spacelessContent.Length <= 8 && (Regex.Matches(spacelessContent, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
 
             if (matches.Count > 0 || msg.Content.StartsWith("🇵🇷🥚") || cursedCheck)
             {
