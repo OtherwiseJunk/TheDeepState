@@ -56,7 +56,7 @@ namespace DeepState.Constants
                     {
                         Name = "text",
                         Type = ApplicationCommandOptionType.String,
-                        MaxLength = 50,
+                        MaxLength = 150,
                         IsRequired = true,
                         Description = "The text to add to the list",
                         MinLength = 3,
