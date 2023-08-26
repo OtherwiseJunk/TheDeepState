@@ -1,8 +1,12 @@
-﻿using DeepState.Data.Context;
+﻿using DartsDiscordBots.Utilities;
+using DeepState.Data.Context;
 using DeepState.Data.Models;
+using Discord;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using System.Text;
 
 namespace DeepState.Data.Services
 {
@@ -68,6 +72,32 @@ namespace DeepState.Data.Services
             {
                 return context.ToDoItems.Where(toDoItem => toDoItem.DiscordUserId == userId).ToList();
             }
+        }
+
+        public string BuildToDoListResponse(IGuildUser user)
+        {
+            string response;
+            StringBuilder builder = new("```");
+            List<ToDoItem> toDos = GetUsersToDos(user.Id);
+            if (toDos.Count > 0)
+            {
+                string title = $"{BotUtilities.GetDisplayNameForUser(user)}'s TODO list";
+                builder.AppendLine(title);
+                builder.AppendLine(string.Concat(Enumerable.Repeat("=", title.Length)));
+                foreach (ToDoItem toDoItem in toDos)
+                {
+                    string toDoCheckbox = toDoItem.IsCompleted ? "[X]" : "[ ]";
+                    builder.AppendLine($"-{toDoItem.Id}: {toDoCheckbox}   {toDoItem.Text}");
+                }
+                builder.AppendLine("```");
+                response = builder.ToString();
+            }
+            else
+            {
+                response = "Sorry, you don't have any TODO items yet";
+            }
+
+            return response;
         }
     }
 }

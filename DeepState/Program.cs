@@ -42,6 +42,7 @@ using System.Net;
 using DeepState.Models.SlashCommands;
 using DeepState.Data.Models;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
+using System.Text;
 
 namespace DeepState
 {
@@ -322,36 +323,29 @@ namespace DeepState
                     response = "https://cdn.discordapp.com/attachments/883466654443507773/1118376851329536010/I_Did_Everything_Right_And_They_Indicted_Me.mp4";
                     break;
                 case SlashCommands.ToDoList:
-                    EmbedBuilder builder = new();
-                    List<ToDoItem> toDos = toDoService.GetUsersToDos(command.User.Id);
-                    if(toDos.Count > 0)
-                    {
-                        builder.Title = $"{BotUtilities.GetDisplayNameForUser(command.User as IGuildUser)}'s TODO list";
-                        foreach (ToDoItem toDoItem in toDos)
-                        {
-                            string fieldTitle = toDoItem.IsCompleted ? "[X]" : "[ ]";
-                            builder.AddField(fieldTitle, toDoItem.Text);
-                        }
-                        embed = builder.Build();
-                    }
-                    else
-                    {
-                        response = "Sorry, you don't have any TODO items yet";
-                    }
+                    response = toDoService.BuildToDoListResponse(command.User as IGuildUser);
                     break;
                 case SlashCommands.ToDoAdd:                    
                     string toDoText = (string)command.Data.Options.First().Value;
                     toDoService.AddToDo(command.User.Id, toDoText);
-                    response = "Ok, I've added that TODO item for you.";
+                    response = $"Ok, I've added that TODO item for you.{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User as IGuildUser)}";
                     break;
                 case SlashCommands.ToDoComplete:
-                    int toDoID = (int)command.Data.Options.First().Value;
+                    int toDoID = 0;
+                    try
+                    {
+                        toDoID = Convert.ToInt32(command.Data.Options.First().Value);
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
                     bool isCompleted = toDoService.IsToDoItemCompleted(toDoID);
                     bool belongsToUser = toDoService.ToDoBelongsToUser(command.User.Id, toDoID);
                     if (belongsToUser && !isCompleted)
                     {
                         toDoService.MarkToDoComplete(toDoID);
-                        response = $"Ok, I've marked item {toDoID} as complete";
+                        response = $"Ok, I've marked item {toDoID} as complete{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User as IGuildUser)}";
                     }
                     else if (isCompleted && belongsToUser)
                     {
@@ -364,7 +358,7 @@ namespace DeepState
                     break;
                 case SlashCommands.ToDoClear:
                     toDoService.ClearAllCompletedToDo(command.User.Id);
-                    response = "Ok, I've deleted all of your completed TODO items.";
+                    response = toDoService.GetUsersToDos(command.User.Id).Count > 0 ? $"Ok, I've deleted all of your completed TODO items.{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User as IGuildUser)}" : "Ok, I've deleted all of your completed TODO items";
                     break;
             }
             if (response != null)
