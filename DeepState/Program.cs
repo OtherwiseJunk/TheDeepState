@@ -41,6 +41,7 @@ using System.IO;
 using System.Net;
 using DeepState.Models.SlashCommands;
 using DeepState.Data.Models;
+using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 
 namespace DeepState
 {
@@ -221,7 +222,10 @@ namespace DeepState
             {
                 try
                 {
-                    _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix);
+                    if(messageParam.Channel.Id != SharedConstants.SelfCareChannelId)
+                    {
+                        _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix);
+                    }                    
                 }
                 catch (Exception ex)
                 {
@@ -242,8 +246,20 @@ namespace DeepState
             _client.SlashCommandExecuted += HandleSlashCommands;
             _client.MessageUpdated += OnEdit;
 
+
         }
 
+        private async void CheckDatEmbed()
+        {
+            var libcraft = _client.GetGuild(698639095940907048);
+            ITextChannel oocChannel = libcraft.GetChannel(777400598789095445) as ITextChannel;
+            var message = await oocChannel.GetMessageAsync(1140102426515480647);
+            message.Embeds.ForEach((IEmbed embed) =>
+            {
+                Console.WriteLine("Embed from Libcraft OOC");
+                Console.WriteLine(embed.Image);
+            });
+        }
         private async Task OnEdit(Cacheable<IMessage, ulong> cacheableMessage, SocketMessage message, ISocketMessageChannel channel)
         {
             new Thread(async () => { if (message != null && message.Content != null) { await OnMessageHandlers.DeletePreggersMessage(message); } }).Start();
@@ -411,6 +427,11 @@ namespace DeepState
                 760308671170215968
             };
             if (message == null) return;
+
+            if(message.Content == "awfuck" && message.Author.Username == "_dart")
+            {
+                CheckDatEmbed();
+            }
 
             UserRecordsService urservice = _services.GetService<UserRecordsService>();
             if (message.Author.IsBot)
