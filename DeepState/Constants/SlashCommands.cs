@@ -74,6 +74,7 @@ namespace DeepState.Constants
                         IsRequired = true,
                         Description = "The ID of the TODO item to mark as completed",
                         MinLength = 1,
+                        MaxLength= 150
                     }
                     }),
                     new SlashCommandWithoutOptions(ToDoClear, "Remove all TODO items marked as complete."),
