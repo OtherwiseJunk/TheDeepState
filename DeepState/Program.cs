@@ -42,6 +42,7 @@ using System.Net;
 using DeepState.Models.SlashCommands;
 using DeepState.Data.Models;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
+using System.Text;
 
 namespace DeepState
 {
@@ -322,81 +323,119 @@ namespace DeepState
                     response = "https://cdn.discordapp.com/attachments/883466654443507773/1118376851329536010/I_Did_Everything_Right_And_They_Indicted_Me.mp4";
                     break;
                 case SlashCommands.ToDoList:
-                    EmbedBuilder builder = new();
-                    List<ToDoItem> toDos = toDoService.GetUsersToDos(command.User.Id);
-                    builder.Title = $"{BotUtilities.GetDisplayNameForUser(command.User as IGuildUser)}'s TODO list";
-                    foreach(ToDoItem toDoItem in toDos)
-                    {
-                        string fieldTitle = toDoItem.IsCompleted ? "[X]" : "[ ]";
-                        builder.AddField(fieldTitle, toDoItem.Text);
-                    }
-                    embed = builder.Build();
+                    response = toDoService.BuildToDoListResponse(command.User);
                     break;
                 case SlashCommands.ToDoAdd:                    
                     string toDoText = (string)command.Data.Options.First().Value;
                     toDoService.AddToDo(command.User.Id, toDoText);
-                    response = "Ok, I've added that TODO item for you.";
+                    response = $"Ok, I've added that TODO item for you.{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User)}";
                     break;
                 case SlashCommands.ToDoComplete:
-                    int toDoID = (int)command.Data.Options.First().Value;
-                    bool isCompleted = toDoService.IsToDoItemCompleted(toDoID);
-                    bool belongsToUser = toDoService.ToDoBelongsToUser(command.User.Id, toDoID);
-                    if (belongsToUser && !isCompleted)
+                    string toDoIdString = "";
+                    List<int> toDoIds = new();
+                    try
                     {
-                        toDoService.MarkToDoComplete(toDoID);
-                        response = $"Ok, I've marked item {toDoID} as complete";
+                        toDoIdString = (string)command.Data.Options.First().Value;
+                        toDoIds = toDoIdString.Split(',').Select(id => int.Parse(id)).ToList();
                     }
-                    else if (isCompleted && belongsToUser)
+                    catch(Exception ex)
                     {
-                        response = "Sorry, that item is already marked as completed.";
+                        Console.WriteLine(ex.Message);
                     }
-                    else
+                    StringBuilder builder = new StringBuilder();
+                    foreach(int toDoID in toDoIds)
                     {
-                        response = $"Sorry, either TODO Item {toDoID} doesn't exist, or it belongs to another user";
+                        bool isCompleted = toDoService.IsToDoItemCompleted(toDoID);
+                        bool belongsToUser = toDoService.ToDoBelongsToUser(command.User.Id, toDoID);
+                        if (belongsToUser && !isCompleted)
+                        {
+                            toDoService.MarkToDoComplete(toDoID);
+                            builder.AppendLine($"Ok, I've marked item {toDoID} as complete");
+                        }
+                        else if (isCompleted && belongsToUser)
+                        {
+                            builder.AppendLine($"Sorry, item {toDoID} has already been marked as completed.");
+                        }
+                        else
+                        {
+                            builder.AppendLine($"Sorry, either TODO Item {toDoID} doesn't exist, or it belongs to another user");
+                        }
                     }
+                    builder.Append($"{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User)}");
+                    response = builder.ToString();
                     break;
                 case SlashCommands.ToDoClear:
                     toDoService.ClearAllCompletedToDo(command.User.Id);
-                    response = "Ok, I've deleted all of your completed TODO items.";
+                    response = toDoService.GetUsersToDos(command.User.Id).Count > 0 ? $"Ok, I've deleted all of your completed TODO items.{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User)}" : "Ok, I've deleted all of your completed TODO items";
                     break;
             }
             if (response != null)
             {
                 _ = command.RespondAsync(response);
             }
+            if(embed != null)
+            {
+                _ = command.RespondAsync(embed: embed);
+            }
         }
 
         private async Task InstallSlashCommands()
         {
-            foreach (var item in SlashCommands.SlashCommandsToInstall)
+            new Thread(async() =>
             {
-                IGuild guild = _client.GetGuild(item.Key);
-                SlashCommandBuilder command;
-                foreach (SlashCommandInformation commandInfo in item.Value)
+                try
                 {
-                    command = new SlashCommandBuilder();
-                    command.WithName(commandInfo.Name);
-                    command.WithDescription(commandInfo.Name);
-                    command.WithNameLocalizations(commandInfo.NameLocalizations);
-                    command.WithDescriptionLocalizations(commandInfo.DescriptionLocalizations);
-                    command.WithDefaultPermission(commandInfo.DefaultPermission);
-                    if (commandInfo.Options.Count > 0)
+                    Console.WriteLine("--- Starting installation of slash commands ---");
+                    foreach (var item in SlashCommands.SlashCommandsToInstall)
                     {
-                        foreach(SlashCommandOptionBuilder option in commandInfo.Options)
+                        IGuild guild = _client.GetGuild(item.Key);
+                        if(item.Key == 0)
                         {
-                            command.AddOption(option.Name, option.Type, option.Description, option.IsRequired, option.IsDefault, maxValue: option.MaxValue);
+                            IGuild libcraft = _client.GetGuild(SharedConstants.LibcraftGuildId);
+                            List<IApplicationCommand> commands = libcraft.GetApplicationCommandsAsync().Result.Where(command => command.Name.StartsWith("todo")).ToList();
+                            foreach(IApplicationCommand commandToDelete in commands)
+                            {
+                                _ = commandToDelete.DeleteAsync();
+                            }
+                        }
+                        SlashCommandBuilder command;
+                        foreach (SlashCommandInformation commandInfo in item.Value)
+                        {
+                            Console.WriteLine($"Installing Command {commandInfo.Name}");
+                            command = new SlashCommandBuilder();
+                            command.WithName(commandInfo.Name);
+                            command.WithDescription(commandInfo.Description);
+                            command.WithNameLocalizations(commandInfo.NameLocalizations);
+                            command.WithDescriptionLocalizations(commandInfo.DescriptionLocalizations);
+                            command.WithDefaultPermission(commandInfo.DefaultPermission);
+                            if (commandInfo.Options.Count > 0)
+                            {
+                                foreach (SlashCommandOptionBuilder option in commandInfo.Options)
+                                {
+                                    command.AddOption(option);
+                                    Console.WriteLine($"Successfully added option {option.Name}");
+                                }
+
+                            }
+                            if (guild != null)
+                            {
+                                await guild.CreateApplicationCommandAsync(command.Build());
+                            }
+                            else
+                            {
+                                await _client.CreateGlobalApplicationCommandAsync(command.Build());
+                            }
                         }
                     }
-                    if (guild != null)
-                    {
-                        await guild.CreateApplicationCommandAsync(command.Build());
-                    }
-                    else
-                    {
-                        await _client.CreateGlobalApplicationCommandAsync(command.Build());
-                    }
+                    Console.WriteLine("--- Ending installation of slash commands ---");
                 }
-            }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("--- Encountered an issue when attempting to install slash commands ---");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("--- Encountered an issue when attempting to install slash commands ---");
+                }
+            }).Start();            
         }
 
         private async Task OnEventCreated(SocketGuildEvent arg)
@@ -448,7 +487,7 @@ namespace DeepState
                 return;
             }            
             new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
-            new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
+           new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
 
             if(guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId)
             {
