@@ -68,6 +68,7 @@ namespace DeepState.Constants
                         Type = ApplicationCommandOptionType.Integer,
                         IsRequired = true,
                         Description = "The ID of the TODO item to mark as completed",
+                        MinValue = 0,
                     }
                     }),
                     new SlashCommandWithoutOptions(ToDoClear, "Remove all TODO items marked as complete."),

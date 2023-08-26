@@ -381,6 +381,23 @@ namespace DeepState
                     foreach (var item in SlashCommands.SlashCommandsToInstall)
                     {
                         IGuild guild = _client.GetGuild(item.Key);
+                        List<IApplicationCommand> commandsToDelete = _client.GetGlobalApplicationCommandsAsync().Result.Where(command => command.Name == command.Description).Select(command => command as IApplicationCommand).ToList();
+                        if (guild != null)
+                        {
+                             commandsToDelete.AddRange(guild.GetApplicationCommandsAsync().Result.Where(command => command.Name == command.Description).ToList());
+                        }
+                        if(commandsToDelete.Count > 0)
+                        {
+                            new Thread(() =>
+                            {
+                                Console.WriteLine("Starting delete thread");
+                                foreach (IApplicationCommand command in commandsToDelete)
+                                {
+                                    Console.WriteLine($"Deleting Command {command.Name} with description {command.Description}");
+                                    _ = command.DeleteAsync();
+                                }
+                            }).Start();
+                        }
                         SlashCommandBuilder command;
                         foreach (SlashCommandInformation commandInfo in item.Value)
                         {
@@ -395,7 +412,7 @@ namespace DeepState
                             {
                                 foreach (SlashCommandOptionBuilder option in commandInfo.Options)
                                 {
-                                    command.AddOption(option.Name, option.Type, option.Description, option.IsRequired, minValue: option.MinValue, maxValue: option.MaxValue);
+                                    command.AddOption(option);
                                     Console.WriteLine($"Successfully added option {option.Name}");
                                 }
 
