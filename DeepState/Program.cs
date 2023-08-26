@@ -337,8 +337,8 @@ namespace DeepState
                     break;
                 case SlashCommands.TrumpMugshot:
                     EmbedBuilder builder = new();
-                    builder.WithTitle("Ladies, Gentlemen, and Friends Beyond The Binary, We Gottem!");
-                    builder.WithImageUrl("https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/TrumpMugshot.webp");
+                    builder.Title = "Ladies, Gentlemen, and Friends Beyond The Binary, We Gottem!";
+                    builder.ImageUrl ="https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/TrumpMugshot2.webp";
                     embed = builder.Build();
                     break;
             }
