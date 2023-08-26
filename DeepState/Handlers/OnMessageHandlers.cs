@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using DeepState.Data.Services;
 using static DartsDiscordBots.Constants.SharedConstants;
 using DeepState.Utilities;
+using DeepState.Modules;
 
 namespace DeepState.Handlers
 {
@@ -41,6 +42,14 @@ namespace DeepState.Handlers
 				{
 					GuildUserCacheDownloaded.Add(guild.Id);
 				}				
+			}
+		}
+
+		public static async Task ReplyIfMessageIsRecessionOnlyInUpperCase(SocketMessage msg)
+		{
+			if (msg.Content.Equals("RECESSION") && msg.Embeds.Count == 0)
+			{
+				_ = (msg as IUserMessage).ReplyAsync("https://www.istheusinarecession.com/");
 			}
 		}
 

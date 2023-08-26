@@ -458,7 +458,8 @@ namespace DeepState
                     urservice.Grant(bestOfUserId, guild.Id, 10);
                 }
                 return;
-            }            
+            }
+            new Thread(async () => { await OnMessageHandlers.ReplyIfMessageIsRecessionOnlyInUpperCase(messageParam); }).Start();
             new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
            new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
 
