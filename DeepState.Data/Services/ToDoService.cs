@@ -86,7 +86,7 @@ namespace DeepState.Data.Services
                 builder.AppendLine(string.Concat(Enumerable.Repeat("=", title.Length)));
                 foreach (ToDoItem toDoItem in toDos)
                 {
-                    string toDoCheckbox = toDoItem.IsCompleted ? "[X]" : "[ ]";
+                    string toDoCheckbox = toDoItem.IsCompleted ? "[x]" : "[ ]";
                     builder.AppendLine($"-{toDoItem.Id}: {toDoCheckbox}   {toDoItem.Text}");
                 }
                 builder.AppendLine("```");
