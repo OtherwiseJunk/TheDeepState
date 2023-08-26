@@ -51,6 +51,11 @@ namespace DeepState.Constants
                     new SlashCommandWithoutOptions(ImFromArizona,"and so can you!"),
                     new SlashCommandWithoutOptions(AntonCheckin,"Live Anton Reaction"),
                     new SlashCommandWithoutOptions(IDidEverythingRight,"I did EVERYTHING RIGHT and I got INDICTED!"),
+                }
+            },
+            {
+                0, new List<SlashCommandInformation>
+                {
                     new SlashCommandWithoutOptions(ToDoList, "List your TODO items"),
                     new SlashCommandWithOptions(ToDoAdd, "Add an item to your TODO list. No more than 50 characters.", new(){new SlashCommandOptionBuilder
                     {
@@ -62,18 +67,18 @@ namespace DeepState.Constants
                         MinLength = 3,
                     }
                     }),
-                    new SlashCommandWithOptions(ToDoComplete, "Mark the specified TODO item as complete, by ID.", new(){new SlashCommandOptionBuilder
+                    new SlashCommandWithOptions(ToDoComplete, "Mark the specified TODO item as complete, by ID. For multiple provide a comma separated list.", new(){new SlashCommandOptionBuilder
                     {
                         Name = "identifier",
-                        Type = ApplicationCommandOptionType.Integer,
+                        Type = ApplicationCommandOptionType.String,
                         IsRequired = true,
                         Description = "The ID of the TODO item to mark as completed",
-                        MinValue = 0,
+                        MinLength = 1,
                     }
                     }),
                     new SlashCommandWithoutOptions(ToDoClear, "Remove all TODO items marked as complete."),
                 }
-            },
+            }
         };
     }
 }

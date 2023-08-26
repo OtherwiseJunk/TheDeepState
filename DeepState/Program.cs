@@ -331,30 +331,38 @@ namespace DeepState
                     response = $"Ok, I've added that TODO item for you.{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User as IGuildUser)}";
                     break;
                 case SlashCommands.ToDoComplete:
-                    int toDoID = 0;
+                    string toDoIdString = "";
+                    List<int> toDoIds = new();
                     try
                     {
-                        toDoID = Convert.ToInt32(command.Data.Options.First().Value);
+                        toDoIdString = (string)command.Data.Options.First().Value;
+                        toDoIds = toDoIdString.Split(',').Select(id => int.Parse(id)).ToList();
                     }
                     catch(Exception ex)
                     {
                         Console.WriteLine(ex.Message);
                     }
-                    bool isCompleted = toDoService.IsToDoItemCompleted(toDoID);
-                    bool belongsToUser = toDoService.ToDoBelongsToUser(command.User.Id, toDoID);
-                    if (belongsToUser && !isCompleted)
+                    StringBuilder builder = new StringBuilder();
+                    foreach(int toDoID in toDoIds)
                     {
-                        toDoService.MarkToDoComplete(toDoID);
-                        response = $"Ok, I've marked item {toDoID} as complete{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User as IGuildUser)}";
+                        bool isCompleted = toDoService.IsToDoItemCompleted(toDoID);
+                        bool belongsToUser = toDoService.ToDoBelongsToUser(command.User.Id, toDoID);
+                        if (belongsToUser && !isCompleted)
+                        {
+                            toDoService.MarkToDoComplete(toDoID);
+                            builder.AppendLine($"Ok, I've marked item {toDoID} as complete");
+                        }
+                        else if (isCompleted && belongsToUser)
+                        {
+                            builder.AppendLine($"Sorry, item {toDoID} has already been marked as completed.");
+                        }
+                        else
+                        {
+                            builder.AppendLine($"Sorry, either TODO Item {toDoID} doesn't exist, or it belongs to another user");
+                        }
                     }
-                    else if (isCompleted && belongsToUser)
-                    {
-                        response = "Sorry, that item is already marked as completed.";
-                    }
-                    else
-                    {
-                        response = $"Sorry, either TODO Item {toDoID} doesn't exist, or it belongs to another user";
-                    }
+                    builder.Append($"{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User as IGuildUser)}");
+                    response = builder.ToString();
                     break;
                 case SlashCommands.ToDoClear:
                     toDoService.ClearAllCompletedToDo(command.User.Id);
@@ -381,6 +389,15 @@ namespace DeepState
                     foreach (var item in SlashCommands.SlashCommandsToInstall)
                     {
                         IGuild guild = _client.GetGuild(item.Key);
+                        if(item.Key == 0)
+                        {
+                            IGuild libcraft = _client.GetGuild(SharedConstants.LibcraftGuildId);
+                            List<IApplicationCommand> commands = libcraft.GetApplicationCommandsAsync().Result.Where(command => command.Name.StartsWith("todo")).ToList();
+                            foreach(IApplicationCommand commandToDelete in commands)
+                            {
+                                _ = commandToDelete.DeleteAsync();
+                            }
+                        }
                         SlashCommandBuilder command;
                         foreach (SlashCommandInformation commandInfo in item.Value)
                         {
