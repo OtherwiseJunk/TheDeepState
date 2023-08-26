@@ -74,14 +74,15 @@ namespace DeepState.Data.Services
             }
         }
 
-        public string BuildToDoListResponse(IGuildUser user)
+        public string BuildToDoListResponse(IUser user)
         {
             string response;
             StringBuilder builder = new("```");
             List<ToDoItem> toDos = GetUsersToDos(user.Id);
             if (toDos.Count > 0)
             {
-                string title = $"{BotUtilities.GetDisplayNameForUser(user)}'s TODO list";
+                string username = user is IGuildUser ? BotUtilities.GetDisplayNameForUser(user as IGuildUser) : user.Username;
+                string title = $"{username}'s TODO list";
                 builder.AppendLine(title);
                 builder.AppendLine(string.Concat(Enumerable.Repeat("=", title.Length)));
                 int biggestIdLength = $"toDos.Max(toDo => toDo.Id)".Length;

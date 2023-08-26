@@ -323,12 +323,12 @@ namespace DeepState
                     response = "https://cdn.discordapp.com/attachments/883466654443507773/1118376851329536010/I_Did_Everything_Right_And_They_Indicted_Me.mp4";
                     break;
                 case SlashCommands.ToDoList:
-                    response = toDoService.BuildToDoListResponse(command.User as IGuildUser);
+                    response = toDoService.BuildToDoListResponse(command.User);
                     break;
                 case SlashCommands.ToDoAdd:                    
                     string toDoText = (string)command.Data.Options.First().Value;
                     toDoService.AddToDo(command.User.Id, toDoText);
-                    response = $"Ok, I've added that TODO item for you.{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User as IGuildUser)}";
+                    response = $"Ok, I've added that TODO item for you.{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User)}";
                     break;
                 case SlashCommands.ToDoComplete:
                     string toDoIdString = "";
@@ -361,12 +361,12 @@ namespace DeepState
                             builder.AppendLine($"Sorry, either TODO Item {toDoID} doesn't exist, or it belongs to another user");
                         }
                     }
-                    builder.Append($"{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User as IGuildUser)}");
+                    builder.Append($"{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User)}");
                     response = builder.ToString();
                     break;
                 case SlashCommands.ToDoClear:
                     toDoService.ClearAllCompletedToDo(command.User.Id);
-                    response = toDoService.GetUsersToDos(command.User.Id).Count > 0 ? $"Ok, I've deleted all of your completed TODO items.{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User as IGuildUser)}" : "Ok, I've deleted all of your completed TODO items";
+                    response = toDoService.GetUsersToDos(command.User.Id).Count > 0 ? $"Ok, I've deleted all of your completed TODO items.{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User)}" : "Ok, I've deleted all of your completed TODO items";
                     break;
             }
             if (response != null)

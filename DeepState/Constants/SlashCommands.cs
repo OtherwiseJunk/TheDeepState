@@ -72,7 +72,7 @@ namespace DeepState.Constants
                         Name = "identifier",
                         Type = ApplicationCommandOptionType.String,
                         IsRequired = true,
-                        Description = "The ID of the TODO item to mark as completed",
+                        Description = "The ID of the TODO item to mark as completed. For multiple, use a comma between IDs (no spaces)",
                         MinLength = 1,
                         MaxLength= 150
                     }
