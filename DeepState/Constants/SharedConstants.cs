@@ -359,8 +359,9 @@ namespace DeepState.Constants
 		public static string NongenderedPronounRolename = @"they/them";
 		public const string AdminsOnlyGroup = "AdminsOnly";
 		public const string HungerGamesRegistrationDateGroup = "HGRegistrationPeriod";
+        public const string MudshotBadgeImagePath = "./FultonCountySheriffBadge.png";
 
-		public static ulong LibcraftBestOfChannel = 1074504783576182794;
+        public static ulong LibcraftBestOfChannel = 1074504783576182794;
 
 		public static List<ulong> LibcraftBestOfExclusionList = new List<ulong>
 		{

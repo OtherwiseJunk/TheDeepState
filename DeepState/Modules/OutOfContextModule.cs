@@ -18,11 +18,11 @@ namespace DeepState.Modules
     public class OutOfContextModule : ModuleBase
     {
         private OOCService _panopticon { get; set; }
-        private ImagingService _imageService { get; set; }
+        private DartsDiscordBots.Services.ImagingService _imageService { get; set; }
         private string OutOfCOntextFolder = "OutOfContext";
         public static string OutOfContextTitle = "Libcraft Out Of Context: ";
 
-        public OutOfContextModule(OOCService panopticon, ImagingService imageService)
+        public OutOfContextModule(OOCService panopticon, DartsDiscordBots.Services.ImagingService imageService)
         {
             _panopticon = panopticon;
             _imageService = imageService;

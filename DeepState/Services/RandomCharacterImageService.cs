@@ -10,9 +10,9 @@ namespace DeepState.Services
 {
     public class RandomCharacterImageService
     {
-        ImagingService _imagingService;
+        DartsDiscordBots.Services.ImagingService _imagingService;
 
-        public RandomCharacterImageService(ImagingService imagingService)
+        public RandomCharacterImageService(DartsDiscordBots.Services.ImagingService imagingService)
         {
             _imagingService = imagingService;
         }
