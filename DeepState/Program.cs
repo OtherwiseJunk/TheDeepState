@@ -37,6 +37,10 @@ using Victoria;
 using DartsDiscordBots.Modules.Audio;
 using DartsDiscordBots.Modules.LockedTomb;
 using System.Linq;
+using System.IO;
+using System.Net;
+using DeepState.Models.SlashCommands;
+using DeepState.Data.Models;
 
 namespace DeepState
 {
@@ -79,8 +83,17 @@ namespace DeepState
         {
             Console.WriteLine($"DEEPSTATE has been INITIALIZED");
             Console.WriteLine($"{Environment.GetEnvironmentVariable("DATABASE")}");
-
-            await InstallCommandsAsync();
+            new Thread(async () =>
+            {
+                if (!File.Exists(SharedConstants.MudshotBadgeImagePath))
+                {
+                    using (WebClient client = new WebClient())
+                    {
+                        client.DownloadFile(new Uri("https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/FultonCountySheriffBadge.png"), SharedConstants.MudshotBadgeImagePath);
+                    }
+                    await InstallCommandsAsync();
+                }
+            }).Start();            
 
 
             string token = Environment.GetEnvironmentVariable("DEEPSTATE");
@@ -101,6 +114,7 @@ namespace DeepState
 
             new Thread(() => _ = LibcoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>())).Start();
             new Thread(() => _ = LibcoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>())).Start();
+            
 #if !DEBUG
             new Thread(() => JackboxUtilities.EnsureDefaultGamesExist(_services.GetService<JackboxContext>())).Start();
 #endif
@@ -134,7 +148,7 @@ namespace DeepState
                 .AddSingleton<IBotInformation, BotInformation>()
                 .AddSingleton<IMessageReliabilityService, MessageReliabilityService>()
                 .AddSingleton<IJackboxService, JackboxService>()
-                .AddSingleton(new ImagingService(Environment.GetEnvironmentVariable("DOPUBLIC"),
+                .AddSingleton(new DartsDiscordBots.Services.ImagingService(Environment.GetEnvironmentVariable("DOPUBLIC"),
                     Environment.GetEnvironmentVariable("DOSECRET"),
                     Environment.GetEnvironmentVariable("DOURL"),
                     Environment.GetEnvironmentVariable("DOBUCKET"))
@@ -151,11 +165,14 @@ namespace DeepState
                 .AddSingleton<BestOfService>()
                 .AddSingleton<IServerManagmentService, ServerManagementService>()
                 .AddSingleton<RandomCharacterImageService>()
+                .AddSingleton<ToDoService>()
+                .AddDbContext<ToDoContext>()
                 .AddDbContext<GuildUserRecordContext>()
                 .AddDbContext<HungerGamesContext>()
                 .AddDbContextFactory<GuildUserRecordContext>()
                 .AddDbContextFactory<HungerGamesContext>()
                 .AddDbContextFactory<ModTeamRequestContext>()
+                .AddDbContextFactory<ToDoContext>()
 #if !DEBUG
                 .AddDbContextFactory<JackboxContext>()
 #endif
@@ -222,7 +239,7 @@ namespace DeepState
             _client.MessageReceived += OnMessage;
             _client.ButtonExecuted += OnButtonClicked;
             _client.Ready += InstallSlashCommands;
-            _client.SlashCommandExecuted += HandleAutoResponseCommands;
+            _client.SlashCommandExecuted += HandleSlashCommands;
             _client.MessageUpdated += OnEdit;
 
         }
@@ -232,9 +249,12 @@ namespace DeepState
             new Thread(async () => { if (message != null && message.Content != null) { await OnMessageHandlers.DeletePreggersMessage(message); } }).Start();
         }
 
-        private async Task HandleAutoResponseCommands(SocketSlashCommand command)
+        private async Task HandleSlashCommands(SocketSlashCommand command)
         {
             string response = null;
+            bool ephemeralResponse = false;
+            Embed embed = null;
+            ToDoService toDoService = _services.GetService<ToDoService>();
             switch (command.CommandName)
             {
                 case SlashCommands.LeRacisme:
@@ -285,6 +305,44 @@ namespace DeepState
                 case SlashCommands.IDidEverythingRight:
                     response = "https://cdn.discordapp.com/attachments/883466654443507773/1118376851329536010/I_Did_Everything_Right_And_They_Indicted_Me.mp4";
                     break;
+                case SlashCommands.ToDoList:
+                    EmbedBuilder builder = new();
+                    List<ToDoItem> toDos = toDoService.GetUsersToDos(command.User.Id);
+                    builder.Title = $"{BotUtilities.GetDisplayNameForUser(command.User as IGuildUser)}'s TODO list";
+                    foreach(ToDoItem toDoItem in toDos)
+                    {
+                        string fieldTitle = toDoItem.IsCompleted ? "[X]" : "[ ]";
+                        builder.AddField(fieldTitle, toDoItem.Text);
+                    }
+                    embed = builder.Build();
+                    break;
+                case SlashCommands.ToDoAdd:                    
+                    string toDoText = (string)command.Data.Options.First().Value;
+                    toDoService.AddToDo(command.User.Id, toDoText);
+                    response = "Ok, I've added that TODO item for you.";
+                    break;
+                case SlashCommands.ToDoComplete:
+                    int toDoID = (int)command.Data.Options.First().Value;
+                    bool isCompleted = toDoService.IsToDoItemCompleted(toDoID);
+                    bool belongsToUser = toDoService.ToDoBelongsToUser(command.User.Id, toDoID);
+                    if (belongsToUser && !isCompleted)
+                    {
+                        toDoService.MarkToDoComplete(toDoID);
+                        response = $"Ok, I've marked item {toDoID} as complete";
+                    }
+                    else if (isCompleted && belongsToUser)
+                    {
+                        response = "Sorry, that item is already marked as completed.";
+                    }
+                    else
+                    {
+                        response = $"Sorry, either TODO Item {toDoID} doesn't exist, or it belongs to another user";
+                    }
+                    break;
+                case SlashCommands.ToDoClear:
+                    toDoService.ClearAllCompletedToDo(command.User.Id);
+                    response = "Ok, I've deleted all of your completed TODO items.";
+                    break;
             }
             if (response != null)
             {
@@ -308,7 +366,10 @@ namespace DeepState
                     command.WithDefaultPermission(commandInfo.DefaultPermission);
                     if (commandInfo.Options.Count > 0)
                     {
-                        // Do things to generate command options.
+                        foreach(SlashCommandOptionBuilder option in commandInfo.Options)
+                        {
+                            command.AddOption(option.Name, option.Type, option.Description, option.IsRequired, option.IsDefault, maxValue: option.MaxValue);
+                        }
                     }
                     if (guild != null)
                     {

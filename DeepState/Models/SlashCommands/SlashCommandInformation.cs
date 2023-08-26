@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DeepState.Models
+namespace DeepState.Models.SlashCommands
 {
     public class SlashCommandInformation
     {

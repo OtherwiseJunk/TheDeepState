@@ -5,18 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DeepState.Models
+namespace DeepState.Models.SlashCommands
 {
-    public class AutoResponseCommandInformation : SlashCommandInformation
+    internal class SlashCommandWithOptions : SlashCommandInformation
     {
-        public AutoResponseCommandInformation(string name, string description)
+        public SlashCommandWithOptions(string name, string description, List<SlashCommandOptionBuilder> options)
         {
             Name = name;
             Description = description;
             DefaultPermission = true;
-            Options = new List<SlashCommandOptionBuilder>();
+            Options = options;
             NameLocalizations = new Dictionary<string, string>();
             DescriptionLocalizations = new Dictionary<string, string>();
         }
-    }   
+    }
 }

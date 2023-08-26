@@ -1,4 +1,5 @@
-﻿using DeepState.Models;
+﻿using DeepState.Models.SlashCommands;
+using Discord;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,27 +26,52 @@ namespace DeepState.Constants
         public const string ImFromArizona = "imfromarizona";
         public const string AntonCheckin = "antoncheckin";
         public const string IDidEverythingRight = "idideverythingright";
+        public const string ToDoAdd = "todoadd";
+        public const string ToDoList = "todo";
+        public const string ToDoComplete = "todocomplete";
+        public const string ToDoClear = "todoclear";
 
         public static Dictionary<ulong, List<SlashCommandInformation>> SlashCommandsToInstall = new Dictionary<ulong, List<SlashCommandInformation>> {
             {
                 SharedConstants.LibcraftGuildId, new List<SlashCommandInformation>
                 {
-                    new AutoResponseCommandInformation(LeRacisme,"'Le racisme' *applause*"),
-                    new AutoResponseCommandInformation(WokeMoralists,"Jordan is DONE with these woke moralists."),
-                    new AutoResponseCommandInformation(DarkBrandon, "He's Coming For You."),
-                    new AutoResponseCommandInformation(PetersonSex,"I don't know what you're expecting, but it can't be good, right?"),
-                    new AutoResponseCommandInformation(NotThisTime,"Jonathan Frakes doesn't like your chances next time, either."),
-                    new AutoResponseCommandInformation(Clara,"Such a silly woman."),
-                    new AutoResponseCommandInformation(EML, "You Know What Youre Getting"),
-                    new AutoResponseCommandInformation(TheWeekend,"Ladies, Gentlemen, and our friends beyond the binary, The Weekend."),
-                    new AutoResponseCommandInformation(Crackers,"That's just how they feel, yanno?"),
-                    new AutoResponseCommandInformation(StupidSonOfAbitch,"You're a stupid son of a bitch."),
-                    new AutoResponseCommandInformation(TooSpicy,"Anton has a weak stomache."),
-                    new AutoResponseCommandInformation(ImGonnaCome,"He'll do it."),
-                    new AutoResponseCommandInformation(DoNotCome,"Just don't."),
-                    new AutoResponseCommandInformation(ImFromArizona,"and so can you!"),
-                    new AutoResponseCommandInformation(AntonCheckin,"Live Anton Reaction"),
-                    new AutoResponseCommandInformation(IDidEverythingRight,"I did EVERYTHING RIGHT and I got INDICTED!")
+                    new SlashCommandWithoutOptions(LeRacisme,"'Le racisme' *applause*"),
+                    new SlashCommandWithoutOptions(WokeMoralists,"Jordan is DONE with these woke moralists."),
+                    new SlashCommandWithoutOptions(DarkBrandon, "He's Coming For You."),
+                    new SlashCommandWithoutOptions(PetersonSex,"I don't know what you're expecting, but it can't be good, right?"),
+                    new SlashCommandWithoutOptions(NotThisTime,"Jonathan Frakes doesn't like your chances next time, either."),
+                    new SlashCommandWithoutOptions(Clara,"Such a silly woman."),
+                    new SlashCommandWithoutOptions(EML, "You Know What Youre Getting"),
+                    new SlashCommandWithoutOptions(TheWeekend,"Ladies, Gentlemen, and our friends beyond the binary, The Weekend."),
+                    new SlashCommandWithoutOptions(Crackers,"That's just how they feel, yanno?"),
+                    new SlashCommandWithoutOptions(StupidSonOfAbitch,"You're a stupid son of a bitch."),
+                    new SlashCommandWithoutOptions(TooSpicy,"Anton has a weak stomache."),
+                    new SlashCommandWithoutOptions(ImGonnaCome,"He'll do it."),
+                    new SlashCommandWithoutOptions(DoNotCome,"Just don't."),
+                    new SlashCommandWithoutOptions(ImFromArizona,"and so can you!"),
+                    new SlashCommandWithoutOptions(AntonCheckin,"Live Anton Reaction"),
+                    new SlashCommandWithoutOptions(IDidEverythingRight,"I did EVERYTHING RIGHT and I got INDICTED!"),
+                    new SlashCommandWithoutOptions(ToDoList, "List your TODO items"),
+                    new SlashCommandWithOptions(ToDoAdd, "Add an item to your TODO list. No more than 50 characters.", new(){new SlashCommandOptionBuilder
+                    {
+                        Name = "TODO text",
+                        Type = ApplicationCommandOptionType.String,
+                        MaxLength = 50,
+                        IsRequired = true,
+                        Description = "The text to add to the list",
+                        IsDefault = true,
+                    }
+                    }),
+                    new SlashCommandWithOptions(ToDoComplete, "Mark the specified TODO item as complete, by ID.", new(){new SlashCommandOptionBuilder
+                    {
+                        Name = "TODO ID",
+                        Type = ApplicationCommandOptionType.Integer,
+                        IsRequired = true,
+                        Description = "The ID of the TODO item to mark as completed",
+                        IsDefault = true,
+                    }
+                    }),
+                    new SlashCommandWithoutOptions(ToDoClear, "Remove all TODO items marked as complete."),
                 }
             },
         };
