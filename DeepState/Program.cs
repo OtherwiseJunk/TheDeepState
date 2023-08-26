@@ -91,11 +91,11 @@ namespace DeepState
                     using (WebClient client = new WebClient())
                     {
                         client.DownloadFile(new Uri("https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/FultonCountySheriffBadge.png"), SharedConstants.MudshotBadgeImagePath);
-                    }
-                    await InstallCommandsAsync();
+                    }                    
                 }
-            }).Start();            
+            }).Start();
 
+            await InstallCommandsAsync();
 
             string token = Environment.GetEnvironmentVariable("DEEPSTATE");
             Console.WriteLine("Attempting to retrieve bot token from Environment...");
