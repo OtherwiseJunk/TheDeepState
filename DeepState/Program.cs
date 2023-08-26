@@ -387,7 +387,7 @@ namespace DeepState
                             Console.WriteLine($"Installing Command {commandInfo.Name}");
                             command = new SlashCommandBuilder();
                             command.WithName(commandInfo.Name);
-                            command.WithDescription(commandInfo.Name);
+                            command.WithDescription(commandInfo.Description);
                             command.WithNameLocalizations(commandInfo.NameLocalizations);
                             command.WithDescriptionLocalizations(commandInfo.DescriptionLocalizations);
                             command.WithDefaultPermission(commandInfo.DefaultPermission);
