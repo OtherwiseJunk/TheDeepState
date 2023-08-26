@@ -54,17 +54,18 @@ namespace DeepState.Constants
                     new SlashCommandWithoutOptions(ToDoList, "List your TODO items"),
                     new SlashCommandWithOptions(ToDoAdd, "Add an item to your TODO list. No more than 50 characters.", new(){new SlashCommandOptionBuilder
                     {
-                        Name = "TODO text",
+                        Name = "text",
                         Type = ApplicationCommandOptionType.String,
                         MaxLength = 50,
                         IsRequired = true,
                         Description = "The text to add to the list",
                         IsDefault = true,
+                        MinLength = 3,
                     }
                     }),
                     new SlashCommandWithOptions(ToDoComplete, "Mark the specified TODO item as complete, by ID.", new(){new SlashCommandOptionBuilder
                     {
-                        Name = "TODO ID",
+                        Name = "identifier",
                         Type = ApplicationCommandOptionType.Integer,
                         IsRequired = true,
                         Description = "The ID of the TODO item to mark as completed",

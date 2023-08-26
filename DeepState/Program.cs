@@ -368,34 +368,41 @@ namespace DeepState
 
         private async Task InstallSlashCommands()
         {
-            foreach (var item in SlashCommands.SlashCommandsToInstall)
+            try
             {
-                IGuild guild = _client.GetGuild(item.Key);
-                SlashCommandBuilder command;
-                foreach (SlashCommandInformation commandInfo in item.Value)
+                foreach (var item in SlashCommands.SlashCommandsToInstall)
                 {
-                    command = new SlashCommandBuilder();
-                    command.WithName(commandInfo.Name);
-                    command.WithDescription(commandInfo.Name);
-                    command.WithNameLocalizations(commandInfo.NameLocalizations);
-                    command.WithDescriptionLocalizations(commandInfo.DescriptionLocalizations);
-                    command.WithDefaultPermission(commandInfo.DefaultPermission);
-                    if (commandInfo.Options.Count > 0)
+                    IGuild guild = _client.GetGuild(item.Key);
+                    SlashCommandBuilder command;
+                    foreach (SlashCommandInformation commandInfo in item.Value)
                     {
-                        foreach(SlashCommandOptionBuilder option in commandInfo.Options)
+                        command = new SlashCommandBuilder();
+                        command.WithName(commandInfo.Name);
+                        command.WithDescription(commandInfo.Name);
+                        command.WithNameLocalizations(commandInfo.NameLocalizations);
+                        command.WithDescriptionLocalizations(commandInfo.DescriptionLocalizations);
+                        command.WithDefaultPermission(commandInfo.DefaultPermission);
+                        if (commandInfo.Options.Count > 0)
                         {
-                            command.AddOption(option.Name, option.Type, option.Description, option.IsRequired, option.IsDefault, maxValue: option.MaxValue);
+                            foreach (SlashCommandOptionBuilder option in commandInfo.Options)
+                            {
+                                command.AddOption(option.Name, option.Type, option.Description, option.IsRequired, option.IsDefault, maxValue: option.MaxValue);
+                            }
+                        }
+                        if (guild != null)
+                        {
+                            await guild.CreateApplicationCommandAsync(command.Build());
+                        }
+                        else
+                        {
+                            await _client.CreateGlobalApplicationCommandAsync(command.Build());
                         }
                     }
-                    if (guild != null)
-                    {
-                        await guild.CreateApplicationCommandAsync(command.Build());
-                    }
-                    else
-                    {
-                        await _client.CreateGlobalApplicationCommandAsync(command.Build());
-                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
