@@ -10,7 +10,7 @@ namespace DeepState.Interfaces
 {
     public interface ISlashCommandModule
     {
-        public Task InstallModuleSlashCommands(IGuild? guild, IDiscordClient? client);
+        public Task InstallModuleSlashCommands(IGuild? guild, DiscordSocketClient client);
         public Task HandleSocketSlashCommand(SocketSlashCommand command);
     }
 }

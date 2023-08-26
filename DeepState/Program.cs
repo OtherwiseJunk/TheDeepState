@@ -386,11 +386,11 @@ namespace DeepState
                             }
                             if (guild != null)
                             {
-                                await guild.CreateApplicationCommandAsync(command.Build());
+                                var installedCommand = await guild.CreateApplicationCommandAsync(command.Build());
                             }
                             else
                             {
-                                await _client.CreateGlobalApplicationCommandAsync(command.Build());
+                                var installedCommand = await _client.CreateGlobalApplicationCommandAsync(command.Build());
                             }
                         }
                     }

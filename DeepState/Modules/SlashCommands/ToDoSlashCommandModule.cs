@@ -64,7 +64,7 @@ namespace DeepState.Modules.SlashCommands
             }
         }
 
-        public async Task InstallModuleSlashCommands(IGuild? guild, IDiscordClient? client)
+        public async Task InstallModuleSlashCommands(IGuild? guild, DiscordSocketClient? client)
         {
             Console.WriteLine("Attempting to install TODO Module Slash Commands...");
             if(guild == null && client == null)
@@ -75,18 +75,18 @@ namespace DeepState.Modules.SlashCommands
             {
                 if (guild == null)
                 {
-                    List<IApplicationCommand> commands = client.GetGlobalApplicationCommandsAsync().Result.ToList();
-                    await DeletePreviousCommandVersions(commands.Where(command => IsSlashCommandManager(command.Name)).ToList());
+                    // List<IApplicationCommand> commands = client.GetGlobalApplicationCommandsAsync().Result.ToList();
+                    // await DeletePreviousCommandVersions(commands.Where(command => IsSlashCommandManager(command.Name)).ToList());
                     Console.WriteLine("No Guild Provided, installing as Global commands.");
-                    await client.CreateGlobalApplicationCommand(ToDoListCommandProperties);
-                    await client.CreateGlobalApplicationCommand(ToDoAddCommandProperties);
-                    await client.CreateGlobalApplicationCommand(ToDoCompleteCommandProperties);
-                    await client.CreateGlobalApplicationCommand(ToDoClearCommandProperties);
+                    var listCommand = await client.CreateGlobalApplicationCommandAsync(ToDoListCommandProperties);
+                    var addCommand = await client.CreateGlobalApplicationCommandAsync(ToDoAddCommandProperties);
+                    var completeCommand = await client.CreateGlobalApplicationCommandAsync(ToDoCompleteCommandProperties);
+                    var clearCommand = await client.CreateGlobalApplicationCommandAsync(ToDoClearCommandProperties);
                 }
                 else
                 {
-                    List<IApplicationCommand> commands = guild.GetApplicationCommandsAsync().Result.ToList();
-                    await DeletePreviousCommandVersions(commands.Where(command => IsSlashCommandManager(command.Name)).ToList());
+                    // List<IApplicationCommand> commands = guild.GetApplicationCommandsAsync().Result.ToList();
+                    // await DeletePreviousCommandVersions(commands.Where(command => IsSlashCommandManager(command.Name)).ToList());
                     Console.WriteLine("Guild Provided, installing as Guild commands.");
                     await guild.CreateApplicationCommandAsync(ToDoListCommandProperties);
                     await guild.CreateApplicationCommandAsync(ToDoAddCommandProperties);
