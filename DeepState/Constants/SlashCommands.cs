@@ -59,7 +59,6 @@ namespace DeepState.Constants
                         MaxLength = 50,
                         IsRequired = true,
                         Description = "The text to add to the list",
-                        IsDefault = true,
                         MinLength = 3,
                     }
                     }),
@@ -69,7 +68,6 @@ namespace DeepState.Constants
                         Type = ApplicationCommandOptionType.Integer,
                         IsRequired = true,
                         Description = "The ID of the TODO item to mark as completed",
-                        IsDefault = true,
                     }
                     }),
                     new SlashCommandWithoutOptions(ToDoClear, "Remove all TODO items marked as complete."),

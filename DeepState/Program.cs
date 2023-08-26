@@ -324,13 +324,20 @@ namespace DeepState
                 case SlashCommands.ToDoList:
                     EmbedBuilder builder = new();
                     List<ToDoItem> toDos = toDoService.GetUsersToDos(command.User.Id);
-                    builder.Title = $"{BotUtilities.GetDisplayNameForUser(command.User as IGuildUser)}'s TODO list";
-                    foreach(ToDoItem toDoItem in toDos)
+                    if(toDos.Count > 0)
                     {
-                        string fieldTitle = toDoItem.IsCompleted ? "[X]" : "[ ]";
-                        builder.AddField(fieldTitle, toDoItem.Text);
+                        builder.Title = $"{BotUtilities.GetDisplayNameForUser(command.User as IGuildUser)}'s TODO list";
+                        foreach (ToDoItem toDoItem in toDos)
+                        {
+                            string fieldTitle = toDoItem.IsCompleted ? "[X]" : "[ ]";
+                            builder.AddField(fieldTitle, toDoItem.Text);
+                        }
+                        embed = builder.Build();
                     }
-                    embed = builder.Build();
+                    else
+                    {
+                        response = "Sorry, you don't have any TODO items yet";
+                    }
                     break;
                 case SlashCommands.ToDoAdd:                    
                     string toDoText = (string)command.Data.Options.First().Value;
@@ -364,46 +371,60 @@ namespace DeepState
             {
                 _ = command.RespondAsync(response);
             }
+            if(embed != null)
+            {
+                _ = command.RespondAsync(embed: embed);
+            }
         }
 
         private async Task InstallSlashCommands()
         {
-            try
+            new Thread(async() =>
             {
-                foreach (var item in SlashCommands.SlashCommandsToInstall)
+                try
                 {
-                    IGuild guild = _client.GetGuild(item.Key);
-                    SlashCommandBuilder command;
-                    foreach (SlashCommandInformation commandInfo in item.Value)
+                    Console.WriteLine("--- Starting installation of slash commands ---");
+                    foreach (var item in SlashCommands.SlashCommandsToInstall)
                     {
-                        command = new SlashCommandBuilder();
-                        command.WithName(commandInfo.Name);
-                        command.WithDescription(commandInfo.Name);
-                        command.WithNameLocalizations(commandInfo.NameLocalizations);
-                        command.WithDescriptionLocalizations(commandInfo.DescriptionLocalizations);
-                        command.WithDefaultPermission(commandInfo.DefaultPermission);
-                        if (commandInfo.Options.Count > 0)
+                        IGuild guild = _client.GetGuild(item.Key);
+                        SlashCommandBuilder command;
+                        foreach (SlashCommandInformation commandInfo in item.Value)
                         {
-                            foreach (SlashCommandOptionBuilder option in commandInfo.Options)
+                            Console.WriteLine($"Installing Command {commandInfo.Name}");
+                            command = new SlashCommandBuilder();
+                            command.WithName(commandInfo.Name);
+                            command.WithDescription(commandInfo.Name);
+                            command.WithNameLocalizations(commandInfo.NameLocalizations);
+                            command.WithDescriptionLocalizations(commandInfo.DescriptionLocalizations);
+                            command.WithDefaultPermission(commandInfo.DefaultPermission);
+                            if (commandInfo.Options.Count > 0)
                             {
-                                command.AddOption(option.Name, option.Type, option.Description, option.IsRequired, option.IsDefault, maxValue: option.MaxValue);
+                                foreach (SlashCommandOptionBuilder option in commandInfo.Options)
+                                {
+                                    command.AddOption(option.Name, option.Type, option.Description, option.IsRequired, minValue: option.MinValue, maxValue: option.MaxValue);
+                                    Console.WriteLine($"Successfully added option {option.Name}");
+                                }
+
+                            }
+                            if (guild != null)
+                            {
+                                await guild.CreateApplicationCommandAsync(command.Build());
+                            }
+                            else
+                            {
+                                await _client.CreateGlobalApplicationCommandAsync(command.Build());
                             }
                         }
-                        if (guild != null)
-                        {
-                            await guild.CreateApplicationCommandAsync(command.Build());
-                        }
-                        else
-                        {
-                            await _client.CreateGlobalApplicationCommandAsync(command.Build());
-                        }
                     }
+                    Console.WriteLine("--- Ending installation of slash commands ---");
                 }
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("--- Encountered an issue when attempting to install slash commands ---");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("--- Encountered an issue when attempting to install slash commands ---");
+                }
+            }).Start();            
         }
 
         private async Task OnEventCreated(SocketGuildEvent arg)
