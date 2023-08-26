@@ -43,6 +43,7 @@ using DeepState.Models.SlashCommands;
 using DeepState.Data.Models;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using System.Text;
+using DeepState.Modules.SlashCommands;
 
 namespace DeepState
 {
@@ -247,6 +248,20 @@ namespace DeepState
             _client.SlashCommandExecuted += HandleSlashCommands;
             _client.MessageUpdated += OnEdit;
 
+            new Thread(() =>
+            {
+                ToDoService toDoService = _services.GetService<ToDoService>();
+                ToDoSlashCommandModule toDo = new(toDoService);
+                _client.Ready += async () =>
+                {
+                    new Thread(async () =>
+                    {
+                        await toDo.InstallModuleSlashCommands(null, _client);
+                    }).Start();                    
+                };
+                _client.SlashCommandExecuted += toDo.HandleSocketSlashCommand;
+            }).Start();
+
 
         }
 
@@ -269,9 +284,7 @@ namespace DeepState
         private async Task HandleSlashCommands(SocketSlashCommand command)
         {
             string response = null;
-            bool ephemeralResponse = false;
-            Embed embed = null;
-            ToDoService toDoService = _services.GetService<ToDoService>();
+            Embed embed = null;            
             switch (command.CommandName)
             {
                 case SlashCommands.LeRacisme:
@@ -321,52 +334,6 @@ namespace DeepState
                     break;
                 case SlashCommands.IDidEverythingRight:
                     response = "https://cdn.discordapp.com/attachments/883466654443507773/1118376851329536010/I_Did_Everything_Right_And_They_Indicted_Me.mp4";
-                    break;
-                case SlashCommands.ToDoList:
-                    response = toDoService.BuildToDoListResponse(command.User);
-                    break;
-                case SlashCommands.ToDoAdd:                    
-                    string toDoText = (string)command.Data.Options.First().Value;
-                    toDoService.AddToDo(command.User.Id, toDoText);
-                    response = $"Ok, I've added that TODO item for you.{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User)}";
-                    break;
-                case SlashCommands.ToDoComplete:
-                    string toDoIdString = "";
-                    List<int> toDoIds = new();
-                    try
-                    {
-                        toDoIdString = (string)command.Data.Options.First().Value;
-                        toDoIds = toDoIdString.Split(',').Select(id => int.Parse(id)).ToList();
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                    StringBuilder builder = new StringBuilder();
-                    foreach(int toDoID in toDoIds)
-                    {
-                        bool isCompleted = toDoService.IsToDoItemCompleted(toDoID);
-                        bool belongsToUser = toDoService.ToDoBelongsToUser(command.User.Id, toDoID);
-                        if (belongsToUser && !isCompleted)
-                        {
-                            toDoService.MarkToDoComplete(toDoID);
-                            builder.AppendLine($"Ok, I've marked item {toDoID} as complete");
-                        }
-                        else if (isCompleted && belongsToUser)
-                        {
-                            builder.AppendLine($"Sorry, item {toDoID} has already been marked as completed.");
-                        }
-                        else
-                        {
-                            builder.AppendLine($"Sorry, either TODO Item {toDoID} doesn't exist, or it belongs to another user");
-                        }
-                    }
-                    builder.Append($"{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User)}");
-                    response = builder.ToString();
-                    break;
-                case SlashCommands.ToDoClear:
-                    toDoService.ClearAllCompletedToDo(command.User.Id);
-                    response = toDoService.GetUsersToDos(command.User.Id).Count > 0 ? $"Ok, I've deleted all of your completed TODO items.{Environment.NewLine}{Environment.NewLine}{toDoService.BuildToDoListResponse(command.User)}" : "Ok, I've deleted all of your completed TODO items";
                     break;
             }
             if (response != null)

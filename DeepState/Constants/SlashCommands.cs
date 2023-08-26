@@ -52,33 +52,6 @@ namespace DeepState.Constants
                     new SlashCommandWithoutOptions(AntonCheckin,"Live Anton Reaction"),
                     new SlashCommandWithoutOptions(IDidEverythingRight,"I did EVERYTHING RIGHT and I got INDICTED!"),
                 }
-            },
-            {
-                0, new List<SlashCommandInformation>
-                {
-                    new SlashCommandWithoutOptions(ToDoList, "List your TODO items"),
-                    new SlashCommandWithOptions(ToDoAdd, "Add an item to your TODO list. No more than 50 characters.", new(){new SlashCommandOptionBuilder
-                    {
-                        Name = "text",
-                        Type = ApplicationCommandOptionType.String,
-                        MaxLength = 150,
-                        IsRequired = true,
-                        Description = "The text to add to the list",
-                        MinLength = 3,
-                    }
-                    }),
-                    new SlashCommandWithOptions(ToDoComplete, "Mark the specified TODO item as complete, by ID. For multiple provide a comma separated list.", new(){new SlashCommandOptionBuilder
-                    {
-                        Name = "identifier",
-                        Type = ApplicationCommandOptionType.String,
-                        IsRequired = true,
-                        Description = "The ID of the TODO item to mark as completed. For multiple, use a comma between IDs (no spaces)",
-                        MinLength = 1,
-                        MaxLength= 150
-                    }
-                    }),
-                    new SlashCommandWithoutOptions(ToDoClear, "Remove all TODO items marked as complete."),
-                }
             }
         };
     }
