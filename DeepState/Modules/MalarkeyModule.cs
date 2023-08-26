@@ -119,6 +119,15 @@ namespace DeepState.Modules
         {
             AutoResponse($"{SharedConstants.JonathanFrakesThatsNotTrue.GetRandom()}");
         }
+        [Command("mugshot"), Alias("smiledonnysmile","smileforthecamera","donnysbigday","mostwanted","darkbrandonsendshisregards")]
+        [Summary("I wouldn't like to see ol' Donny wiggle out of this jam, if I'm being honest")]
+        public async Task MugShot()
+        {
+            EmbedBuilder builder = new();
+            builder.WithTitle("Ladies, Gentlemen, and Friends Beyond The Binary, We Gottem!");
+            builder.WithImageUrl("https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/TrumpMugshot.webp");
+            _ = Context.Message.ReplyAsync(embed: builder.Build());
+        }
 
         [Command("clara"), Alias("sillywoman")]
         [Summary("CLARA!")]

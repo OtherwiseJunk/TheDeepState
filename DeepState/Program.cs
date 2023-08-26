@@ -335,6 +335,12 @@ namespace DeepState
                 case SlashCommands.IDidEverythingRight:
                     response = "https://cdn.discordapp.com/attachments/883466654443507773/1118376851329536010/I_Did_Everything_Right_And_They_Indicted_Me.mp4";
                     break;
+                case SlashCommands.TrumpMugshot:
+                    EmbedBuilder builder = new();
+                    builder.WithTitle("Ladies, Gentlemen, and Friends Beyond The Binary, We Gottem!");
+                    builder.WithImageUrl("https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/TrumpMugshot.webp");
+                    embed = builder.Build();
+                    break;
             }
             if (response != null)
             {

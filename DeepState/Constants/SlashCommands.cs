@@ -26,10 +26,7 @@ namespace DeepState.Constants
         public const string ImFromArizona = "imfromarizona";
         public const string AntonCheckin = "antoncheckin";
         public const string IDidEverythingRight = "idideverythingright";
-        public const string ToDoAdd = "todoadd";
-        public const string ToDoList = "todo";
-        public const string ToDoComplete = "todocomplete";
-        public const string ToDoClear = "todoclear";
+        public const string TrumpMugshot = "mugshot";
 
         public static Dictionary<ulong, List<SlashCommandInformation>> SlashCommandsToInstall = new Dictionary<ulong, List<SlashCommandInformation>> {
             {
@@ -51,6 +48,7 @@ namespace DeepState.Constants
                     new SlashCommandWithoutOptions(ImFromArizona,"and so can you!"),
                     new SlashCommandWithoutOptions(AntonCheckin,"Live Anton Reaction"),
                     new SlashCommandWithoutOptions(IDidEverythingRight,"I did EVERYTHING RIGHT and I got INDICTED!"),
+                    new SlashCommandWithoutOptions(TrumpMugshot, "I wouldn't like to see ol' Donny wiggle out of this jam, if I'm being honest")
                 }
             }
         };
