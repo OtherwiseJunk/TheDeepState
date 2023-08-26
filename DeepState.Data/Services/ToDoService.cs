@@ -84,10 +84,16 @@ namespace DeepState.Data.Services
                 string title = $"{BotUtilities.GetDisplayNameForUser(user)}'s TODO list";
                 builder.AppendLine(title);
                 builder.AppendLine(string.Concat(Enumerable.Repeat("=", title.Length)));
+                int biggestIdLength = $"toDos.Max(toDo => toDo.Id)".Length;
                 foreach (ToDoItem toDoItem in toDos)
                 {
                     string toDoCheckbox = toDoItem.IsCompleted ? "[x]" : "[ ]";
-                    builder.AppendLine($"-{toDoItem.Id}: {toDoCheckbox}   {toDoItem.Text}");
+                    string toDoIDText = $"{toDoItem}";
+                    while(toDoIDText.Length < biggestIdLength)
+                    {
+                        toDoIDText += " ";
+                    }
+                    builder.AppendLine($"-{toDoItem.Id}: {toDoCheckbox} {toDoItem.Text}");
                 }
                 builder.AppendLine("```");
                 response = builder.ToString();

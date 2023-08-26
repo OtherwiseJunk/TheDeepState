@@ -381,23 +381,6 @@ namespace DeepState
                     foreach (var item in SlashCommands.SlashCommandsToInstall)
                     {
                         IGuild guild = _client.GetGuild(item.Key);
-                        List<IApplicationCommand> commandsToDelete = _client.GetGlobalApplicationCommandsAsync().Result.Where(command => command.Name == command.Description).Select(command => command as IApplicationCommand).ToList();
-                        if (guild != null)
-                        {
-                             commandsToDelete.AddRange(guild.GetApplicationCommandsAsync().Result.Where(command => command.Name == command.Description).ToList());
-                        }
-                        if(commandsToDelete.Count > 0)
-                        {
-                            new Thread(() =>
-                            {
-                                Console.WriteLine("Starting delete thread");
-                                foreach (IApplicationCommand command in commandsToDelete)
-                                {
-                                    Console.WriteLine($"Deleting Command {command.Name} with description {command.Description}");
-                                    _ = command.DeleteAsync();
-                                }
-                            }).Start();
-                        }
                         SlashCommandBuilder command;
                         foreach (SlashCommandInformation commandInfo in item.Value)
                         {
@@ -487,7 +470,7 @@ namespace DeepState
                 return;
             }            
             new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
-            new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
+           new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
 
             if(guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId)
             {
