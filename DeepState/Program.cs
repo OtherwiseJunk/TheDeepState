@@ -40,10 +40,11 @@ using System.Linq;
 using System.IO;
 using System.Net;
 using DeepState.Models.SlashCommands;
-using DeepState.Data.Models;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
-using System.Text;
-using DeepState.Modules.SlashCommands;
+using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule.Service;
+using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule.Context;
+using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule.Interfaces;
+using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule;
 
 namespace DeepState
 {
@@ -168,7 +169,10 @@ namespace DeepState
                 .AddSingleton<BestOfService>()
                 .AddSingleton<IServerManagmentService, ServerManagementService>()
                 .AddSingleton<RandomCharacterImageService>()
-                .AddSingleton<ToDoService>()
+                .AddSingleton<IToDoService, ToDoService>()
+                .AddSingleton<ToDoSlashCommandModule>()
+                .AddSingleton<WaffleHouseApocalypseService>()
+                .AddSingleton<WaffleHouseApocolypseModule>()
                 .AddDbContext<ToDoContext>()
                 .AddDbContext<GuildUserRecordContext>()
                 .AddDbContext<HungerGamesContext>()
@@ -250,16 +254,18 @@ namespace DeepState
 
             new Thread(() =>
             {
-                ToDoService toDoService = _services.GetService<ToDoService>();
-                ToDoSlashCommandModule toDo = new(toDoService);
+                ToDoSlashCommandModule toDoModule = _services.GetService<ToDoSlashCommandModule>();
+                WaffleHouseApocolypseModule waffleHouse = _services.GetService<WaffleHouseApocolypseModule>();
                 _client.Ready += async () =>
                 {
                     new Thread(async () =>
                     {
-                        await toDo.InstallModuleSlashCommands(null, _client);
+                        await waffleHouse.InstallModuleSlashCommands(null, _client);
+                        await toDoModule.InstallModuleSlashCommands(null, _client);
                     }).Start();                    
                 };
-                _client.SlashCommandExecuted += toDo.HandleSocketSlashCommand;
+                _client.SlashCommandExecuted += toDoModule.HandleSocketSlashCommand;
+                _client.SlashCommandExecuted += waffleHouse.HandleSocketSlashCommand;
             }).Start();
 
 
