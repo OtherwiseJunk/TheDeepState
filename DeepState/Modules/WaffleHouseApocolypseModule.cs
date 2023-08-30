@@ -36,7 +36,7 @@ namespace DeepState.Modules
             string title = response.stores.Count == 0 ? "Kalm" : "PANIK! It's the Apocalypse!";
             builder.Title = title;
             builder.AddField("Stores Closed", response.stores.Count);
-            builder.AddField("Last Updated", response.last_updates.ToString("MM/dd/yyyy hh:mm tt"));
+            builder.AddField("Last Updated", $"<t:{((DateTimeOffset)response.last_updates.ToUniversalTime()).ToUnixTimeSeconds()}:F>");
 
             return builder.Build();
         }
