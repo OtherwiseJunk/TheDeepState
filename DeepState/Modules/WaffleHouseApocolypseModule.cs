@@ -36,7 +36,7 @@ namespace DeepState.Modules
             string title = response.stores.Count == 0 ? "Kalm" : "PANIK! It's the Apocalypse!";
             builder.Title = title;
             builder.AddField("Waffle House Locations Closed", response.stores.Count);
-            builder.AddField("Last Updated", $"<t:{((DateTimeOffset)response.last_updates.ToUniversalTime()).ToUnixTimeSeconds()}:R>");
+            builder.AddField("Last Updated", $"<t:{((DateTimeOffset)response.last_updates).AddHours(-4).ToUnixTimeSeconds()}:R>");
 
             return builder.Build();
         }
