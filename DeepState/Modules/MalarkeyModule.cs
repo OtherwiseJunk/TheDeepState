@@ -50,19 +50,24 @@ namespace DeepState.Modules
         };
         List<string> ServerIsFullSnark { get; set; } = new()
         {
-            "More bodies than your server has room for! Wait shoot."
+            "More bodies than your server has room for! Wait shoot.",
         };
         List<string> ServerIsntFullSnark { get; set; } = new()
         {
-            "come on in the servers fine"
+            "come on in the servers fine.",
+            "room for more.",
+            "log on, dork."
         };
         List<string> ServerIsOfflineSnark { get; set; } = new()
         {
-            "Everyone pray to God (Sporf), the server is down."
+            "Everyone pray to God (Sporf), the server is down.",
+            "The system id down. The Cheat is _GROUNDED_.",
+            "Oh god, oh fuck. I swear it wasn't me this time, but the server's down.",
+            "I broke the server, my b."
         };
         [Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 })]
         [Summary("Returns a message with a status of Sporf's Minecraft server")]
-        public async Task MinecraftStatus(string serverAddress = SporfbaseConstants.ServerAddress, ushort serverPort = SporfbaseConstants.ServerPort)
+        public async Task MinecraftStatus(string serverAddress = MCLibcraftConstants.ServerAddress, ushort serverPort = MCLibcraftConstants.ServerPort)
         {
             MineStat ms = new MineStat(serverAddress, serverPort);
             EmbedBuilder eb = new();
