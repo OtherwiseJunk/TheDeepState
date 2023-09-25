@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -41,7 +41,7 @@
     <PackageReference Include="Panopticon.Shared" Version="1.1.0" />
     <PackageReference Include="Serilog" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-    <PackageReference Include="SkiaSharp" Version="2.88.5" />
+    <PackageReference Include="SkiaSharp" Version="2.88.6" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.88.5" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.5" />
 		<PackageReference Include="Svg" Version="3.4.4" />
