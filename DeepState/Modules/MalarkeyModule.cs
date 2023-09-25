@@ -36,12 +36,12 @@ namespace DeepState.Modules
             "More blocks than your body has room for.",
             "I think I saw a creeper skulking around the base. You might want to log on and take care of that.",
             "You will eat the bugs. You will Mine the Craft.",
-            "I bet you 50 libcoin you can't find my base. Here's a hint: There's a lot of restone.",
+            "I bet you 5000 libcoin you can't find my base. Here's a hint: There's a lot of restone.",
             "The Phantom Power Party will rise again.",
             "'The Rise and Fall of the Arcadian Empire' is my favorite book",
             "I saw some shady figure by your stuff. Better log on to make sure it's all good.",
             "Citizen, we have always been at war with the River Basin Confederation",
-            "I'm selling elytra for 1 iron bar to everyone who logs in in the next 15 minutes and finds my base.",
+            "I'm selling elytra for 1 iron ingot to everyone who logs in in the next 15 minutes and finds my base.",
             "I betcha wanna know how many people are playing. Good news, I know one surefire way to find out.",
             "Touch Blocks",
             "If you don't log on I'm going to call in a raid by your trading hall. I'm sure it'll be fine though right?",
@@ -50,19 +50,24 @@ namespace DeepState.Modules
         };
         List<string> ServerIsFullSnark { get; set; } = new()
         {
-            "More bodies than your server has room for! Wait shoot."
+            "More bodies than your server has room for! Wait shoot.",
         };
         List<string> ServerIsntFullSnark { get; set; } = new()
         {
-            "come on in the servers fine"
+            "come on in the servers fine.",
+            "room for more.",
+            "log on, dork."
         };
         List<string> ServerIsOfflineSnark { get; set; } = new()
         {
-            "Everyone pray to God (Sporf), the server is down."
+            "Everyone pray to God (Sporf), the server is down.",
+            "The system id down. The Cheat is _GROUNDED_.",
+            "Oh god, oh fuck. I swear it wasn't me this time, but the server's down.",
+            "I broke the server, my b."
         };
         [Command("mstatus"), Alias("minecraft", "minecraftstatus", "mcstatus"), RequireGuild(new ulong[] { SharedConstants.LibcraftGuildId, 95887290571685888 })]
         [Summary("Returns a message with a status of Sporf's Minecraft server")]
-        public async Task MinecraftStatus(string serverAddress = SporfbaseConstants.ServerAddress, ushort serverPort = SporfbaseConstants.ServerPort)
+        public async Task MinecraftStatus(string serverAddress = MCLibcraftConstants.ServerAddress, ushort serverPort = MCLibcraftConstants.ServerPort)
         {
             MineStat ms = new MineStat(serverAddress, serverPort);
             EmbedBuilder eb = new();
