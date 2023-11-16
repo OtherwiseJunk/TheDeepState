@@ -84,10 +84,11 @@ namespace DeepState.Handlers
 		public static async Task DeletePreggersMessage(SocketMessage msg)
         {
             MatchCollection matches = Regex.Matches(msg.Content.Normalize(System.Text.NormalizationForm.FormD), SharedConstants.PreggersDetector, RegexOptions.IgnoreCase);
+			MatchCollection matchizles = Regex.Matches(msg.Content.Normalize(System.Text.NormalizationForm.FormD), SharedConstants.PreggizleDetector, RegexOptions.IgnoreCase);
             string spacelessContent = msg.Content.Replace(" ", String.Empty);
             bool cursedCheck = spacelessContent.Length >= 5 && spacelessContent.Length <= 8 && (Regex.Matches(spacelessContent, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
 
-            if (matches.Count > 0 || msg.Content.StartsWith("🇵🇷🥚") || cursedCheck)
+            if (matches.Count > 0 || msg.Content.StartsWith("🇵🇷🥚") || cursedCheck || matchizles.Count > 0)
             {
 				DateTime now = DateTime.Now;
 				if(now.Month == 12 && now.Day == 11)
