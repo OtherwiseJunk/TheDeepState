@@ -251,6 +251,7 @@ namespace DeepState.Tests
         [TestCase("preg*ers")]
         [TestCase("pre*gers")]
         [TestCase("pre**ers")]
+        [TestCase("PrGGers")]
         public void Preggers(string input)
         {
             string spacelessInput = input.Replace(" ", string.Empty);
