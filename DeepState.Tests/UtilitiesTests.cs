@@ -270,6 +270,7 @@ namespace DeepState.Tests
         [TestCase("pregunta")]
         [TestCase("pregame")]
         [TestCase("up regretting")]
+        [TestCase("🇪🇷")]
         public void NotPreggers(string input)
         {
             string spacelessInput = input.Replace(" ", string.Empty);
