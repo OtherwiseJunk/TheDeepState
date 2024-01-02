@@ -252,11 +252,14 @@ namespace DeepState.Tests
         [TestCase("pre*gers")]
         [TestCase("pre**ers")]
         [TestCase("PrGGers")]
+        [TestCase("Preggizle")]
+        [TestCase("Pregizle")]
+        [TestCase("Pregizzle")]
         public void Preggers(string input)
         {
             string spacelessInput = input.Replace(" ", string.Empty);
             bool cursedCheck = spacelessInput.Length >= 5 && spacelessInput.Length <= 8 && (Regex.Matches(spacelessInput, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
-            Assert.IsTrue(Regex.Match(input, SharedConstants.PreggersDetector).Success || cursedCheck);
+            Assert.IsTrue(Regex.Match(input, SharedConstants.PreggersDetector).Success || cursedCheck || Regex.Match(input, SharedConstants.PreggizleDetector).Success);
         }
 
         [TestCase("program")]
@@ -275,7 +278,7 @@ namespace DeepState.Tests
         {
             string spacelessInput = input.Replace(" ", string.Empty);
             bool cursedCheck = spacelessInput.Length >= 5 && spacelessInput.Length <= 8 && (Regex.Matches(spacelessInput, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
-            Assert.IsFalse(Regex.Match(input, SharedConstants.PreggersDetector).Success && cursedCheck);
+            Assert.IsFalse(Regex.Match(input, SharedConstants.PreggersDetector).Success || cursedCheck || Regex.Match(input, SharedConstants.PreggizleDetector).Success);
         }
         #endregion
 
