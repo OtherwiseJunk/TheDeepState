@@ -329,7 +329,7 @@ namespace DeepState.Constants
 		public static string WebpUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.webp";
         public static string MediaUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:gif|gifv|webp|mp4|jpg|png)";        
 		public static string G = "[gğġ8🇬6🥚9ℊ:;𝒈𝗀*ġ𝕘𝓰🇬]";
-		public static string E = "[eе🇪ô𝓮🇪óéɚèėᲕęê£ëæěĕẽęȩ:ɛ̃;ɇếềεḗḕễḝẻȅëȇểẹḙḛệ@òɘöē3ʒϵЗĒ]";
+		public static string E = "[eе🇪ô€𝓮🇪óéɚèėᲕęê£ëæěĕẽęȩ:ɛ̃;ɇếềεḗḕễḝẻȅëȇểẹḙḛệ@òɘöē3ʒϵЗĒ]";
 		public static string P = "[🇵pρ₽𝖯𝐩pP𝞺𝚙ｐ𝞀ß𝓹:🇵;р🅱]";
 		public static string R = "[🇷rr®️:;𝓻г🇷ř]"; 
 		public static string PreggersDetector = $"{P}+{R}+{E}*{G}+{E.Replace("]", "a]")}*{R}+"; //Přęġğëřș
