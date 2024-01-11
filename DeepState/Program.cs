@@ -290,7 +290,7 @@ namespace DeepState
         private async Task HandleSlashCommands(SocketSlashCommand command)
         {
             string response = null;
-            Embed embed = null;            
+            Embed embed = null;
             switch (command.CommandName)
             {
                 case SlashCommands.LeRacisme:
@@ -344,12 +344,20 @@ namespace DeepState
                 case SlashCommands.TrumpMugshot:
                     EmbedBuilder builder = new();
                     builder.Title = "Ladies, Gentlemen, and Friends Beyond The Binary, We Gottem!";
-                    builder.ImageUrl ="https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/TrumpMugshot2.webp";
+                    builder.ImageUrl = "https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/TrumpMugshot2.webp";
                     embed = builder.Build();
                     break;
                 case SlashCommands.Learn:
-                    string thingToLearn = ((string)command.Data.Options.First().Value).Replace(' ','_');
-                    response = $"https://api.memegen.link/images/custom/_/get_ready_to_learn_{thingToLearn}_buddy..png?background=https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/Get_Ready_to_Learn.jpg";
+                    string thingToLearn = ((string)command.Data.Options.First().Value).Replace(' ', '_');
+
+                    if (OnMessageHandlers.IsPreggers(thingToLearn))
+                    {
+                        response = "https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/YouDidThis.png";
+                    }
+                    else
+                    {
+                        response = $"https://api.memegen.link/images/custom/_/get_ready_to_learn_{thingToLearn}_buddy..png?background=https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/Get_Ready_to_Learn.jpg";
+                    }
                     break;
             }
             if (response != null)

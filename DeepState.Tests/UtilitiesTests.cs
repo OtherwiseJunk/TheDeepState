@@ -1,4 +1,5 @@
 ﻿using DeepState.Constants;
+using DeepState.Handlers;
 using DeepState.Utilities;
 using NUnit.Framework;
 using System.Text.RegularExpressions;
@@ -260,9 +261,7 @@ namespace DeepState.Tests
         [TestCase("Pr€gg€rs")]
         public void Preggers(string input)
         {
-            string spacelessInput = input.Replace(" ", string.Empty);
-            bool cursedCheck = spacelessInput.Length >= 5 && spacelessInput.Length <= 8 && (Regex.Matches(spacelessInput, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
-            Assert.IsTrue(Regex.Match(input, SharedConstants.PreggersDetector).Success || cursedCheck || Regex.Match(input, SharedConstants.PreggizleDetector).Success);
+            Assert.IsTrue(OnMessageHandlers.IsPreggers(input));
         }
 
         [TestCase("program")]
@@ -279,9 +278,7 @@ namespace DeepState.Tests
         [TestCase("🇪🇷")]
         public void NotPreggers(string input)
         {
-            string spacelessInput = input.Replace(" ", string.Empty);
-            bool cursedCheck = spacelessInput.Length >= 5 && spacelessInput.Length <= 8 && (Regex.Matches(spacelessInput, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
-            Assert.IsFalse(Regex.Match(input, SharedConstants.PreggersDetector).Success || cursedCheck || Regex.Match(input, SharedConstants.PreggizleDetector).Success);
+            Assert.IsFalse(OnMessageHandlers.IsPreggers(input));
         }
         #endregion
 
