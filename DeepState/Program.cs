@@ -347,6 +347,10 @@ namespace DeepState
                     builder.ImageUrl ="https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/TrumpMugshot2.webp";
                     embed = builder.Build();
                     break;
+                case SlashCommands.Learn:
+                    string thingToLearn = ((string)command.Data.Options.First().Value).Replace(' ','_');
+                    response = $"https://api.memegen.link/images/custom/_/get_ready_to_learn_{thingToLearn}_buddy..png?background=https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/Get_Ready_to_Learn.jpg";
+                    break;
             }
             if (response != null)
             {
