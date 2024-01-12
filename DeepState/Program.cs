@@ -45,6 +45,7 @@ using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule.Service;
 using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule.Context;
 using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule.Interfaces;
 using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule;
+using System.Web;
 
 namespace DeepState
 {
@@ -348,7 +349,19 @@ namespace DeepState
                     embed = builder.Build();
                     break;
                 case SlashCommands.Learn:
-                    string thingToLearn = ((string)command.Data.Options.First().Value).Replace(' ', '_');
+                    string thingToLearn = ((string)command.Data.Options.First().Value)
+                        .Replace("_", "__")
+                        .Replace("-","--")                        
+                        .Replace("/", "~s")
+                        .Replace("?", "~q")
+                        .Replace("&", "~a")
+                        .Replace("%", "~p")
+                        .Replace("#", "~h")
+                        .Replace("\\", "~b")
+                        .Replace("<", "~l")
+                        .Replace(">", "~g")
+                        .Replace("\"", "''")
+                        .Replace(' ', '_');
 
                     if (OnMessageHandlers.IsPreggers(thingToLearn))
                     {
