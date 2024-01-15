@@ -331,8 +331,8 @@ namespace DeepState.Constants
 		public static string G = "[gğġ8🇬6🥚9ℊ:;𝒈𝗀*ġ𝕘𝓰🇬]";
 		public static string E = "[eе🇪ô€𝓮🇪óéɚèėᲕęê£ëæěĕẽęȩ:ɛ̃;ɇếềεḗḕễḝẻȅëȇểẹḙḛệ@òɘöē3ʒϵЗĒ]";
 		public static string P = "[🇵pρ₽𝖯𝐩pP𝞺𝚙ｐ𝞀ß𝓹:🇵;р🅱]";
-		public static string R = "[🇷rr®️:;𝓻г🇷ř]"; 
-		public static string PreggersDetector = $"{P}+{R}+{E}*{G}+{E.Replace("]", "a]")}*{R}+"; //Přęġğëřș
+		public static string R = "[🇷rwr®️:;𝓻г🇷ř]"; 
+		public static string PreggersDetector = $"{P}+{R}+{E}*{G}+{E.Replace("]", "a]")}*{R}+";
         public static string PreggizleDetector = $"{P}+{R}+{E}*{G}+i+z+l+e+";
         public static string FlaggedTwitterUserDetector = @"https?://(c.vx|vx|fx|www.)?twitter.com/(realdonaldtrump|elonmusk|kanyewest)+/status/\d+\??(\w*=?[\w\d-]*&?)*";
 		public static string TwitterStatusDetector = @"http(s)?://[c.]*[fx]*[vx]*twitter.com/.+/status/\d+[?]*.+";

@@ -10,7 +10,6 @@ using System.Text.RegularExpressions;
 using DeepState.Data.Services;
 using static DartsDiscordBots.Constants.SharedConstants;
 using DeepState.Utilities;
-using DeepState.Modules;
 
 namespace DeepState.Handlers
 {
@@ -87,8 +86,10 @@ namespace DeepState.Handlers
             MatchCollection matchizles = Regex.Matches(message.Normalize(System.Text.NormalizationForm.FormD), SharedConstants.PreggizleDetector, RegexOptions.IgnoreCase);
             string spacelessContent = message.Replace(" ", String.Empty);
             bool cursedCheck = spacelessContent.Length >= 5 && spacelessContent.Length <= 8 && (Regex.Matches(spacelessContent, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
+			bool containsPweggy = message.ToLower().Contains("pweggy") || message.ToLower().Contains("pwegy");
 
-			return matches.Count > 0 || message.StartsWith("🇵🇷🥚") || cursedCheck || matchizles.Count > 0;
+
+            return matches.Count > 0 || message.StartsWith("🇵🇷🥚") || cursedCheck || matchizles.Count > 0 || containsPweggy;
         }
 		public static async Task DeletePreggersMessage(SocketMessage msg)
         {
