@@ -321,7 +321,7 @@ namespace DeepState.Constants
 		#endregion
 
 		#region RegexStrings
-		public static string TwitterLinkRegex = @"/(?:http:\/\/)?(?:www\.)?twitter\.com\/(?:(?:\w)*#!\/)?(?:pages\/)?(?:[\w\-]*\/)*([\w\-]*)/";
+		public static string TwitterLinkRegex = @"https?://(?:www\.)?(?:twitter\.com|x\.com|nitter\.net)/([\w_]+)/status/(\d+)(/(?:photo|video)/\d)?/?(?:\?\S+)?";
         public static string SusRegex = @"(\bs+u+s+y?\b)|(\bamo+\w{0,2}\s*us)";
 		public static string ImageURLRegex = @"(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|png)";
 		public static string VideoUrlRegex = @"(http(s?):)([/|.|\w|\s|-])*\.mp4";

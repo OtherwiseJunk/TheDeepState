@@ -52,6 +52,10 @@ namespace DeepState.Utilities
 
 		public static string ReplaceTwitterWithFXTwitter(string message)
         {
+			if(message.Contains("x.com", StringComparison.OrdinalIgnoreCase))
+			{
+				return message.Replace("x.com", "c.vxtwitter.com", StringComparison.OrdinalIgnoreCase);
+            }
 			return message.Replace("twitter.com", "c.vxtwitter.com", StringComparison.OrdinalIgnoreCase);
 		}
 

@@ -77,7 +77,15 @@ namespace DeepState.Handlers
             if (Utils.ContainsTwitterLink(msg.Content))
             {
 				await (msg as IUserMessage).ReplyAsync($"**{BotUtilities.GetDisplayNameForUser(msg.Author as IGuildUser)}**: {Utils.ReplaceTwitterWithFXTwitter(msg.Content)}", allowedMentions: AllowedMentions.None);
-				await msg.DeleteAsync();
+				foreach (Embed embed in msg.Embeds)
+				{
+					if (Utils.ContainsTwitterLink(embed.Url)){
+						await (msg as SocketUserMessage).ModifyAsync((msg) =>
+						{
+							msg.Flags = MessageFlags.SuppressEmbeds;
+						});
+					}
+				}
             }
         }
 		public static bool IsPreggers(string message)
