@@ -72,7 +72,7 @@ namespace DeepState.Constants
                     new SlashCommandWithoutOptions(ImGonnaCome,"He'll do it."),
                     new SlashCommandWithoutOptions(DoNotCome,"Just don't."),
                     new SlashCommandWithOptions(Learn, "Get ready to learn <Your Input>, buddy!", LearnOptions),
-                    new SlashCommandWithOptions(Apprendre, "Préparez-vous à apprendre <Votre apport>, mon pote!", ApprendreOptions)
+                    new SlashCommandWithOptions(Apprendre, "Préparez-vous à apprendre <Votre Apport>, mon pote!", ApprendreOptions)
                 }
             }
         };

@@ -306,7 +306,7 @@ namespace DeepState
                         .Replace("\"", "''")
                         .Replace(' ', '_');
 
-            string memeUrl = isFrench? $"" : $"Préparez--vous_à_apprendre_{thingToLearn}_mon_pote!.png";
+            string memeUrl = isFrench ? $"Preparez--vous_a_apprendre_{thingToLearn}_mon_pote!.png" : $"get_ready_to_learn_{thingToLearn}_buddy..png";
 
             if (OnMessageHandlers.IsPreggers(thingToLearn))
             {
@@ -314,7 +314,7 @@ namespace DeepState
             }
             else
             {
-                response = $"https://api.memegen.link/images/custom/_/{memeUrl}? background=https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/Get_Ready_to_Learn.jpg";
+                response = $"https://api.memegen.link/images/custom/_/{memeUrl}?background=https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/Get_Ready_to_Learn.jpg";
             }
 
             return response;
@@ -381,10 +381,10 @@ namespace DeepState
                     embed = builder.Build();
                     break;
                 case SlashCommands.Learn:
-                    GetReadyToLearn(((string)command.Data.Options.First().Value));
+                    response = GetReadyToLearn(((string)command.Data.Options.First().Value));
                     break;
                 case SlashCommands.Apprendre:
-                    GetReadyToLearn(((string)command.Data.Options.First().Value), isFrench: true);
+                    response = GetReadyToLearn(((string)command.Data.Options.First().Value), isFrench: true);
                     break;
             }
             if (response != null)
@@ -410,7 +410,8 @@ namespace DeepState
                         if(guild != null && guild.Id == SharedConstants.LibcraftGuildId)
                         {
                             IGuild libcraft = _client.GetGuild(SharedConstants.LibcraftGuildId);
-                            List<IApplicationCommand> commands = libcraft.GetApplicationCommandsAsync().Result.Where(command => command.Name.StartsWith("todo")).ToList();
+                            var libcraftCommands = libcraft.GetApplicationCommandsAsync().Result;
+                            List<IApplicationCommand> commands = libcraftCommands.Where(command => command.Name.StartsWith("todo") || command.Name.StartsWith("learn")).ToList();
                             foreach(IApplicationCommand commandToDelete in commands)
                             {
                                 _ = commandToDelete.DeleteAsync();
