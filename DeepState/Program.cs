@@ -407,7 +407,7 @@ namespace DeepState
                     foreach (var item in SlashCommands.SlashCommandsToInstall)
                     {
                         IGuild guild = _client.GetGuild(item.Key);
-                        if(item.Key == 0)
+                        if(guild != null && guild.Id == SharedConstants.LibcraftGuildId)
                         {
                             IGuild libcraft = _client.GetGuild(SharedConstants.LibcraftGuildId);
                             List<IApplicationCommand> commands = libcraft.GetApplicationCommandsAsync().Result.Where(command => command.Name.StartsWith("todo")).ToList();
@@ -435,7 +435,7 @@ namespace DeepState
                                 }
 
                             }
-                            if (guild != null && commandInfo.Name != SlashCommands.Learn && commandInfo.Name != SlashCommands.Apprendre)
+                            if (guild != null)
                             {
                                 var installedCommand = await guild.CreateApplicationCommandAsync(command.Build());
                             }
