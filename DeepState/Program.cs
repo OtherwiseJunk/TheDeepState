@@ -46,6 +46,7 @@ using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule.Context;
 using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule.Interfaces;
 using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule;
 using System.Web;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace DeepState
 {
@@ -288,6 +289,37 @@ namespace DeepState
             new Thread(async () => { if (message != null && message.Content != null) { await OnMessageHandlers.DeletePreggersMessage(message); } }).Start();
         }
 
+        private string GetReadyToLearn(string input, bool isFrench = false)
+        {
+            string response;            
+            string thingToLearn = input
+                        .Replace("_", "__")
+                        .Replace("-", "--")
+                        .Replace("/", "~s")
+                        .Replace("?", "~q")
+                        .Replace("&", "~a")
+                        .Replace("%", "~p")
+                        .Replace("#", "~h")
+                        .Replace("\\", "~b")
+                        .Replace("<", "~l")
+                        .Replace(">", "~g")
+                        .Replace("\"", "''")
+                        .Replace(' ', '_');
+
+            string memeUrl = isFrench? $"" : $"Préparez--vous_à_apprendre_{thingToLearn}_mon_pote!.png";
+
+            if (OnMessageHandlers.IsPreggers(thingToLearn))
+            {
+                response = "https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/YouDidThis.png";
+            }
+            else
+            {
+                response = $"https://api.memegen.link/images/custom/_/{memeUrl}? background=https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/Get_Ready_to_Learn.jpg";
+            }
+
+            return response;
+        }
+
         private async Task HandleSlashCommands(SocketSlashCommand command)
         {
             string response = null;
@@ -349,28 +381,10 @@ namespace DeepState
                     embed = builder.Build();
                     break;
                 case SlashCommands.Learn:
-                    string thingToLearn = ((string)command.Data.Options.First().Value)
-                        .Replace("_", "__")
-                        .Replace("-","--")                        
-                        .Replace("/", "~s")
-                        .Replace("?", "~q")
-                        .Replace("&", "~a")
-                        .Replace("%", "~p")
-                        .Replace("#", "~h")
-                        .Replace("\\", "~b")
-                        .Replace("<", "~l")
-                        .Replace(">", "~g")
-                        .Replace("\"", "''")
-                        .Replace(' ', '_');
-
-                    if (OnMessageHandlers.IsPreggers(thingToLearn))
-                    {
-                        response = "https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/YouDidThis.png";
-                    }
-                    else
-                    {
-                        response = $"https://api.memegen.link/images/custom/_/get_ready_to_learn_{thingToLearn}_buddy..png?background=https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/Get_Ready_to_Learn.jpg";
-                    }
+                    GetReadyToLearn(((string)command.Data.Options.First().Value));
+                    break;
+                case SlashCommands.Apprendre:
+                    GetReadyToLearn(((string)command.Data.Options.First().Value), isFrench: true);
                     break;
             }
             if (response != null)
@@ -421,7 +435,7 @@ namespace DeepState
                                 }
 
                             }
-                            if (guild != null)
+                            if (guild != null && commandInfo.Name != SlashCommands.Learn && commandInfo.Name != SlashCommands.Apprendre)
                             {
                                 var installedCommand = await guild.CreateApplicationCommandAsync(command.Build());
                             }

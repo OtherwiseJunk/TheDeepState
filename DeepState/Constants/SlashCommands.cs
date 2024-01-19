@@ -28,13 +28,22 @@ namespace DeepState.Constants
         public const string IDidEverythingRight = "idideverythingright";
         public const string TrumpMugshot = "mugshot";
         public const string Learn = "learn";
+        public const string Apprendre = "apprendre";
         public static List<SlashCommandOptionBuilder> LearnOptions = new() {
             new SlashCommandOptionBuilder()
             .WithName("input")
             .WithType(ApplicationCommandOptionType.String)
-            .WithMaxLength(36)
+            .WithMaxLength(72)
             .WithMinLength(1)
             .WithDescription("The input you want people to get ready to learn.")
+        };
+        public static List<SlashCommandOptionBuilder> ApprendreOptions = new() {
+            new SlashCommandOptionBuilder()
+            .WithName("apport")
+            .WithType(ApplicationCommandOptionType.String)
+            .WithMaxLength(72)
+            .WithMinLength(1)
+            .WithDescription("L'apport que vous souhaitez que les gens se préparent à apprendre.")
         };
 
         public static Dictionary<ulong, List<SlashCommandInformation>> SlashCommandsToInstall = new Dictionary<ulong, List<SlashCommandInformation>> {
@@ -58,7 +67,8 @@ namespace DeepState.Constants
                     new SlashCommandWithoutOptions(AntonCheckin,"Live Anton Reaction"),
                     new SlashCommandWithoutOptions(IDidEverythingRight,"I did EVERYTHING RIGHT and I got INDICTED!"),
                     new SlashCommandWithoutOptions(TrumpMugshot, "I wouldn't like to see ol' Donny wiggle out of this jam, if I'm being honest"),
-                    new SlashCommandWithOptions(Learn, "Get ready to learn <Your Input>, buddy!", LearnOptions)
+                    new SlashCommandWithOptions(Learn, "Get ready to learn <Your Input>, buddy!", LearnOptions),
+                    new SlashCommandWithOptions(Apprendre, "Préparez-vous à apprendre <Votre apport>, mon pote!", ApprendreOptions)
                 }
             }
         };
