@@ -92,7 +92,7 @@ namespace DeepState
                 {
                     case "0124":
                         _ = libcraftCalendarChannel.ModifyTextChannel(
-                            "national-otherwisejunk-testing-an-ill-concieved-bot-feature-day",
+                            "national-otherwisejunk-testing-an-ill-conceived-bot-feature-day",
                             "Why write actual tests when you can just test your bot in production by making up a bogus day? Sure hope this works!");
                         break;
                     case "0514":
