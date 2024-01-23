@@ -47,6 +47,7 @@ using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule.Interfaces;
 using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule;
 using System.Web;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using DeepState.Extensions;
 
 namespace DeepState
 {
@@ -77,11 +78,30 @@ namespace DeepState
                 IGuild libcraft = _client.GetGuild(SharedConstants.LibcraftGuildId);
                 IMessageChannel oocChannel = await libcraft.GetChannelAsync(SharedConstants.LibcraftOutOfContext) as IMessageChannel;
                 Console.WriteLine($"Channel null? {oocChannel == null}");
-                EmbedBuilder embed = ooc.BuildOOCEmbed(OutOfContextModule.OutOfContextTitle,libcraft, oocChannel, ooc.GetRandomRecord());
+                EmbedBuilder embed = ooc.BuildOOCEmbed(OutOfContextModule.OutOfContextTitle, libcraft, oocChannel, ooc.GetRandomRecord());
                 Console.WriteLine($"Embed null? {embed == null}");
 
                 _ = oocChannel.SendMessageAsync("Heard from a reliable source that you're jonesing for some OOC. I gotchu.", embed: embed.Build());
             }, s => s.ToRunEvery(2).Hours().At(0));
+            JobManager.AddJob(async () =>
+            {
+                DateTime now = DateTime.Now;
+                string ddMM = now.ToString("ddMM");
+                var libcraftCalendarChannel = _client.GetChannel(893391224092885094) as ITextChannel;
+                switch (ddMM)
+                {
+                    case "0124":
+                        _ = libcraftCalendarChannel.ModifyTextChannel(
+                            "national-otherwisejunk-testing-an-ill-concieved-bot-feature-day",
+                            "Why write actual tests when you can just test your bot in production by making up a bogus day? Sure hope this works!");
+                        break;
+                    case "0514":
+                        _ = libcraftCalendarChannel.ModifyTextChannel(
+                            "national-chirp-like-a-penguin-while-holding-ice-cubes-day-(observance)", 
+                            "Actual holiday is on October 2nd. This is the observance of National Chirp Like a Penguin While Holding Ice Cubes Day");
+                        break;
+                }
+            }, s => s.ToRunEvery(1).Days().At(0, 0));
         }
         public static void Main(string[] args)
     => new Program().MainAsync().GetAwaiter().GetResult();
@@ -96,7 +116,7 @@ namespace DeepState
                     using (WebClient client = new WebClient())
                     {
                         client.DownloadFile(new Uri("https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/FultonCountySheriffBadge.png"), SharedConstants.MudshotBadgeImagePath);
-                    }                    
+                    }
                 }
             }).Start();
 
@@ -120,7 +140,7 @@ namespace DeepState
 
             new Thread(() => _ = LibcoinUtilities.LibcraftCoinCheck(_services.GetService<UserRecordsService>())).Start();
             new Thread(() => _ = LibcoinUtilities.LibcoinReactionChecker(_services.GetService<UserRecordsService>())).Start();
-            
+
 #if !DEBUG
             new Thread(() => JackboxUtilities.EnsureDefaultGamesExist(_services.GetService<JackboxContext>())).Start();
 #endif
@@ -230,10 +250,10 @@ namespace DeepState
             {
                 try
                 {
-                    if(messageParam.Channel.Id != SharedConstants.SelfCareChannelId)
+                    if (messageParam.Channel.Id != SharedConstants.SelfCareChannelId)
                     {
                         _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix);
-                    }                    
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -264,7 +284,7 @@ namespace DeepState
                     {
                         await waffleHouse.InstallModuleSlashCommands(null, _client);
                         await toDoModule.InstallModuleSlashCommands(null, _client);
-                    }).Start();                    
+                    }).Start();
                 };
                 _client.SlashCommandExecuted += toDoModule.HandleSocketSlashCommand;
                 _client.SlashCommandExecuted += waffleHouse.HandleSocketSlashCommand;
@@ -291,7 +311,7 @@ namespace DeepState
 
         private string GetReadyToLearn(string input, bool isFrench = false)
         {
-            string response;            
+            string response;
             string thingToLearn = input
                         .Replace("_", "__")
                         .Replace("-", "--")
@@ -391,7 +411,7 @@ namespace DeepState
             {
                 _ = command.RespondAsync(response);
             }
-            if(embed != null)
+            if (embed != null)
             {
                 _ = command.RespondAsync(embed: embed);
             }
@@ -399,7 +419,7 @@ namespace DeepState
 
         private async Task InstallSlashCommands()
         {
-            new Thread(async() =>
+            new Thread(async () =>
             {
                 try
                 {
@@ -407,12 +427,12 @@ namespace DeepState
                     foreach (var item in SlashCommands.SlashCommandsToInstall)
                     {
                         IGuild guild = _client.GetGuild(item.Key);
-                        if(guild != null && guild.Id == SharedConstants.LibcraftGuildId)
+                        if (guild != null && guild.Id == SharedConstants.LibcraftGuildId)
                         {
                             IGuild libcraft = _client.GetGuild(SharedConstants.LibcraftGuildId);
                             var libcraftCommands = libcraft.GetApplicationCommandsAsync().Result;
                             List<IApplicationCommand> commands = libcraftCommands.Where(command => command.Name.StartsWith("todo") || command.Name.StartsWith("learn")).ToList();
-                            foreach(IApplicationCommand commandToDelete in commands)
+                            foreach (IApplicationCommand commandToDelete in commands)
                             {
                                 _ = commandToDelete.DeleteAsync();
                             }
@@ -454,7 +474,7 @@ namespace DeepState
                     Console.WriteLine(ex.Message);
                     Console.WriteLine("--- Encountered an issue when attempting to install slash commands ---");
                 }
-            }).Start();            
+            }).Start();
         }
 
         private async Task OnEventCreated(SocketGuildEvent arg)
@@ -486,7 +506,7 @@ namespace DeepState
             };
             if (message == null) return;
 
-            if(message.Content == "awfuck" && message.Author.Username == "_dart")
+            if (message.Content == "awfuck" && message.Author.Username == "_dart")
             {
                 CheckDatEmbed();
             }
@@ -497,7 +517,7 @@ namespace DeepState
                 //We don't want to process messages from bots. Screw bots, all my homies hate bots.
 
                 //Well, except in these specific cases
-                if(message.Channel.Id == SharedConstants.LibcraftBestOfChannel && message.Author.Id == 799039246668398633)
+                if (message.Channel.Id == SharedConstants.LibcraftBestOfChannel && message.Author.Id == 799039246668398633)
                 {
                     string[] footerComponents = message.Embeds.First().Footer.Value.Text.Split('-');
                     ulong bestOfUserId = ulong.Parse(footerComponents[2]);
@@ -507,9 +527,9 @@ namespace DeepState
             }
             new Thread(async () => { await OnMessageHandlers.ReplyIfMessageIsRecessionOnlyInUpperCase(messageParam); }).Start();
             new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
-           new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
+            new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
 
-            if(guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId)
+            if (guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId)
             {
                 new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
             }
@@ -565,7 +585,7 @@ namespace DeepState
 
             new Thread(() => { _ = OnReactHandlers.SelfReactCheck(reaction, channel, msg); }).Start();
 
-            if (!SharedConstants.NoAutoReactsChannel.Contains(msg.Channel.Id) && !SharedConstants.LibcraftBestOfExclusionList.Contains(msg.Channel.Id)) 
+            if (!SharedConstants.NoAutoReactsChannel.Contains(msg.Channel.Id) && !SharedConstants.LibcraftBestOfExclusionList.Contains(msg.Channel.Id))
             {
                 new Thread(() => { _ = ORH.BestOfChecker(msg, _services.GetService<BestOfService>(), SharedConstants.LibcraftGuildId, SharedConstants.LibcraftBestOfChannel, 10, SharedConstants.LibcraftBestOfVotingEmotes, reactingUser); }).Start();
             }
