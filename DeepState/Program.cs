@@ -85,18 +85,21 @@ namespace DeepState
             }, s => s.ToRunEvery(2).Hours().At(0));
             JobManager.AddJob(async () =>
             {
+                Console.WriteLine("Checking if it's a notable day.");
                 DateTime now = DateTime.Now;
                 string ddMM = now.ToString("ddMM");
+                Console.WriteLine(ddMM);
                 var libcraftCalendarChannel = _client.GetChannel(893391224092885094) as ITextChannel;
                 switch (ddMM)
                 {
-                    case "0124":
-                        _ = libcraftCalendarChannel.ModifyTextChannel(
+                    case "0125":
+                        Console.WriteLine("Successfully hit the test day, attempting to modify channel");
+                        await libcraftCalendarChannel.ModifyTextChannel(
                             "national-otherwisejunk-testing-an-ill-conceived-bot-feature-day",
                             "Why write actual tests when you can just test your bot in production by making up a bogus day? Sure hope this works!");
                         break;
                     case "0514":
-                        _ = libcraftCalendarChannel.ModifyTextChannel(
+                        await libcraftCalendarChannel.ModifyTextChannel(
                             "national-chirp-like-a-penguin-while-holding-ice-cubes-day-(observance)", 
                             "Actual holiday is on October 2nd. This is the observance of National Chirp Like a Penguin While Holding Ice Cubes Day");
                         break;
