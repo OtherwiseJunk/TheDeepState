@@ -264,6 +264,7 @@ namespace DeepState.Tests
         [TestCase("pweggy")]
         [TestCase("pɤeggeɤ")]
         [TestCase("perggers")]
+        [TestCase("pregherz")]
         public void Preggers(string input)
         {
             Assert.IsTrue(OnMessageHandlers.IsPreggers(input));
