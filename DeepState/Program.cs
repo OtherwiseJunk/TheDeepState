@@ -89,22 +89,34 @@ namespace DeepState
                 DateTime now = DateTime.Now;
                 string ddMM = now.ToString("ddMM");
                 Console.WriteLine(ddMM);
-                var libcraftCalendarChannel = _client.GetChannel(893391224092885094) as ITextChannel;
-                switch (ddMM)
+                try
                 {
-                    case "0125":
-                        Console.WriteLine("Successfully hit the test day, attempting to modify channel");
-                        await libcraftCalendarChannel.ModifyTextChannel(
-                            "national-otherwisejunk-testing-an-ill-conceived-bot-feature-day",
-                            "Why write actual tests when you can just test your bot in production by making up a bogus day? Sure hope this works!");
-                        break;
-                    case "0514":
-                        await libcraftCalendarChannel.ModifyTextChannel(
-                            "national-chirp-like-a-penguin-while-holding-ice-cubes-day-(observance)", 
-                            "Actual holiday is on October 2nd. This is the observance of National Chirp Like a Penguin While Holding Ice Cubes Day");
-                        break;
+                    var libcraftCalendarChannel = _client.GetChannel(893391224092885094) as ITextChannel;
+                    switch (ddMM)
+                    {
+                        case "0125":
+                            Console.WriteLine("Successfully hit the test day, attempting to modify channel");
+                            await libcraftCalendarChannel.ModifyTextChannel(
+                                "national-otherwisejunk-testing-an-ill-conceived-bot-feature-day",
+                                "Why write actual tests when you can just test your bot in production by making up a bogus day? Sure hope this works!");
+                            break;
+                        case "0514":
+                            await libcraftCalendarChannel.ModifyTextChannel(
+                                "national-chirp-like-a-penguin-while-holding-ice-cubes-day-(observance)",
+                                "Actual holiday is on October 2nd. This is the observance of National Chirp Like a Penguin While Holding Ice Cubes Day");
+                            break;
+                    }
                 }
-            }, s => s.ToRunEvery(1).Days().At(0, 0));
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    while(ex.InnerException != null)
+                    {
+                        ex = ex.InnerException;
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+            }, s => s.ToRunEvery(1).Days().At(0, 30));
         }
         public static void Main(string[] args)
     => new Program().MainAsync().GetAwaiter().GetResult();
