@@ -512,12 +512,13 @@ namespace DeepState
             //Don't process the command if it was a system message
             SocketUserMessage message = messageParam as SocketUserMessage;
             IGuild guild = ((IGuildChannel)message.Channel).Guild;
-            List<ulong> ids = new()
+            List<ulong> noTwitterDeleteGuilds = new()
             {
                 698639095940907048,
                 1024862866634969188,
                 746570029180518422,
-                760308671170215968
+                760308671170215968,
+                1200630940469297232
             };
             if (message == null) return;
 
@@ -549,7 +550,7 @@ namespace DeepState
                 new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
             }
 
-            if (!ids.Contains(guild.Id) && !message.Content.StartsWith(BotProperties.CommandPrefix))
+            if (!noTwitterDeleteGuilds.Contains(guild.Id) && !message.Content.StartsWith(BotProperties.CommandPrefix))
             {
                 new Thread(async () => { await OnMessageHandlers.ReplyToAllTwitterLinksWithCVXTwitter(message); }).Start();
             }
