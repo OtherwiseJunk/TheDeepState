@@ -212,7 +212,8 @@ namespace DeepState.Constants
 			{ "bogdrigo", 874165323291562034 },
 			{ "gengar_smug", 646174407592640523 },
 			{ "based", 930329422148538431 },
-			{ "a:laughing", 669517192370454539 }
+			{ "a:laughing", 669517192370454539 },
+			{ "thisisveryhumorous", 1205720653097996338 }
 		};
 
 

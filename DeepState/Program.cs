@@ -94,12 +94,6 @@ namespace DeepState
                     var libcraftCalendarChannel = _client.GetChannel(893391224092885094) as ITextChannel;
                     switch (ddMM)
                     {
-                        case "2501":
-                            Console.WriteLine("Successfully hit the test day, attempting to modify channel");
-                            await libcraftCalendarChannel.ModifyTextChannel(
-                                "national-otherwisejunk-testing-an-ill-conceived-bot-feature-day",
-                                "Why write actual tests when you can just test your bot in production by making up a bogus day? Sure hope this works!");
-                            break;
                         case "1405":
                             await libcraftCalendarChannel.ModifyTextChannel(
                                 "national-chirp-like-a-penguin-while-holding-ice-cubes-day-(observance)",
