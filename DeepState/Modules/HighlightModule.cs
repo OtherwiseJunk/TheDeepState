@@ -37,6 +37,8 @@ namespace DeepState.Modules
             foreach(Highlight highlight in highlights){
                 builder.AddField($"{highlight.HighlightId}.", highlight.TriggerPhrase);
             }
+
+            await Context.Message.ReplyAsync(embed: builder.Build());
         }
     }
 }
