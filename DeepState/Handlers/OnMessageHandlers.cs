@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using DeepState.Data.Services;
 using static DartsDiscordBots.Constants.SharedConstants;
 using DeepState.Utilities;
+using System.Linq;
 
 namespace DeepState.Handlers
 {
@@ -18,6 +19,28 @@ namespace DeepState.Handlers
 		
 		static HashSet<ulong> GuildUserCacheDownloaded = new();
 		static object HashsetLock = new();
+
+		public async static Task HighlightCheck(SocketMessage msg, HighlightService service)
+		{
+			var highlights = service.GetHighlights();
+			var text = msg.Content.ToLower();
+			var pingedUsers = new List<IUser>();
+
+            foreach (var highlight in highlights) {
+				var user = await msg.Channel.GetUserAsync(highlight.UserId);
+				if(user == null)
+				{
+					continue;
+				}
+
+                if (text.Contains(highlight.TriggerPhrase) && !pingedUsers.Contains(user))
+				{
+					await user.SendMessageAsync(@$"Reason: {highlight.TriggerPhrase}
+{msg.GetJumpUrl()}");
+					pingedUsers.Add(user);
+                }
+			}
+		}
 		public static void EgoCheck(SocketMessage msg, bool isMentioningMe)
 		{
 			if (isMentioningMe)

@@ -251,6 +251,7 @@ namespace DeepState
             await _commands.AddModuleAsync<AudioModule>(_services);
             await _commands.AddModuleAsync<LockedTombModule>(_services);
             await _commands.AddModuleAsync<CharacterGeneratorModule>(_services);
+            await _commands.AddModuleAsync<HighlightModule>(_services);
 
 #if !DEBUG
 			await _commands.AddModuleAsync<JackboxModule>(_services);
@@ -538,6 +539,7 @@ namespace DeepState
             new Thread(async () => { await OnMessageHandlers.ReplyIfMessageIsRecessionOnlyInUpperCase(messageParam); }).Start();
             new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
             new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
+            new Thread(async () =>{ await OnMessageHandlers.HighlightCheck(message, _services.GetService<HighlightService>()); }).Start();
 
             if (guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId)
             {
