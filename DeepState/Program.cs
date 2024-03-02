@@ -204,6 +204,7 @@ namespace DeepState
                 .AddSingleton<ToDoSlashCommandModule>()
                 .AddSingleton<WaffleHouseApocalypseService>()
                 .AddSingleton<WaffleHouseApocolypseModule>()
+                .AddSingleton<HighlightService>()
                 .AddDbContext<ToDoContext>()
                 .AddDbContext<GuildUserRecordContext>()
                 .AddDbContext<HungerGamesContext>()
@@ -211,6 +212,7 @@ namespace DeepState
                 .AddDbContextFactory<HungerGamesContext>()
                 .AddDbContextFactory<ModTeamRequestContext>()
                 .AddDbContextFactory<ToDoContext>()
+                .AddDbContextFactory<HighlightContext>()
 #if !DEBUG
                 .AddDbContextFactory<JackboxContext>()
 #endif
