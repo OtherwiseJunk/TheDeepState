@@ -20,10 +20,11 @@ namespace DeepState.Handlers
 		static HashSet<ulong> GuildUserCacheDownloaded = new();
 		static object HashsetLock = new();
 
-		public async static void HighlightCheck(SocketMessage msg, HighlightService service)
+		public async static Task HighlightCheck(SocketMessage msg, HighlightService service)
 		{
 			var highlights = service.GetHighlights();
 			var text = msg.Content.ToLower();
+			var pingedUsers = new List<IUser>();
 
             foreach (var highlight in highlights) {
 				var user = await msg.Channel.GetUserAsync(highlight.UserId);
@@ -32,10 +33,11 @@ namespace DeepState.Handlers
 					continue;
 				}
 
-                if (text.Contains(highlight.TriggerPhrase))
+                if (text.Contains(highlight.TriggerPhrase) && !pingedUsers.Contains(user))
 				{
-					user.SendMessageAsync(@$"Reason: {highlight.TriggerPhrase}
+					await user.SendMessageAsync(@$"Reason: {highlight.TriggerPhrase}
 {msg.GetJumpUrl()}");
+					pingedUsers.Add(user);
                 }
 			}
 		}
