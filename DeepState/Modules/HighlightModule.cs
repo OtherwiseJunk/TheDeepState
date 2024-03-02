@@ -20,10 +20,12 @@ namespace DeepState.Modules
 
         [Command("highlight")]
         [Summary("Registers the string as a highlight for you. When a message is sent to a channel you're in with the EXACT string (ignores case) the bot will send you a message with a link to the triggering message.")]
-        public void CreateHighlight([Remainder] string triggerPhrase)
+        public async Task CreateHighlight([Remainder] string triggerPhrase)
         {
+            Console.WriteLine($"Saving highlight: {Context.Message.Author.Username} - {triggerPhrase}");
             _service.CreateHighlight(Context.Message.Author.Id, triggerPhrase);
-            Context.Message.AddReactionAsync(new Discord.Emoji("✅"));
+            await Context.Message.AddReactionAsync(new Discord.Emoji("✅"));
+            Console.WriteLine("Saved");
         }
 
         [Command("highlights")]
