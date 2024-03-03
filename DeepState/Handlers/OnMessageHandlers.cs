@@ -11,20 +11,30 @@ using DeepState.Data.Services;
 using static DartsDiscordBots.Constants.SharedConstants;
 using DeepState.Utilities;
 using System.Linq;
+using System.ComponentModel;
 
 namespace DeepState.Handlers
 {
 	public static class OnMessageHandlers
 	{
-		
 		static HashSet<ulong> GuildUserCacheDownloaded = new();
 		static object HashsetLock = new();
+
+		private async static Task<List<IUser>> GetActiveUsers(ITextChannel channel){
+			var messages = await channel.GetMessagesAsync(limit: 500).FlattenAsync();
+			var fifteenMinutesAgo = DateTime.Now.AddMinutes(-15);
+			var lastFifteenMinutesOfMessages = messages.Where(message => message.Timestamp > fifteenMinutesAgo);
+			var activeUsers = lastFifteenMinutesOfMessages.Select(message => message.Author).Distinct().ToList();
+
+			return activeUsers;
+		}
 
 		public async static Task HighlightCheck(SocketMessage msg, HighlightService service)
 		{
 			var highlights = service.GetHighlights();
 			var text = msg.Content.ToLower();
 			var pingedUsers = new List<IUser>();
+			var activeUsers = await GetActiveUsers(msg.Channel as ITextChannel);
 
             foreach (var highlight in highlights) {
 				var user = await msg.Channel.GetUserAsync(highlight.UserId);
@@ -32,8 +42,8 @@ namespace DeepState.Handlers
 				{
 					continue;
 				}
-
-                if (text.Contains(highlight.TriggerPhrase) && !pingedUsers.Contains(user))
+				bool shouldDMUser = text.Contains(highlight.TriggerPhrase) && !pingedUsers.Contains(user) && !activeUsers.Contains(user);
+                if (shouldDMUser)
 				{
 					await user.SendMessageAsync(@$"Reason: {highlight.TriggerPhrase}
 {msg.GetJumpUrl()}");

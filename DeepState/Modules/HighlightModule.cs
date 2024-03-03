@@ -22,10 +22,8 @@ namespace DeepState.Modules
         [Summary("Registers the string as a highlight for you. When a message is sent to a channel you're in with the EXACT string (ignores case) the bot will send you a message with a link to the triggering message.")]
         public async Task CreateHighlight([Remainder] string triggerPhrase)
         {
-            Console.WriteLine($"Saving highlight: {Context.Message.Author.Username} - {triggerPhrase}");
             _service.CreateHighlight(Context.Message.Author.Id, triggerPhrase);
-            await Context.Message.AddReactionAsync(new Discord.Emoji("✅"));
-            Console.WriteLine("Saved");
+            await Context.Message.AddReactionAsync(new Emoji("✅"));
         }
 
         [Command("highlights")]
@@ -42,5 +40,20 @@ namespace DeepState.Modules
 
             await Context.Message.ReplyAsync(embed: builder.Build());
         }
+
+        [Command("deletehighlight"), Alias("hld")]
+        [Summary("Deletes a highlight.")]
+        public async Task DeleteHighlight([Remainder] int highlightId)
+        {
+            var highlightToDelete = _service.GetHighlightsForUser(Context.Message.Author.Id).FirstOrDefault(h => h.HighlightId == highlightId);
+            if(highlightToDelete == null)
+            {
+                await Context.Message.ReplyAsync("You don't have a highlight with that ID.");
+                return;
+            }
+            _service.DeleteHighlight(highlightToDelete);
+            await Context.Message.AddReactionAsync(new Emoji("✅"));
+        }
     }
 }
+
