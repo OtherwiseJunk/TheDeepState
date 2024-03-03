@@ -18,7 +18,7 @@ namespace DeepState.Modules
             _service = service;
         }
 
-        [Command("highlight")]
+        [Command("highlight"), Alias("hl")]
         [Summary("Registers the string as a highlight for you. When a message is sent to a channel you're in with the EXACT string (ignores case) the bot will send you a message with a link to the triggering message.")]
         public async Task CreateHighlight([Remainder] string triggerPhrase)
         {
@@ -26,7 +26,7 @@ namespace DeepState.Modules
             await Context.Message.AddReactionAsync(new Emoji("✅"));
         }
 
-        [Command("highlights")]
+        [Command("highlights") , Alias("hls")]
         [Summary("Lists all of your highlights.")]
         public async Task ListHighlights()
         {
