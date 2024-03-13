@@ -18,7 +18,7 @@ namespace DeepState.Modules
             _service = service;
         }
 
-        [Command("highlight")]
+        [Command("highlight"), Alias("hl")]
         [Summary("Registers the string as a highlight for you. When a message is sent to a channel you're in with the EXACT string (ignores case) the bot will send you a message with a link to the triggering message.")]
         public async Task CreateHighlight([Remainder] string triggerPhrase)
         {
@@ -26,7 +26,7 @@ namespace DeepState.Modules
             await Context.Message.AddReactionAsync(new Emoji("✅"));
         }
 
-        [Command("highlights")]
+        [Command("highlights") , Alias("hls")]
         [Summary("Lists all of your highlights.")]
         public async Task ListHighlights()
         {
@@ -43,12 +43,23 @@ namespace DeepState.Modules
 
         [Command("deletehighlight"), Alias("hld")]
         [Summary("Deletes a highlight.")]
-        public async Task DeleteHighlight([Remainder] int highlightId)
+        public async Task DeleteHighlight([Remainder] string highlightLookup)
         {
-            var highlightToDelete = _service.GetHighlightsForUser(Context.Message.Author.Id).FirstOrDefault(h => h.HighlightId == highlightId);
+            Highlight highlightToDelete = null;
+            int highlightId;
+            string errorMessage = "Shoot, something went wrong but don't ask me what.";
+            if(int.TryParse(highlightLookup, out highlightId)){
+                highlightToDelete = _service.GetHighlightsForUser(Context.Message.Author.Id).FirstOrDefault(h => h.HighlightId == highlightId);
+                errorMessage = $"Highlight {highlightId} not found in your list of highlights.";
+            }
+            else{
+                highlightToDelete = _service.GetHighlightsForUser(Context.Message.Author.Id).FirstOrDefault(h => h.TriggerPhrase == highlightLookup.ToLower());
+                errorMessage = $"Highlight with a trigger phrase of `{highlightLookup}` not found in your list of highlights.";
+            }
+
             if(highlightToDelete == null)
             {
-                await Context.Message.ReplyAsync("You don't have a highlight with that ID.");
+                await Context.Message.ReplyAsync(errorMessage);
                 return;
             }
             _service.DeleteHighlight(highlightToDelete);
