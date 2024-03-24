@@ -48,6 +48,7 @@ using DartsDiscordBots.SlashCommandModules.ToDoSlashCommandModule;
 using System.Web;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using DeepState.Extensions;
+using System.Threading.Channels;
 
 namespace DeepState
 {
@@ -551,7 +552,7 @@ namespace DeepState
             new Thread(async () =>{ await OnMessageHandlers.ActiveUserCheck(message); }).Start();
             new Thread(async () =>{ await OnMessageHandlers.HighlightCheck(message, _services.GetService<HighlightService>()); }).Start();
 
-            if (guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId || guild.Id == 1219366266033405952)
+            if ((guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId || guild.Id == 1219366266033405952) && message.Channel.Id != SharedConstants.SelfCareChannelId )
             {
                 new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
             }
