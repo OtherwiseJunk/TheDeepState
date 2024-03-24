@@ -19,17 +19,30 @@ namespace DeepState.Handlers
 {
     public static class OnMessageHandlers
     {
+        public static Dictionary<ulong, Dictionary<ulong, DateTime>> ActiveUserDictionaryByChannelId = new();
         static HashSet<ulong> GuildUserCacheDownloaded = new();
         static object HashsetLock = new();
 
-        private async static Task<List<IUser>> GetActiveUsers(ITextChannel channel)
-        {
-            var messages = await channel.GetMessagesAsync(limit: 500).FlattenAsync();
-            var fifteenMinutesAgo = DateTime.Now.AddMinutes(-15);
-            var lastFifteenMinutesOfMessages = messages.Where(message => message.Timestamp > fifteenMinutesAgo);
-            var activeUsers = lastFifteenMinutesOfMessages.Select(message => message.Author).Distinct().ToList();
+        public async static Task ActiveUserCheck(SocketMessage msg){
+            var channelId = msg.Channel.Id;
+            if(!ActiveUserDictionaryByChannelId.TryGetValue(channelId,out var lastActiveDateByUserId)){
+                lastActiveDateByUserId = new();
+                ActiveUserDictionaryByChannelId[channelId] = lastActiveDateByUserId;
+            }
+            lastActiveDateByUserId[msg.Author.Id] = DateTime.Now;
 
-            return activeUsers;
+            CleanupActiveUserDictionaries();
+        }
+
+        private static void CleanupActiveUserDictionaries(){
+            foreach(var channelId in ActiveUserDictionaryByChannelId.Keys){
+                var lastActiveDateByUserId = ActiveUserDictionaryByChannelId[channelId];
+
+                var inactiveUsers = lastActiveDateByUserId.Where( entry => entry.Value < DateTime.Now.AddMinutes(-15));
+                foreach(var userEntry in inactiveUsers){
+                    lastActiveDateByUserId.Remove(userEntry.Key);
+                }
+            }
         }
 
         public async static Task HighlightCheck(SocketMessage msg, HighlightService service)
@@ -37,7 +50,12 @@ namespace DeepState.Handlers
             var highlights = service.GetHighlights();
             var text = msg.Content.ToLower();
             var pingedUsers = new List<IUser>();
-            var activeUsers = await GetActiveUsers(msg.Channel as ITextChannel);
+            Dictionary<ulong, DateTime> activeUsersForChannel;
+            ActiveUserDictionaryByChannelId.TryGetValue(msg.Channel.Id, out activeUsersForChannel);
+
+            if(activeUsersForChannel == null){
+                activeUsersForChannel = new();
+            }
 
             foreach (var highlight in highlights)
             {
@@ -48,7 +66,7 @@ namespace DeepState.Handlers
                 {
                     continue;
                 }
-                bool shouldDMUser = ShouldDMUserForHighlight(text, highlight) && !pingedUsers.Contains(user) && !activeUsers.Contains(user);
+                bool shouldDMUser = ShouldDMUserForHighlight(text, highlight) && !pingedUsers.Contains(user) && !activeUsersForChannel.Keys.Contains(user.Id);
                 if (shouldDMUser)
                 {
                     await user.SendMessageAsync(@$"Reason: {highlight.TriggerPhrase}

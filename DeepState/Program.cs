@@ -548,6 +548,7 @@ namespace DeepState
             new Thread(async () => { await OnMessageHandlers.ReplyIfMessageIsRecessionOnlyInUpperCase(messageParam); }).Start();
             new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
             new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
+            new Thread(async () =>{ await OnMessageHandlers.ActiveUserCheck(message); }).Start();
             new Thread(async () =>{ await OnMessageHandlers.HighlightCheck(message, _services.GetService<HighlightService>()); }).Start();
 
             if (guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId || guild.Id == 1219366266033405952)
