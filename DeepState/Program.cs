@@ -285,6 +285,7 @@ namespace DeepState
             _client.Ready += InstallSlashCommands;
             _client.SlashCommandExecuted += HandleSlashCommands;
             _client.MessageUpdated += OnEdit;
+            _client.GuildMemberUpdated += OnGuildUserUpdated;
 
             new Thread(() =>
             {
@@ -303,6 +304,15 @@ namespace DeepState
             }).Start();
 
 
+        }
+
+        private async Task OnGuildUserUpdated(Cacheable<SocketGuildUser, ulong> cacheable, SocketGuildUser userPostUpdate)
+        {
+            if(OnMessageHandlers.IsPreggers(userPostUpdate.DisplayName)){
+                await userPostUpdate.ModifyAsync((GuildUserProperties user) =>{
+                    user.Nickname = "idiot";
+                });
+            }
         }
 
         private async void CheckDatEmbed()
