@@ -118,16 +118,6 @@ namespace DeepState
         {
             Console.WriteLine($"DEEPSTATE has been INITIALIZED");
             Console.WriteLine($"{Environment.GetEnvironmentVariable("DATABASE")}");
-            new Thread(async () =>
-            {
-                if (!File.Exists(SharedConstants.MudshotBadgeImagePath))
-                {
-                    using (WebClient client = new WebClient())
-                    {
-                        client.DownloadFile(new Uri("https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/FultonCountySheriffBadge.png"), SharedConstants.MudshotBadgeImagePath);
-                    }
-                }
-            }).Start();
 
             await InstallCommandsAsync();
 
@@ -286,6 +276,7 @@ namespace DeepState
             _client.SlashCommandExecuted += HandleSlashCommands;
             _client.MessageUpdated += OnEdit;
             _client.GuildMemberUpdated += OnGuildUserUpdated;
+            _client.Disconnected += OnDisconnected;
 
             new Thread(() =>
             {
@@ -304,6 +295,12 @@ namespace DeepState
             }).Start();
 
 
+        }
+
+        private async Task OnDisconnected(Exception exception)
+        {
+            Console.WriteLine("Got Disconnected 😭");
+            Console.WriteLine(exception.Message);
         }
 
         private async Task OnGuildUserUpdated(Cacheable<SocketGuildUser, ulong> cacheable, SocketGuildUser userPostUpdate)
@@ -553,7 +550,7 @@ namespace DeepState
             new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
             new Thread(async () =>{ await OnMessageHandlers.HighlightCheck(message, _services.GetService<HighlightService>()); }).Start();
 
-            if (guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId)
+            if (guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId || guild.Id == 1219366266033405952)
             {
                 new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
             }

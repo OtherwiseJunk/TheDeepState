@@ -189,8 +189,9 @@ namespace DeepState.Handlers
         MatchCollection matchizles = Regex.Matches(msg.Content.Normalize(System.Text.NormalizationForm.FormD), SharedConstants.PreggizleDetector, RegexOptions.IgnoreCase);
         string spacelessContent = msg.Content.Replace(" ", String.Empty);
         bool cursedCheck = spacelessContent.Length >= 5 && spacelessContent.Length <= 8 && (Regex.Matches(spacelessContent, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
+        List<IGuildUser> mentionedUsers = msg.MentionedUsers.Select( user => user as IGuildUser).ToList();
 
-        if (IsPreggers(msg.Content))
+        if (IsPreggers(msg.Content) || mentionedUsers.FirstOrDefault((user) => IsPreggers(user.DisplayName)) != null )
         {
             DateTime now = DateTime.Now;
             if (now.Month == 12 && now.Day == 11)
