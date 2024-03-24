@@ -191,15 +191,15 @@ namespace DeepState.Handlers
         string normalizedMessage = message.Normalize(System.Text.NormalizationForm.FormD);
         MatchCollection matches = Regex.Matches(normalizedMessage, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase);
         MatchCollection matchizles = Regex.Matches(normalizedMessage, SharedConstants.PreggizleDetector, RegexOptions.IgnoreCase);
-        MatchCollection pergersMatches = Regex.Matches(normalizedMessage, SharedConstants.PerggersDetector, RegexOptions.IgnoreCase);
+        //MatchCollection pergersMatches = Regex.Matches(normalizedMessage, SharedConstants.PerggersDetector, RegexOptions.IgnoreCase);
         MatchCollection preghersMatches = Regex.Matches(normalizedMessage, SharedConstants.PreghersDetector, RegexOptions.IgnoreCase);
         MatchCollection perghersMatches = Regex.Matches(normalizedMessage, SharedConstants.PerghersDetector, RegexOptions.IgnoreCase);
         string spacelessContent = message.Replace(" ", String.Empty);
-        bool cursedCheck = spacelessContent.Length >= 5 && spacelessContent.Length <= 8 && (Regex.Matches(spacelessContent, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase)).Count > 0;
+        bool cursedCheck = spacelessContent.Length >= 5 && spacelessContent.Length <= 8 && Regex.Matches(spacelessContent, SharedConstants.PreggersDetector, RegexOptions.IgnoreCase).Count > 0;
         bool containsPweggy = message.ToLower().Contains("pweggy") || message.ToLower().Contains("pwegy");
 
 
-        return matches.Count > 0 || message.StartsWith("🇵🇷🥚") || cursedCheck || matchizles.Count > 0 || containsPweggy || pergersMatches.Count > 0 || preghersMatches.Count > 0 || perghersMatches.Count > 0;
+        return matches.Count > 0 || message.StartsWith("🇵🇷🥚") || cursedCheck || matchizles.Count > 0 || containsPweggy || /*pergersMatches.Count > 0 ||*/ preghersMatches.Count > 0 || perghersMatches.Count > 0;
     }
     public static async Task DeletePreggersMessage(SocketMessage msg)
     {

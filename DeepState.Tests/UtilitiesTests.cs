@@ -263,7 +263,6 @@ namespace DeepState.Tests
         [TestCase("pweggers")]
         [TestCase("pweggy")]
         [TestCase("pɤeggeɤ")]
-        [TestCase("perggers")]
         [TestCase("pregherz")]
         public void Preggers(string input)
         {
@@ -283,6 +282,7 @@ namespace DeepState.Tests
         [TestCase("up regretting")]
         [TestCase("🇪🇷")]
         [TestCase("superhero")]
+        [TestCase("aspergers")]
         public void NotPreggers(string input)
         {
             Assert.IsFalse(OnMessageHandlers.IsPreggers(input));
