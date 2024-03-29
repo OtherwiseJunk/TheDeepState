@@ -19,22 +19,33 @@ namespace DeepState.Modules
 
     public class EmojiMonetizationModule : ModuleBase
     {
-        // This creates an instance of the service that checks user balance
-        private UserRecordsService _userRecordsService { get; set; }
-        private bool _bit_active { get; set; }
+        private UserRecordsService _userRecordsService { get; set; };
+        private bool _bit_active { get; set; };
+        public Dictionary<string, List<string>> _packs { get; set; };
         
         public EmojiMonetizationModule(UserRecordsService service)
         {
             _userRecordsService = service;
             _bit_active = false;
+
+            // TODO: Finish populating this
+            // TODO: Ask Junk about command stuff
+            _packs = Dictionary<string, List<Emote>> Packs = new() {
+                { "LibCraftProPack", SharedConstants.ProPack },
+                { "pro", SharedConstants.BasicPack },
+            };
         }
 
         [Command("start")]
         [RequireUserPermission(GuildPermission.ManageGuild)]
         public async Task StartBit()
         {
-            // This gets all the roles in the list of packs
-            List<IRole> PackRoles = Context.Guild.Roles.Where(r => EMC.EmojiPackRoles.Contains(r.Name)).ToList();
+            // This creates a new role for each in the list
+            List<IRole> PackRoles = new();
+
+            
+
+            List<GuildEmote> emojis = Context.Guild.Emotes;
 
             _bit_active = true;
         }
@@ -56,7 +67,7 @@ namespace DeepState.Modules
             }
             else
             {
-                
+                _ = ((IGuildUser)Context.User).AddRoleAsync(packRole)
             }
         }
 
