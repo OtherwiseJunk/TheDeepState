@@ -1,7 +1,7 @@
 using DeepState.Data.Services;
 using DeepState.Constants;
 using DeepState.Modules.Preconditions;
-using EMC = DeepState.Data.Constants.EmojiMonetizationConstants;
+using EMC = DeepState.Constants.EmojiMonetizationConstants;
 
 using Discord.Commands;
 using Discord;
@@ -19,9 +19,9 @@ namespace DeepState.Modules
 
     public class EmojiMonetizationModule : ModuleBase
     {
-        private UserRecordsService _userRecordsService { get; set; };
-        private bool _bit_active { get; set; };
-        public Dictionary<string, (List<Emote> emotes, int cost)> _packs { get; set; };
+        private UserRecordsService _userRecordsService { get; set; }
+        private bool _bit_active { get; set; }
+        public Dictionary<string, (List<Emote> emotes, int cost)> _packs { get; set; }
         
         public EmojiMonetizationModule(UserRecordsService service)
         {
@@ -30,9 +30,9 @@ namespace DeepState.Modules
 
             // TODO: Finish populating this
             // TODO: Ask Junk about command stuff
-            _packs new() {
-                { "LibCraft Basic Pack", (SharedConstants.ProPack, 800) },
-                { "LibCraft Pro Pack", (SharedConstants.BasicPack, 1500)},
+            _packs = new() {
+                { "LibCraft Basic Pack", (EMC.BasicPack, 800) },
+                { "LibCraft Pro Pack", (EMC.ProPack, 1500)},
             };
         }
 
@@ -41,37 +41,41 @@ namespace DeepState.Modules
         public async Task StartBit()
         {
 
-            IRole dummyEmojiRole = new("Dummy Emoji Role");
+            var dummyEmojiRole = await Context.Guild.CreateRoleAsync("Dummy Emoji Role", null, null, false, null);
 
             // Gets each role with a name in the pack
-            List<IRole> packRoles = Context.Guild.Roles
-                .Where(r => _packs.Any(p => p.Value.))
-                .ToDictionary(r => r.Name, r => r)
+            Dictionary<string, IRole> packRoles = Context.Guild.Roles
+                .Where(r => _packs.Any(p => p.Key == r.Name))
+                .ToDictionary(r => r.Name, r => r);
 
             // Creates a new role for any missing packs
             foreach (var pack in _packs
-                .Where(p => !(Context.Guild.Roles.Any(r => r.Name == p.Key)))
+                .Where(p => !Context.Guild.Roles.Any(r => r.Name == p.Key))
                 .ToDictionary(p => p.Key, p => p.Value))
             {
-                await newRole = Context.Guild.CreateRoleAsync(pack).Result;
+                await Context.Guild.CreateRoleAsync(pack.Key, null, null, false, null);
             }
 
             // Restrict all emojis
-            List<GuildEmote> emojis = Context.Guild.Emotes;
-            foreach (var emoji in emojis)
+            var emotes = Context.Guild.Emotes;
+            foreach (var emote in emotes)
             {
-                await Context.Guild.ModifyEmoteAsync(emoji =>
+                await Context.Guild.ModifyEmoteAsync(emote, e =>
                 {
-                    emoji.Roles = new List<Emote>{dummyEmojiRole};
-                })
+                    e.Roles = new List<IRole>{dummyEmojiRole};
+                });
             }
 
-            // Now add the pack roles to each
-            foreach (var pack in packRoles)
+            // Now add the pack roles to each emoji in each pack
+            foreach (var packRole in packRoles)
             {
-                foreach (var emote in _packs[pack].emotes)
+                foreach (var emote in _packs[packRole.Value.Name].emotes)
                 {
-                    emote.Roles.Add(pack)
+                    await Context.Guild.ModifyEmoteAsync((GuildEmote)emote, e =>
+                    {
+                        e.Roles.Value.ToList().Add(packRole.Value);
+                    }
+                    );
                 }
             }
 
@@ -79,10 +83,6 @@ namespace DeepState.Modules
         }
 
         [Command("purchase"), Alias("buy")]
-        // Placeholder here. Should be 100 times # of emojis when the pack structs are implemented
-        // TODO: Update this when structs are done
-        [RequireLibcoinBalance(EMC.PerEmojiCost)]
-
         public async Task BuyPack(string PackName)
         {
             // Fetch the role, case-insensitive
@@ -95,9 +95,19 @@ namespace DeepState.Modules
             }
             else
             {
-                _ = ((IGuildUser)Context.User).AddRoleAsync(packRole)
-            }
+                double packCost = _packs[PackName].cost;
+                double senderBalance = _userRecordsService.GetUserBalance(Context.User.Id, Context.Guild.Id);
+                
+                if(packCost > senderBalance)
+                {
+                    // TODO: Say something funny here
+                    await Context.Channel.SendMessageAsync("")
+                }
+                else
+                {
+                    await ((IGuildUser)Context.User).AddRoleAsync(packRole);
+                }
+            };
         }
-
     }
 }
