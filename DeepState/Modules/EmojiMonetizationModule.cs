@@ -155,6 +155,12 @@ namespace DeepState.Modules
 
         private async Task BuyPack(IRole packRole, ICommandContext Context)
         {
+            if(((IGuildUser)Context.User).RoleIds.Any(r => emoteBought.RoleIds.Contains(r)))
+            {
+                await Context.Channel.SendMessageAsync($"Sorry, {Context.User.Username}, but you already own {emoteBought.Name}.");
+                return;
+            }
+
             int packCost = _packs[packRole.Name].cost;
             double senderBalance = _userRecordsService.GetUserBalance(Context.User.Id, Context.Guild.Id);
             string senderName = Context.User.Username;
