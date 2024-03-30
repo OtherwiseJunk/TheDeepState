@@ -41,7 +41,7 @@ namespace DeepState.Services
                 }
                 catch
                 {
-                    await Context.User.SendMessageAsync("Sorry, I created the role but I don't have permission to move it's position, so your color might not change :shrug:");
+                    await Context.User.SendMessageAsync("Sorry, I created the role but I don't have permission to move its position, so your color might not change :shrug:");
                 }
             }
             else

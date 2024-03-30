@@ -21,7 +21,7 @@ namespace DeepState.Modules
     {
         private UserRecordsService _userRecordsService { get; set; };
         private bool _bit_active { get; set; };
-        public Dictionary<string, List<string>> _packs { get; set; };
+        public Dictionary<string, (List<Emote> emotes, int cost)> _packs { get; set; };
         
         public EmojiMonetizationModule(UserRecordsService service)
         {
@@ -30,9 +30,9 @@ namespace DeepState.Modules
 
             // TODO: Finish populating this
             // TODO: Ask Junk about command stuff
-            _packs = Dictionary<string, List<Emote>> Packs = new() {
-                { "LibCraftProPack", SharedConstants.ProPack },
-                { "pro", SharedConstants.BasicPack },
+            _packs new() {
+                { "LibCraft Basic Pack", (SharedConstants.ProPack, 800) },
+                { "LibCraft Pro Pack", (SharedConstants.BasicPack, 1500)},
             };
         }
 
@@ -40,12 +40,40 @@ namespace DeepState.Modules
         [RequireUserPermission(GuildPermission.ManageGuild)]
         public async Task StartBit()
         {
-            // This creates a new role for each in the list
-            List<IRole> PackRoles = new();
 
-            
+            IRole dummyEmojiRole = new("Dummy Emoji Role");
 
+            // Gets each role with a name in the pack
+            List<IRole> packRoles = Context.Guild.Roles
+                .Where(r => _packs.Any(p => p.Value.))
+                .ToDictionary(r => r.Name, r => r)
+
+            // Creates a new role for any missing packs
+            foreach (var pack in _packs
+                .Where(p => !(Context.Guild.Roles.Any(r => r.Name == p.Key)))
+                .ToDictionary(p => p.Key, p => p.Value))
+            {
+                await newRole = Context.Guild.CreateRoleAsync(pack).Result;
+            }
+
+            // Restrict all emojis
             List<GuildEmote> emojis = Context.Guild.Emotes;
+            foreach (var emoji in emojis)
+            {
+                await Context.Guild.ModifyEmoteAsync(emoji =>
+                {
+                    emoji.Roles = new List<Emote>{dummyEmojiRole};
+                })
+            }
+
+            // Now add the pack roles to each
+            foreach (var pack in packRoles)
+            {
+                foreach (var emote in _packs[pack].emotes)
+                {
+                    emote.Roles.Add(pack)
+                }
+            }
 
             _bit_active = true;
         }
