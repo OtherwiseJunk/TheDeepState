@@ -101,7 +101,7 @@ namespace DeepState.Modules
                 if(packCost > senderBalance)
                 {
                     // TODO: Say something funny here
-                    await Context.Channel.SendMessageAsync("")
+                    await Context.Channel.SendMessageAsync("");
                 }
                 else
                 {
