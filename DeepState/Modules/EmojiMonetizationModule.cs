@@ -156,9 +156,9 @@ namespace DeepState.Modules
 
         private async Task BuyPack(IRole packRole, ICommandContext Context)
         {
-            if(((IGuildUser)Context.User).RoleIds.Any(r => emoteBought.RoleIds.Contains(r)))
+            if(((IGuildUser)Context.User).RoleIds.Any(r => r == packRole.Id))
             {
-                await Context.Channel.SendMessageAsync($"Sorry, {Context.User.Username}, but you already own {emoteBought.Name}.");
+                await Context.Channel.SendMessageAsync($"Sorry, {Context.User.Username}, but you already own {packRole.Name}.");
                 return;
             }
 
