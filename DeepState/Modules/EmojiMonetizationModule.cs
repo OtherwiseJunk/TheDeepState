@@ -124,6 +124,7 @@ namespace DeepState.Modules
                 return;
             }
 
+            // Only allow if bit is active
             if(!_bit_active)
             {
                 await Context.Channel.SendMessageAsync($"We understand your enthusiasm! The LibCraft:registered: Emoji Monetization Pilot Program:tm: has ended due to public backlash, but stay tuned while we work to bring more exciting offers to you!");
