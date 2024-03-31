@@ -72,7 +72,13 @@ namespace DeepState.Modules
             var emotes = EMC.TestPack;
             foreach (var emote in emotes)
             {
-                await Context.Guild.ModifyEmoteAsync((GuildEmote)emote, e =>
+                var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
+
+                if (guildEmote == null)
+                {
+                    Console.WriteLine("Failed to cast the emote, bailing :dAmn:");
+                }
+                await Context.Guild.ModifyEmoteAsync(guildEmote, e =>
                 {
                     e.Roles = new List<IRole>{dummyEmojiRole};
                 });
@@ -83,7 +89,13 @@ namespace DeepState.Modules
             {
                 foreach (var emote in _packs[packRole.Key].emotes)
                 {
-                    await Context.Guild.ModifyEmoteAsync((GuildEmote)emote, e =>
+                    var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
+
+                    if(guildEmote == null)
+                    {
+                        Console.WriteLine("Failed to cast the emote, bailing :dAmn:");
+                    }
+                    await Context.Guild.ModifyEmoteAsync(guildEmote, e =>
                     {
                         var roles = e.Roles.GetValueOrDefault();
                         if (roles != null)
