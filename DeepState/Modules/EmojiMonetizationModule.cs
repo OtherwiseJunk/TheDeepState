@@ -259,7 +259,7 @@ namespace DeepState.Modules
                 await ((IGuildUser)Context.User).AddRoleAsync(packRole);
 
                 _userRecordsService.Deduct(Context.User.Id, Context.Guild.Id, packCost);
-                await Context.Channel.SendMessageAsync($"Congratulations, {senderName}! You are now the proud owner of the {packRole.Name}:tm:, for the low price of just {packCost} LibCoins:registered:.\n{EMC.ThankYouMessages[rand.Next(0, EMC.ThankYouMessages.Count())]}");
+                await Context.Channel.SendMessageAsync($"Congratulations, {senderName}! You are now the proud owner of the {packRole.Name}:tm:, for the low price of just {packCost} LibCoins:registered:.\nFor your convenience, a restart of your discord client is required for this change to take effect. That's the power of your Libcoin at work!\n\n{EMC.ThankYouMessages[rand.Next(0, EMC.ThankYouMessages.Count())]}");
             }
         }
 
