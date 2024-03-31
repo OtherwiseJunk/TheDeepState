@@ -21,8 +21,8 @@ namespace DeepState.Modules
     {
         private UserRecordsService _userRecordsService { get; set; }
         private bool _bit_active { get; set; }
-        public Dictionary<string, (List<Emote> emotes, int cost)> _packs { get; set; }
-        public Dictionary<string, IRole> _packRoles { get; set; }
+        public Dictionary<string, (List<Emote> emotes, int cost)> _packs;
+        public Dictionary<string, IRole> _packRoles;
         
         public EmojiMonetizationModule(UserRecordsService service)
         {
