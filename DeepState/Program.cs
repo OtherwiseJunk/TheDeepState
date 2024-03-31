@@ -245,6 +245,7 @@ namespace DeepState
             await _commands.AddModuleAsync<LockedTombModule>(_services);
             await _commands.AddModuleAsync<CharacterGeneratorModule>(_services);
             await _commands.AddModuleAsync<HighlightModule>(_services);
+            await _commands.AddModuleAsync<EmojiMonetizationModule>(_services);
 
 #if !DEBUG
 			await _commands.AddModuleAsync<JackboxModule>(_services);

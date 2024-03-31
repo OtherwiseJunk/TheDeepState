@@ -319,6 +319,8 @@ namespace DeepState.Constants
 			Emote.Parse(BooHooCrackerID),
 			Emote.Parse(BogId)
 		};
+
+
 		#endregion
 
 		#region RegexStrings
