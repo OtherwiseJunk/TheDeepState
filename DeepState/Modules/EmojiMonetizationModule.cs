@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
 using System;
-
+using System.Text;
 
 namespace DeepState.Modules
 {
@@ -40,13 +40,11 @@ namespace DeepState.Modules
         }
 
         [Command("start")]
-        [RequireUserPermission(GuildPermission.ManageGuild)]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "AdminCheck"), RequireOwner(Group = "AdminCheck")]
         public async Task StartBit()
         {
 
             await Context.Channel.SendMessageAsync("Starting bit...");
-
-            var dummyEmojiRole = await Context.Guild.CreateRoleAsync("Dummy Emoji Role", null, null, false, null);
 
             // Gets each role with a name in the pack
             _packRoles = Context.Guild.Roles
@@ -68,6 +66,12 @@ namespace DeepState.Modules
             var emotes = Context.Guild.Emotes;
             */
             var emotes = EMC.TestPack;
+            var testPackRole = Context.Guild.Roles.FirstOrDefault(role => role.Name.Equals("LibCraft Test Pack"));
+            if (testPackRole == null)
+            {
+                await Context.Channel.SendMessageAsync("Aw fuck. No test pack role?!");
+                return;
+            }
             foreach (var emote in emotes)
             {
                 var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
@@ -78,7 +82,7 @@ namespace DeepState.Modules
                 }
                 await Context.Guild.ModifyEmoteAsync(guildEmote, e =>
                 {
-                    e.Roles = new List<IRole>{dummyEmojiRole};
+                    e.Roles = new List<IRole>{ testPackRole };
                 });
             }
 
@@ -98,7 +102,7 @@ namespace DeepState.Modules
                         var roles = e.Roles.GetValueOrDefault();
                         if (roles != null)
                         {
-                            e.Roles = new List<IRole> { dummyEmojiRole, packRole.Value };
+                            e.Roles = new List<IRole> { testPackRole, packRole.Value };
                         }
                     });
                 }
@@ -108,17 +112,32 @@ namespace DeepState.Modules
         }
 
         [Command("end")]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "AdminCheck"), RequireOwner(Group = "AdminCheck")]
         public async Task EndBit()
         {
             await Context.Channel.SendMessageAsync("Ending bit...");
 
             // Clear the roles from all emojis
-            foreach(var emote in Context.Guild.Emotes)
+            foreach (var pack in _packs)
             {
-                await Context.Guild.ModifyEmoteAsync(emote, e =>
+                foreach (var emote in pack.Value.emotes)
                 {
-                    e.Roles = new();
-                });
+                    var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
+                    if(guildEmote == null)
+                    {
+                        Console.WriteLine("Sadge");
+                    }
+
+                    await Context.Guild.ModifyEmoteAsync(guildEmote, emote =>
+                    {
+                        var role = emote.Roles.GetValueOrDefault();
+                        if(role != null)
+                        {
+                            emote.Roles = new();
+                        }
+                        
+                    });
+                }
             }
             foreach(var pack in _packs)
             {
@@ -147,7 +166,7 @@ namespace DeepState.Modules
             if(!IsBitActiveForGuild(Context.Guild))
             {
                 await Context.Channel.SendMessageAsync($"We understand your enthusiasm! The LibCraft:registered: Emoji Monetization Pilot Program:tm: has ended due to public backlash, but stay tuned while we work to bring more exciting offers to you!");
-
+                return;
             }
 
             // Fetch the role, case-insensitive
@@ -171,6 +190,38 @@ namespace DeepState.Modules
             {
                 await BuyPack(packRole, Context);
             }
+        }
+
+        [Command("debug")]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "AdminCheck"), RequireOwner(Group = "AdminCheck")]
+        public async Task Debug()
+        {
+            var builder = new StringBuilder();
+
+            if (!IsBitActiveForGuild(Context.Guild))
+            {
+                await Context.Channel.SendMessageAsync("The bit isn't on, gotta start it.");
+            }
+            foreach(var pack in _packs)
+            {
+                foreach(var emote in pack.Value.emotes)
+                {
+                    var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
+                    if (guildEmote == null)
+                    {
+                        Console.WriteLine("Sadge");
+                    }
+
+                    var roles = guildEmote.RoleIds.ToList();
+                    builder.AppendLine($"${guildEmote.Name} Role IDs");
+                    foreach (var role in roles)
+                    {
+                        builder.AppendLine($"{role}");
+                    }
+                }
+            }
+
+            await Context.Channel.SendMessageAsync(builder.ToString());
         }
 
         private bool IsBitActiveForGuild(IGuild guild)
