@@ -127,7 +127,7 @@ namespace DeepState.Modules
         }
 
         [Command("purchase")]
-        public async void Purchase(string input)
+        public async Task Purchase(string input)
         {
             // Only allow in #bot-commands
             if(Context.Channel.Id != /*SharedConstants.LCBotCommandsChannel*/ 707386561779597332)
