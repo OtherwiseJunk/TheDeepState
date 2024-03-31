@@ -20,14 +20,12 @@ namespace DeepState.Modules
     public class EmojiMonetizationModule : ModuleBase
     {
         private UserRecordsService _userRecordsService { get; set; }
-        private bool _bit_active { get; set; }
         public Dictionary<string, (List<Emote> emotes, int cost)> _packs;
         public Dictionary<string, IRole> _packRoles;
         
         public EmojiMonetizationModule(UserRecordsService service)
         {
             _userRecordsService = service;
-            _bit_active = false;
 
             // TODO: Finish populating this
             // TODO: Ask Junk about command stuff
@@ -106,8 +104,6 @@ namespace DeepState.Modules
                 }
             }
 
-            _bit_active = true;
-
             await Context.Channel.SendMessageAsync("Bit successfully started!");
         }
 
@@ -124,6 +120,17 @@ namespace DeepState.Modules
                     e.Roles = new();
                 });
             }
+            foreach(var pack in _packs)
+            {
+                var role = Context.Guild.Roles.FirstOrDefault((role) => role.Name.Equals(pack.Key));
+                if(role == null)
+                {
+                    continue;
+                }
+
+                await role.DeleteAsync();
+            }
+            
         }
 
         [Command("purchase")]
@@ -137,7 +144,7 @@ namespace DeepState.Modules
             }
 
             // Only allow if bit is active
-            if(!_bit_active)
+            if(!IsBitActiveForGuild(Context.Guild))
             {
                 await Context.Channel.SendMessageAsync($"We understand your enthusiasm! The LibCraft:registered: Emoji Monetization Pilot Program:tm: has ended due to public backlash, but stay tuned while we work to bring more exciting offers to you!");
 
@@ -164,6 +171,18 @@ namespace DeepState.Modules
             {
                 await BuyPack(packRole, Context);
             }
+        }
+
+        private bool IsBitActiveForGuild(IGuild guild)
+        {
+            var roles = guild.Roles;
+            var bitIsActive = true;
+            foreach(var pack in _packs)
+            {
+                bitIsActive &= roles.FirstOrDefault((role) => role.Name.Equals(pack.Key)) != null;
+            }
+
+            return bitIsActive;
         }
 
         private async Task BuyPack(IRole packRole, ICommandContext Context)
