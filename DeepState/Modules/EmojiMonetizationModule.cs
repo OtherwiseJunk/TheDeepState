@@ -28,12 +28,19 @@ namespace DeepState.Modules
             _userRecordsService = service;
 
             // TODO: Finish populating this
-            // TODO: Ask Junk about command stuff
 
             _packs = new() {/*
-                { "LibCraft Basic Pack", (EMC.BasicPack, 800)},
-                { "LibCraft Pro Pack", (EMC.ProPack, 1500)},*/
-                { "LibCraft Test Pack", (EMC.TestPack, 1)}
+                { "LibCraft Basic Pack", (EMC.BasicPack, 800) },
+                { "LibCraft Pro Pack", (EMC.ProPack, 1500) },
+                { "GorePack", (EMC.GorePack, 1000) },
+                { "GwalmsPack", (EMC.GwalmsPack, 1000) },
+                { "CrabPack", (EMC.CrabPack, 5000) },
+                { "FroggyPack", (EMC.FroggyPack, 1000) },
+                { "SympathyPack", (EMC.SympathyPack, 1000) },
+                { "AnguishPack", (EMC.AnguishPack, 1000) },
+                { "UserpatPack", (EMC.UserpatPack, 1500) },
+                { "BootlickerPack", (EMC.BootlickerPack, 10) }*/
+                { "LibCraft Test Pack", (EMC.TestPack, 1) }
             };
 
             _packRoles = new();
@@ -52,12 +59,27 @@ namespace DeepState.Modules
                 .ToDictionary(r => r.Name, r => r);
 
             // Creates a new role for any missing packs
-            foreach (var pack in _packs
-                .Where(p => !Context.Guild.Roles.Any(r => r.Name == p.Key))
-                .ToDictionary(p => p.Key, p => p.Value))
+            foreach (var pack in _packs)
             {
-                var newRole = await Context.Guild.CreateRoleAsync(pack.Key, null, null, false, null);
-                _packRoles.Add(pack.Key, newRole);
+                var packRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.Equals(pack.Key));
+                if(packRole == null)
+                    {
+                        Console.WriteLine($"No role {pack.Key}, creating...");
+                        packRole = await Context.Guild.CreateRoleAsync(pack.Key, null, null, false, null);
+                    }
+                foreach (var emote in pack.Value.emotes)
+                {
+                    var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
+
+                    await Context.Guild.ModifyEmoteAsync(guildEmote, e =>
+                    {
+                        var roles = e.Roles.GetValueOrDefault();
+                        
+                        e.Roles = new(roles.Append(packRole));
+                    });
+
+                    _packRoles.Add(pack.Key, packRole);
+                }
             }
 
             // Restrict all emojis
@@ -66,10 +88,12 @@ namespace DeepState.Modules
             var emotes = Context.Guild.Emotes;
             */
             var emotes = EMC.TestPack;
-            var testPackRole = Context.Guild.Roles.FirstOrDefault(role => role.Name.Equals("LibCraft Test Pack"));
-            if (testPackRole == null)
+            var dummyRole = Context.Guild.Roles.FirstOrDefault(role => role.Name.Equals("Dummy Emoji Role"));
+            if (dummyRole == null)
             {
-                await Context.Channel.SendMessageAsync("Aw fuck. No test pack role?!");
+                await Context.Channel.SendMessageAsync("Aw fuck. No dummy role?!");
+                await Context.Guild.CreateRoleAsync("Dummy Emoji Role", null, null, false, null);
+
                 return;
             }
             foreach (var emote in emotes)
@@ -82,7 +106,7 @@ namespace DeepState.Modules
                 }
                 await Context.Guild.ModifyEmoteAsync(guildEmote, e =>
                 {
-                    e.Roles = new List<IRole>{ testPackRole };
+                    e.Roles = new List<IRole>{ dummyRole };
                 });
             }
 
@@ -102,7 +126,7 @@ namespace DeepState.Modules
                         var roles = e.Roles.GetValueOrDefault();
                         if (roles != null)
                         {
-                            e.Roles = new List<IRole> { testPackRole, packRole.Value };
+                            e.Roles = new List<IRole> { dummyRole, packRole.Value };
                         }
                     });
                 }
@@ -149,6 +173,10 @@ namespace DeepState.Modules
 
                 await role.DeleteAsync();
             }
+
+            await Context.Channel.SendMessageAsync("Bit successfully ended!");
+
+            
             
         }
 
@@ -165,30 +193,30 @@ namespace DeepState.Modules
             // Only allow if bit is active
             if(!IsBitActiveForGuild(Context.Guild))
             {
-                await Context.Channel.SendMessageAsync($"We understand your enthusiasm! The LibCraft:registered: Emoji Monetization Pilot Program:tm: has ended due to public backlash, but stay tuned while we work to bring more exciting offers to you!");
-                return;
-            }
-
-            // Fetch the role, case-insensitive
-            // If role doesn't exist, null
-            IRole packRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower().Replace(" ", string.Empty) == input.ToLower(), null);
-
-            if (packRole == null)
+                await Context.Channel.SendMessageAsync($"We understand your enthusiasm! The LibCraft:registered: Emoji Monetization Pilot Program:tm: has ended due to public backlash, but stay tuned while we work to bring more exciting offers to you!");            }
+            else
             {
-                GuildEmote emoteBought = Context.Guild.Emotes.FirstOrDefault(r => r.Name.ToLower() == input.ToLower(), null);
-                
-                if(emoteBought == null)
+                // Fetch the role, case-insensitive
+                // If role doesn't exist, null
+                IRole packRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.ToLower().Replace(" ", string.Empty) == input.ToLower(), null);
+
+                if (packRole == null)
                 {
-                    await Context.Channel.SendMessageAsync("Sorry, I can't find that Emoji or LibCraft:registered: Emoji Pack:tm:.");
+                    GuildEmote emoteBought = Context.Guild.Emotes.FirstOrDefault(r => r.Name.ToLower() == input.ToLower(), null);
+                
+                    if(emoteBought == null)
+                    {
+                        await Context.Channel.SendMessageAsync("Sorry, I can't find that Emoji or LibCraft:registered: Emoji Pack:tm:.");
+                    }
+                    else
+                    {
+                        await BuyEmoji(emoteBought, Context);
+                    }
                 }
                 else
                 {
-                    await BuyEmoji(emoteBought, Context);
+                    await BuyPack(packRole, Context);
                 }
-            }
-            else
-            {
-                await BuyPack(packRole, Context);
             }
         }
 
@@ -202,21 +230,24 @@ namespace DeepState.Modules
             {
                 await Context.Channel.SendMessageAsync("The bit isn't on, gotta start it.");
             }
-            foreach(var pack in _packs)
+            else
             {
-                foreach(var emote in pack.Value.emotes)
+                foreach(var pack in _packs)
                 {
-                    var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
-                    if (guildEmote == null)
+                    foreach(var emote in pack.Value.emotes)
                     {
-                        Console.WriteLine("Sadge");
-                    }
+                        var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
+                        if (guildEmote == null)
+                        {
+                            Console.WriteLine("Sadge");
+                        }
 
-                    var roles = guildEmote.RoleIds.ToList();
-                    builder.AppendLine($"${guildEmote.Name} Role IDs");
-                    foreach (var role in roles)
-                    {
-                        builder.AppendLine($"{role}");
+                        var roles = guildEmote.RoleIds.ToList();
+                        builder.AppendLine($"${guildEmote.Name} Role IDs");
+                        foreach (var role in roles)
+                        {
+                            builder.AppendLine($"{role}");
+                        }
                     }
                 }
             }
@@ -295,7 +326,7 @@ namespace DeepState.Modules
             }
 
             _userRecordsService.Deduct(Context.User.Id, Context.Guild.Id, emojiCost);
-            await Context.Channel.SendMessageAsync($"Congratulations, {senderName}! You have bought {emoteBought.Name} for {emojiCost}.\n{EMC.ThankYouMessages[rand.Next(0, EMC.ThankYouMessages.Count())]}");
+            await Context.Channel.SendMessageAsync($"Congratulations, {senderName}! You have bought {emoteBought.Name} for {emojiCost}.\n{EMC.ThankYouMessages[rand.Next(0, EMC.ThankYouMessages.Count())]} \n In order for the changes to take place, you may have to restart your Discord client.");
         }
     }
 }
