@@ -256,7 +256,7 @@ namespace DeepState
                 {
                     if (messageParam.Channel.Id != SharedConstants.SelfCareChannelId)
                     {
-                        _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix);
+                        _ = OMH.HandleCommandWithSummaryOnError(messageParam, new CommandContext(_client, (SocketUserMessage)messageParam), _commands, _services, BotProperties.CommandPrefix, false);
                     }
                 }
                 catch (Exception ex)

@@ -12,6 +12,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System;
 using System.Text;
+using DartsDiscordBots.Permissions;
+using System.Threading;
 
 namespace DeepState.Modules
 {
@@ -22,14 +24,14 @@ namespace DeepState.Modules
         private UserRecordsService _userRecordsService { get; set; }
         public Dictionary<string, (List<Emote> emotes, int cost)> _packs;
         public Dictionary<string, IRole> _packRoles;
-        
+
         public EmojiMonetizationModule(UserRecordsService service)
         {
             _userRecordsService = service;
 
             // TODO: Finish populating this
 
-            _packs = new() {/*
+            _packs = new() {
                 { "LibCraft Basic Pack", (EMC.BasicPack, 800) },
                 { "LibCraft Pro Pack", (EMC.ProPack, 1500) },
                 { "GorePack", (EMC.GorePack, 1000) },
@@ -39,15 +41,26 @@ namespace DeepState.Modules
                 { "SympathyPack", (EMC.SympathyPack, 1000) },
                 { "AnguishPack", (EMC.AnguishPack, 1000) },
                 { "UserpatPack", (EMC.UserpatPack, 1500) },
-                { "BootlickerPack", (EMC.BootlickerPack, 10) }*/
-                { "LibCraft Test Pack", (EMC.TestPack, 1) }
+                { "BootlickerPack", (EMC.BootlickerPack, 10) }
             };
 
             _packRoles = new();
         }
 
+        private async Task<IRole> CreateRoleIfMissing(KeyValuePair<string, (List<Emote> emotes, int cost)> pack)
+        {
+            var packRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.Equals(pack.Key));
+            if (packRole == null)
+            {
+                Console.WriteLine($"No role {pack.Key}, creating...");
+                packRole = await Context.Guild.CreateRoleAsync(pack.Key, null, null, false, null);
+            }
+
+            return packRole;
+        }
+
         [Command("start")]
-        [RequireUserPermission(GuildPermission.ManageGuild, Group = "AdminCheck"), RequireOwner(Group = "AdminCheck")]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "AdminCheck"), RequireOwner(Group = "AdminCheck"), RequireChannel(new ulong[] { 707386561779597332 }, Group = "AdminCheck")]
         public async Task StartBit()
         {
 
@@ -61,82 +74,36 @@ namespace DeepState.Modules
             // Creates a new role for any missing packs
             foreach (var pack in _packs)
             {
-                var packRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.Equals(pack.Key));
-                if(packRole == null)
-                    {
-                        Console.WriteLine($"No role {pack.Key}, creating...");
-                        packRole = await Context.Guild.CreateRoleAsync(pack.Key, null, null, false, null);
-                    }
-                foreach (var emote in pack.Value.emotes)
-                {
-                    var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
-
-                    await Context.Guild.ModifyEmoteAsync(guildEmote, e =>
-                    {
-                        var roles = e.Roles.GetValueOrDefault();
-                        
-                        e.Roles = new(roles.Append(packRole));
-                    });
-
-                    _packRoles.Add(pack.Key, packRole);
-                }
+                var packRole = await CreateRoleIfMissing(pack);
+                _packRoles[pack.Key] = packRole;
             }
 
-            // Restrict all emojis
-            // TODO: uncomment when finished with testing
-            /*
-            var emotes = Context.Guild.Emotes;
-            */
-            var emotes = EMC.TestPack;
+            var emotes = Context.Guild.Emotes.Select(emote => emote as Emote).ToList();
             var dummyRole = Context.Guild.Roles.FirstOrDefault(role => role.Name.Equals("Dummy Emoji Role"));
             if (dummyRole == null)
             {
                 await Context.Channel.SendMessageAsync("Aw fuck. No dummy role?!");
-                await Context.Guild.CreateRoleAsync("Dummy Emoji Role", null, null, false, null);
-
-                return;
+                dummyRole = await Context.Guild.CreateRoleAsync("Dummy Emoji Role", null, null, false, null);
             }
-            foreach (var emote in emotes)
-            {
-                var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
-
-                if (guildEmote == null)
-                {
-                    Console.WriteLine("Failed to cast the emote, bailing :dAmn:");
-                }
-                await Context.Guild.ModifyEmoteAsync(guildEmote, e =>
-                {
-                    e.Roles = new List<IRole>{ dummyRole };
-                });
-            }
+            await AddRoleToEmotes(dummyRole, emotes);
 
             // Now add the pack roles to each emoji in each pack
             foreach (var packRole in _packRoles)
             {
-                foreach (var emote in _packs[packRole.Key].emotes)
-                {
-                    var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
-
-                    if(guildEmote == null)
-                    {
-                        Console.WriteLine("Failed to cast the emote, bailing :dAmn:");
-                    }
-                    await Context.Guild.ModifyEmoteAsync(guildEmote, e =>
-                    {
-                        var roles = e.Roles.GetValueOrDefault();
-                        if (roles != null)
-                        {
-                            e.Roles = new List<IRole> { dummyRole, packRole.Value };
-                        }
-                    });
-                }
+                await AddRoleToEmotes(packRole.Value, _packs[packRole.Key].emotes);
+                Console.WriteLine($"Added role to all emotes for {packRole.Key}");
             }
 
             await Context.Channel.SendMessageAsync("Bit successfully started!");
         }
 
+        private List<ulong> getRolesForEmote(GuildEmote guildEmote)
+        {
+            return guildEmote.RoleIds.ToList();
+        }
+
         [Command("end")]
-        [RequireUserPermission(GuildPermission.ManageGuild, Group = "AdminCheck"), RequireOwner(Group = "AdminCheck")]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "AdminCheck"), RequireOwner(Group = "AdminCheck"), RequireChannel(new ulong[] { 707386561779597332 }, Group = "AdminCheck")]
         public async Task EndBit()
         {
             await Context.Channel.SendMessageAsync("Ending bit...");
@@ -147,26 +114,23 @@ namespace DeepState.Modules
                 foreach (var emote in pack.Value.emotes)
                 {
                     var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
-                    if(guildEmote == null)
+                    if (guildEmote == null)
                     {
                         Console.WriteLine("Sadge");
+                        continue;
                     }
-
+                    
                     await Context.Guild.ModifyEmoteAsync(guildEmote, emote =>
                     {
-                        var role = emote.Roles.GetValueOrDefault();
-                        if(role != null)
-                        {
-                            emote.Roles = new();
-                        }
-                        
+                        emote.Roles = null;
                     });
+                    await Context.Channel.SendMessageAsync($"baleted");
                 }
             }
-            foreach(var pack in _packs)
+            foreach (var pack in _packs)
             {
                 var role = Context.Guild.Roles.FirstOrDefault((role) => role.Name.Equals(pack.Key));
-                if(role == null)
+                if (role == null)
                 {
                     continue;
                 }
@@ -175,25 +139,23 @@ namespace DeepState.Modules
             }
 
             await Context.Channel.SendMessageAsync("Bit successfully ended!");
-
-            
-            
         }
 
         [Command("purchase")]
         public async Task Purchase(string input)
         {
-            // Only allow in #bot-commands
-            if(Context.Channel.Id != /*SharedConstants.LCBotCommandsChannel*/ 707386561779597332)
+            // Only allow in #bot-commands and #echo-chamber
+            if (Context.Channel.Id != SharedConstants.LCBotCommandsChannel && Context.Channel.Id != 707386561779597332)
             {
                 await Context.Channel.SendMessageAsync($"Sorry, {Context.User.Username}, this command is not allowed in this channel.");
                 return;
             }
 
             // Only allow if bit is active
-            if(!IsBitActiveForGuild(Context.Guild))
+            if (!IsBitActiveForGuild(Context.Guild))
             {
-                await Context.Channel.SendMessageAsync($"We understand your enthusiasm! The LibCraft:registered: Emoji Monetization Pilot Program:tm: has ended due to public backlash, but stay tuned while we work to bring more exciting offers to you!");            }
+                await Context.Channel.SendMessageAsync($"We understand your enthusiasm! The LibCraft:registered: Emoji Monetization Pilot Program:tm: has ended due to public backlash, but stay tuned while we work to bring more exciting offers to you!");
+            }
             else
             {
                 // Fetch the role, case-insensitive
@@ -203,8 +165,8 @@ namespace DeepState.Modules
                 if (packRole == null)
                 {
                     GuildEmote emoteBought = Context.Guild.Emotes.FirstOrDefault(r => r.Name.ToLower() == input.ToLower(), null);
-                
-                    if(emoteBought == null)
+
+                    if (emoteBought == null)
                     {
                         await Context.Channel.SendMessageAsync("Sorry, I can't find that Emoji or LibCraft:registered: Emoji Pack:tm:.");
                     }
@@ -221,36 +183,34 @@ namespace DeepState.Modules
         }
 
         [Command("debug")]
-        [RequireUserPermission(GuildPermission.ManageGuild, Group = "AdminCheck"), RequireOwner(Group = "AdminCheck")]
+        [RequireUserPermission(GuildPermission.ManageGuild, Group = "AdminCheck"), RequireOwner(Group = "AdminCheck"), RequireChannel(new ulong[] { 707386561779597332 }, Group = "AdminCheck")]
         public async Task Debug()
         {
             var builder = new StringBuilder();
 
             if (!IsBitActiveForGuild(Context.Guild))
             {
-                await Context.Channel.SendMessageAsync("The bit isn't on, gotta start it.");
+                await Context.Channel.SendMessageAsync("The bit _shouldn't_ be on... but let's check...");
             }
-            else
+            foreach (var pack in _packs)
             {
-                foreach(var pack in _packs)
+                foreach (var emote in pack.Value.emotes)
                 {
-                    foreach(var emote in pack.Value.emotes)
+                    var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
+                    if (guildEmote == null)
                     {
-                        var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
-                        if (guildEmote == null)
-                        {
-                            Console.WriteLine("Sadge");
-                        }
+                        Console.WriteLine("Sadge");
+                    }
 
-                        var roles = guildEmote.RoleIds.ToList();
-                        builder.AppendLine($"${guildEmote.Name} Role IDs");
-                        foreach (var role in roles)
-                        {
-                            builder.AppendLine($"{role}");
-                        }
+                    var roles = guildEmote.RoleIds.ToList();
+                    builder.AppendLine($"${guildEmote.Name} Role IDs");
+                    foreach (var role in roles)
+                    {
+                        builder.AppendLine($"{role}");
                     }
                 }
             }
+
 
             await Context.Channel.SendMessageAsync(builder.ToString());
         }
@@ -259,7 +219,7 @@ namespace DeepState.Modules
         {
             var roles = guild.Roles;
             var bitIsActive = true;
-            foreach(var pack in _packs)
+            foreach (var pack in _packs)
             {
                 bitIsActive &= roles.FirstOrDefault((role) => role.Name.Equals(pack.Key)) != null;
             }
@@ -269,7 +229,7 @@ namespace DeepState.Modules
 
         private async Task BuyPack(IRole packRole, ICommandContext Context)
         {
-            if(((IGuildUser)Context.User).RoleIds.Any(r => r == packRole.Id))
+            if (((IGuildUser)Context.User).RoleIds.Any(r => r == packRole.Id))
             {
                 await Context.Channel.SendMessageAsync($"Sorry, {Context.User.Username}, but you already own {packRole.Name}.");
                 return;
@@ -279,9 +239,9 @@ namespace DeepState.Modules
             double senderBalance = _userRecordsService.GetUserBalance(Context.User.Id, Context.Guild.Id);
             string senderName = Context.User.Username;
             Random rand = Utils.CreateSeededRandom();
-           
-                
-            if(packCost > senderBalance)
+
+
+            if (packCost > senderBalance)
             {
                 await Context.Channel.SendMessageAsync($"Sorry, {senderName}, but this LibCraft:registered: Emoji Pack:tm: costs {packCost} LibCoins:registered:, and you only have {senderBalance}.");
             }
@@ -296,7 +256,7 @@ namespace DeepState.Modules
 
         private async Task BuyEmoji(GuildEmote emoteBought, ICommandContext Context)
         {
-            if(((IGuildUser)Context.User).RoleIds.Any(r => emoteBought.RoleIds.Contains(r)))
+            if (((IGuildUser)Context.User).RoleIds.Any(r => emoteBought.RoleIds.Contains(r)))
             {
                 await Context.Channel.SendMessageAsync($"Sorry, {Context.User.Username}, but you already own {emoteBought.Name}.");
                 return;
@@ -312,21 +272,41 @@ namespace DeepState.Modules
             var er = _packRoles
                 .FirstOrDefault(r => r.Key.ToLower().Replace(" ", string.Empty) == emoteBought.Name.ToLower()).Value;
 
-            IRole? emoteRole = er.Equals(default(IRole)) ? null : er;
-
-            if(emoteRole != null)
+            if (er != null)
             {
-                await ((IGuildUser)Context.User).AddRoleAsync(emoteRole);
+                await ((IGuildUser)Context.User).AddRoleAsync(er);
             }
             else
             {
-                emoteRole = await Context.Guild.CreateRoleAsync(emoteBought.Name + " Emoji", null, null, false, null);
-                _packRoles.Add(emoteBought.Name, emoteRole);
-
+                er = await Context.Guild.CreateRoleAsync(emoteBought.Name + " Emoji", null, null, false, null);
+                _packRoles.Add(emoteBought.Name, er);
+                await AddRoleToEmotes(er, new List<Emote>() { emoteBought });
+                await ((IGuildUser)Context.User).AddRoleAsync(er);
             }
 
             _userRecordsService.Deduct(Context.User.Id, Context.Guild.Id, emojiCost);
             await Context.Channel.SendMessageAsync($"Congratulations, {senderName}! You have bought {emoteBought.Name} for {emojiCost}.\n{EMC.ThankYouMessages[rand.Next(0, EMC.ThankYouMessages.Count())]} \n In order for the changes to take place, you may have to restart your Discord client.");
+        }
+
+        private async Task AddRoleToEmotes(IRole role, List<Emote> emotes)
+        {
+            foreach (var emote in emotes)
+            {
+                var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
+                if (guildEmote == null)
+                {
+                    Console.WriteLine("Failed to cast the emote, bailing :dAmn:");
+                }
+                await Context.Guild.ModifyEmoteAsync(guildEmote, e =>
+                {
+                    List<IRole> requiredRoles = new() { role };
+                    foreach (var emoteId in guildEmote.RoleIds)
+                    {
+                        requiredRoles.Add(Context.Guild.GetRole(emoteId));
+                    }
+                    e.Roles = requiredRoles.Distinct().ToList();
+                });
+            }
         }
     }
 }

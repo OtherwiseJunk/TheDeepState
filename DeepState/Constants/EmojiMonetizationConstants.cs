@@ -21,7 +21,7 @@ namespace DeepState.Constants
 
 		// TODO: Finish populating this
 
-		/*public static List<Emote> BasicPack = new List<Emote>
+		public static List<Emote> BasicPack = new List<Emote>
 		{
 			Emote.Parse("<:emoji:707407221792702525>"),
 			Emote.Parse("<:this:707412329297346622>"),
@@ -64,7 +64,6 @@ namespace DeepState.Constants
 			Emote.Parse("<:GorePat2:905366033534156800>"),
 			Emote.Parse("<:goretrue:1122399419703230515>"),
 			Emote.Parse("<:GoreBat:905364714031308801>"),
-			Emote.Parse("<:GoreClown:905646998676439111>"),
 			Emote.Parse("<:GoreLove:905364357989421076>"),
 			Emote.Parse("<:gorejus:1064079788454723614>"),
 			Emote.Parse("<:goretice:1064079849574105088>"),
@@ -155,7 +154,6 @@ namespace DeepState.Constants
 		{
 			Emote.Parse("<:stickywoah:940114633795186718>"),
 			Emote.Parse("<a:stickypat:944698360735096923>"),
-			Emote.Parse("<:StickyWoke:1053861440676704366>"),
 			Emote.Parse("<a:StickyWOKEpat:1099922482552635555>"),
 			Emote.Parse("<a:STICKYPAT:1189042055998087229>"),
 			Emote.Parse("<a:d9pat:944698428829605948>"),
@@ -195,7 +193,7 @@ namespace DeepState.Constants
 			Emote.Parse("<:killme:801674108491792394>"),
 			Emote.Parse("<:gutfeld:1141737776908357763>"),
 			Emote.Parse("<:utterrage:820744882561613905>")
-		};*/
+		};
 
 
 
