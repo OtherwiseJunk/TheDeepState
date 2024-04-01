@@ -182,6 +182,20 @@ namespace DeepState.Modules
             }
         }
 
+        [Command("list")]
+        public async Task List()
+        {
+            EmbedBuilder builder = new();
+            builder.Title = "Available Emojipacks";
+
+            foreach(var pack in _packs)
+            {
+                builder.AddField(pack.Key.Replace(" ",""), $"{pack.Value.cost} Libcoin");
+            }
+
+            await Context.Channel.SendMessageAsync(embed: builder.Build());
+        }
+
         [Command("debug")]
         [RequireUserPermission(GuildPermission.ManageGuild, Group = "AdminCheck"), RequireOwner(Group = "AdminCheck"), RequireChannel(new ulong[] { 707386561779597332 }, Group = "AdminCheck")]
         public async Task Debug()
