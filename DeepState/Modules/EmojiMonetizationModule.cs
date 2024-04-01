@@ -62,18 +62,24 @@ namespace DeepState.Modules
             foreach (var pack in _packs)
             {
                 var packRole = Context.Guild.Roles.FirstOrDefault(r => r.Name.Equals(pack.Key));
-                if(guildEmote == null)
+                if(packRole == null)
                     {
                         Console.WriteLine($"No role {pack.Key}, creating...");
                         packRole = await Context.Guild.CreateRoleAsync(pack.Key, null, null, false, null);
                     }
+                foreach (var emote in pack.Value.emotes)
+                {
+                    var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
+
                     await Context.Guild.ModifyEmoteAsync(guildEmote, e =>
                     {
                         var roles = e.Roles.GetValueOrDefault();
                         
-                        e.Roles = roles.Append(packRole);
+                        e.Roles = new(roles.Append(packRole));
                     });
-                _packRoles.Add(pack.Key, newRole);
+
+                    _packRoles.Add(pack.Key, packRole);
+                }
             }
 
             // Restrict all emojis
