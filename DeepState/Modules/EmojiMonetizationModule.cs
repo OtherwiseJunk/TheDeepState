@@ -107,25 +107,21 @@ namespace DeepState.Modules
         public async Task EndBit()
         {
             await Context.Channel.SendMessageAsync("Ending bit...");
-
+            var emotes = Context.Guild.Emotes.Select(emote => emote as Emote).ToList();
             // Clear the roles from all emojis
-            foreach (var pack in _packs)
+            foreach (var emote in emotes)
             {
-                foreach (var emote in pack.Value.emotes)
+                var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
+                if (guildEmote == null)
                 {
-                    var guildEmote = await Context.Guild.GetEmoteAsync(emote.Id);
-                    if (guildEmote == null)
-                    {
-                        Console.WriteLine("Sadge");
-                        continue;
-                    }
-                    
-                    await Context.Guild.ModifyEmoteAsync(guildEmote, emote =>
-                    {
-                        emote.Roles = null;
-                    });
-                    await Context.Channel.SendMessageAsync($"baleted");
-                }
+                    Console.WriteLine("Sadge");
+                    continue;
+                }    
+                await Context.Guild.ModifyEmoteAsync(guildEmote, emote =>
+                {
+                    emote.Roles = null;
+                });
+                await Context.Channel.SendMessageAsync($"baleted");
             }
             foreach (var pack in _packs)
             {
