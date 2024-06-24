@@ -560,7 +560,7 @@ namespace DeepState
 
             if (!noTwitterDeleteGuilds.Contains(guild.Id) && !message.Content.StartsWith(BotProperties.CommandPrefix))
             {
-                new Thread(async () => { await OnMessageHandlers.ReplyToAllTwitterLinksWithCVXTwitter(message); }).Start();
+                // new Thread(async () => { await OnMessageHandlers.ReplyToAllTwitterLinksWithCVXTwitter(message); }).Start();
             }
             else
             {
