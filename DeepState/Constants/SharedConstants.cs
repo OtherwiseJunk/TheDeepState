@@ -336,7 +336,7 @@ namespace DeepState.Constants
 		public static string P = "[🇵pρ₽𝖯𝐩pP𝞺𝚙ｐ𝞀ß𝓹:🇵;р🅱]";
 		public static string R = "[🇷rwr®️:;ɤ𝓻г🇷ř]"; 
 		public static string S = "[s𝓼𝕤𝒔$5𝗌]";
-		public static string PreggersDetector = $"(?!(.*p.*w.*9.*e.*r.*h))(?:{P}{R}(?:{E}*{G}+)?{E.Replace("]", "a]")}*{R}+{S}?)";
+		public static string PreggersDetector = $"{P}+{R}+{E}*{G}+{E.Replace("]", "a]")}*{R}+{S}?";
         public static string PreggizleDetector = $"{P}+{R}+{E}*{G}+i+z+l+e+";
         public static string PerggersDetector = $"{P}+{E}*{R}+{G}+{E.Replace("]", "a]")}*{R}+";
         public static string PreghersDetector = $"{P}+{R}+{E}*{G}+h+e+r+[sz]+";
