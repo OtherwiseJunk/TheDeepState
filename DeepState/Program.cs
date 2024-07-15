@@ -115,7 +115,7 @@ namespace DeepState
             }, s => s.ToRunEvery(1).Days().At(0, 35));
         }
 
-        public async Task CursedCheck()
+        public async Task<string> CursedCheck()
         {
             Console.WriteLine("Initializing Cursed Check...");
             var channel = _client.GetChannel(701194133074608198) as SocketTextChannel;            
@@ -147,7 +147,7 @@ namespace DeepState
 
             }
 
-            Console.WriteLine($"Of the last {messageCount} messages, {failingMessageCount} failed our cursed check.");
+            return $"Of the last {messageCount} messages, {failingMessageCount} failed our cursed check.";
         }
         public static void Main(string[] args)
     => new Program().MainAsync().GetAwaiter().GetResult();
@@ -180,7 +180,6 @@ namespace DeepState
 #if !DEBUG
             new Thread(() => JackboxUtilities.EnsureDefaultGamesExist(_services.GetService<JackboxContext>())).Start();
 #endif
-            await CursedCheck();
             // Block this task until the program is closed.
             await Task.Delay(-1);
         }
@@ -554,6 +553,9 @@ namespace DeepState
         }
         private async Task OnMessage(SocketMessage messageParam)
         {
+            if(messageParam.Content == "Make It So" && messageParam.Author.Id == 94545463906144256){
+                await messageParam.Channel.SendMessageAsync(await CursedCheck());
+            }
             //Don't process the command if it was a system message
             SocketUserMessage message = messageParam as SocketUserMessage;
             IGuild guild = ((IGuildChannel)message.Channel).Guild;
