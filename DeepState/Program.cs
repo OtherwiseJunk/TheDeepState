@@ -119,7 +119,7 @@ namespace DeepState
         {
             Console.WriteLine("Initializing Cursed Check...");
             var channel = _client.GetChannel(701194133074608198) as SocketTextChannel;            
-            if (channel == null) return;
+            if (channel == null) return "Channel not found for cursed check";
             Console.WriteLine("Channel found for cursed check");
             var messages = await channel.GetMessagesAsync(10000).FlattenAsync();
             int messageCount = messages.Count();
