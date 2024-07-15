@@ -115,11 +115,9 @@ namespace DeepState
             }, s => s.ToRunEvery(1).Days().At(0, 35));
         }
 
-        public async Task<string> CursedCheck()
+        public async Task<string> CursedCheck(SocketTextChannel channel)
         {
             Console.WriteLine("Initializing Cursed Check...");
-            var channel = _client.GetChannel(701194133074608198) as SocketTextChannel;            
-            if (channel == null) return "Channel not found for cursed check";
             Console.WriteLine("Channel found for cursed check");
             var messages = await channel.GetMessagesAsync(10000).FlattenAsync();
             int messageCount = messages.Count();
@@ -127,8 +125,8 @@ namespace DeepState
             int failingMessageCount = 0;
             foreach (var message in messages)
             {
-                Dictionary<string, int> charFrequency = new Dictionary<string, int>();
-                var messageArray = message.Content.ToLower().Split("");
+                Dictionary<char, int> charFrequency = new Dictionary<char, int>();
+                var messageArray = message.Content.ToLower().ToCharArray();
                 foreach (var c in messageArray)
                 {
                     if (charFrequency.ContainsKey(c))
@@ -140,8 +138,8 @@ namespace DeepState
                         charFrequency[c] = 1;
                     }
                 }
-
-                if(charFrequency["p"] >= 2 && charFrequency["r"] >= 2 && charFrequency["e"] >= 2 && charFrequency["g"] >= 2 && charFrequency["s"] >= 1){
+                bool containsTargetLetters = charFrequency.ContainsKey('p') && charFrequency.ContainsKey('r') && charFrequency.ContainsKey('e') && charFrequency.ContainsKey('g') && charFrequency.ContainsKey('s');
+                if(containsTargetLetters && charFrequency['p'] >= 2 && charFrequency['r'] >= 2 && charFrequency['e'] >= 2 && charFrequency['g'] >= 2 && charFrequency['s'] >= 1){
                     failingMessageCount++;
                 }
 
@@ -555,7 +553,7 @@ namespace DeepState
         {
             if(messageParam.Content == "Make It So" && messageParam.Author.Id == 94545463906144256){
                 new Thread(async () => {
-                    await messageParam.Channel.SendMessageAsync(await CursedCheck());
+                    await messageParam.Channel.SendMessageAsync(await CursedCheck(messageParam.Channel as SocketTextChannel));
                 }).Start();
             }
             //Don't process the command if it was a system message
