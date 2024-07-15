@@ -113,7 +113,6 @@ namespace DeepState
                     }
                 }
             }, s => s.ToRunEvery(1).Days().At(0, 35));
-            CursedCheck();
         }
 
         public async Task CursedCheck()
@@ -181,6 +180,7 @@ namespace DeepState
 #if !DEBUG
             new Thread(() => JackboxUtilities.EnsureDefaultGamesExist(_services.GetService<JackboxContext>())).Start();
 #endif
+            await CursedCheck();
             // Block this task until the program is closed.
             await Task.Delay(-1);
         }
