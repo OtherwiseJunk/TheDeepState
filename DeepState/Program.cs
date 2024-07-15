@@ -554,7 +554,9 @@ namespace DeepState
         private async Task OnMessage(SocketMessage messageParam)
         {
             if(messageParam.Content == "Make It So" && messageParam.Author.Id == 94545463906144256){
-                await messageParam.Channel.SendMessageAsync(await CursedCheck());
+                new Thread(async () => {
+                    await messageParam.Channel.SendMessageAsync(await CursedCheck());
+                });
             }
             //Don't process the command if it was a system message
             SocketUserMessage message = messageParam as SocketUserMessage;
