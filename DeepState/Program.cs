@@ -118,6 +118,7 @@ namespace DeepState
 
         public async Task CursedCheck()
         {
+            Console.WriteLine("Initializing Cursed Check...");
             var channel = _client.GetChannel(701194133074608198) as SocketTextChannel;
             if (channel == null) return;
             var messages = await channel.GetMessagesAsync(10000).FlattenAsync();
@@ -551,7 +552,7 @@ namespace DeepState
         }
         private async Task OnMessage(SocketMessage messageParam)
         {
-            /*//Don't process the command if it was a system message
+            //Don't process the command if it was a system message
             SocketUserMessage message = messageParam as SocketUserMessage;
             IGuild guild = ((IGuildChannel)message.Channel).Guild;
             List<ulong> noTwitterDeleteGuilds = new()
@@ -609,7 +610,7 @@ namespace DeepState
                 new Thread(() => { OnMessageHandlers.Imposter(messageParam, Utils.IsSus(messageParam.Content)); }).Start();
                 new Thread(() => { _ = OnMessageHandlers.MalarkeyLevelOfHandler(message); }).Start();
                 new Thread(() => { _ = OnMessageHandlers.TableFlipCheck(messageParam, guild, _services.GetService<UserRecordsService>()); }).Start();
-            }*/
+            }
 
         }
         private async Task OnReact(Cacheable<IUserMessage, ulong> cachedMessage, Cacheable<IMessageChannel, ulong> cachedChannel, SocketReaction reaction)
