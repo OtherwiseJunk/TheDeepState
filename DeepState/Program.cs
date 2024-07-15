@@ -49,6 +49,7 @@ using System.Web;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using DeepState.Extensions;
 using System.Threading.Channels;
+using NLog.Attributes;
 
 namespace DeepState
 {
@@ -102,16 +103,49 @@ namespace DeepState
                             break;
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
-                    while(ex.InnerException != null)
+                    while (ex.InnerException != null)
                     {
                         ex = ex.InnerException;
                         Console.WriteLine(ex.Message);
                     }
                 }
             }, s => s.ToRunEvery(1).Days().At(0, 35));
+            CursedCheck();
+        }
+
+        public async Task CursedCheck()
+        {
+            var channel = _client.GetChannel(701194133074608198) as SocketTextChannel;
+            if (channel == null) return;
+            var messages = await channel.GetMessagesAsync(10000).FlattenAsync();
+            int messageCount = messages.Count();
+            int failingMessageCount = 0;
+            foreach (var message in messages)
+            {
+                Dictionary<string, int> charFrequency = new Dictionary<string, int>();
+                var messageArray = message.Content.ToLower().Split("");
+                foreach (var c in messageArray)
+                {
+                    if (charFrequency.ContainsKey(c))
+                    {
+                        charFrequency[c]++;
+                    }
+                    else
+                    {
+                        charFrequency[c] = 1;
+                    }
+                }
+
+                if(charFrequency["p"] >= 2 && charFrequency["r"] >= 2 && charFrequency["e"] >= 2 && charFrequency["g"] >= 2 && charFrequency["s"] >= 1){
+                    failingMessageCount++;
+                }
+
+            }
+
+            Console.WriteLine($"Of the last {messageCount} messages, {failingMessageCount} failed our cursed check.");
         }
         public static void Main(string[] args)
     => new Program().MainAsync().GetAwaiter().GetResult();
@@ -307,8 +341,10 @@ namespace DeepState
 
         private async Task OnGuildUserUpdated(Cacheable<SocketGuildUser, ulong> cacheable, SocketGuildUser userPostUpdate)
         {
-            if(OnMessageHandlers.IsPreggers(userPostUpdate.DisplayName)){
-                await userPostUpdate.ModifyAsync((GuildUserProperties user) =>{
+            if (OnMessageHandlers.IsPreggers(userPostUpdate.DisplayName))
+            {
+                await userPostUpdate.ModifyAsync((GuildUserProperties user) =>
+                {
                     user.Nickname = "idiot";
                 });
             }
@@ -515,7 +551,7 @@ namespace DeepState
         }
         private async Task OnMessage(SocketMessage messageParam)
         {
-            //Don't process the command if it was a system message
+            /*//Don't process the command if it was a system message
             SocketUserMessage message = messageParam as SocketUserMessage;
             IGuild guild = ((IGuildChannel)message.Channel).Guild;
             List<ulong> noTwitterDeleteGuilds = new()
@@ -550,10 +586,10 @@ namespace DeepState
             new Thread(async () => { await OnMessageHandlers.ReplyIfMessageIsRecessionOnlyInUpperCase(messageParam); }).Start();
             new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
             new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
-            new Thread(async () =>{ await OnMessageHandlers.ActiveUserCheck(message); }).Start();
-            new Thread(async () =>{ await OnMessageHandlers.HighlightCheck(message, _services.GetService<HighlightService>()); }).Start();
+            new Thread(async () => { await OnMessageHandlers.ActiveUserCheck(message); }).Start();
+            new Thread(async () => { await OnMessageHandlers.HighlightCheck(message, _services.GetService<HighlightService>()); }).Start();
 
-            if ((guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId || guild.Id == 1219366266033405952) && message.Channel.Id != SharedConstants.SelfCareChannelId )
+            if ((guild.Id == SharedConstants.LibcraftGuildId || guild.Id == SharedConstants.BoomercraftGuildId || guild.Id == 1219366266033405952) && message.Channel.Id != SharedConstants.SelfCareChannelId)
             {
                 new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
             }
@@ -573,7 +609,7 @@ namespace DeepState
                 new Thread(() => { OnMessageHandlers.Imposter(messageParam, Utils.IsSus(messageParam.Content)); }).Start();
                 new Thread(() => { _ = OnMessageHandlers.MalarkeyLevelOfHandler(message); }).Start();
                 new Thread(() => { _ = OnMessageHandlers.TableFlipCheck(messageParam, guild, _services.GetService<UserRecordsService>()); }).Start();
-            }
+            }*/
 
         }
         private async Task OnReact(Cacheable<IUserMessage, ulong> cachedMessage, Cacheable<IMessageChannel, ulong> cachedChannel, SocketReaction reaction)
