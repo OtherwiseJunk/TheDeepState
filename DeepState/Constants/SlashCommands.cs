@@ -29,6 +29,7 @@ namespace DeepState.Constants
         public const string TrumpMugshot = "mugshot";
         public const string Learn = "learn";
         public const string Apprendre = "apprendre";
+        public const string Prosecuted = "prosecuted";
         public static List<SlashCommandOptionBuilder> LearnOptions = new() {
             new SlashCommandOptionBuilder()
             .WithName("input")
@@ -44,6 +45,14 @@ namespace DeepState.Constants
             .WithMaxLength(72)
             .WithMinLength(1)
             .WithDescription("L'apport que vous souhaitez que les gens se préparent à apprendre.")
+        };
+        public static List<SlashCommandOptionBuilder> ProsecutedOptions = new() {
+            new SlashCommandOptionBuilder()
+            .WithName("input")
+            .WithType(ApplicationCommandOptionType.String)
+            .WithMaxLength(72)
+            .WithMinLength(1)
+            .WithDescription("The input Kamala Harris prosecuted.")
         };
 
         public static Dictionary<ulong, List<SlashCommandInformation>> SlashCommandsToInstall = new Dictionary<ulong, List<SlashCommandInformation>> {
@@ -72,7 +81,8 @@ namespace DeepState.Constants
                     new SlashCommandWithoutOptions(ImGonnaCome,"He'll do it."),
                     new SlashCommandWithoutOptions(DoNotCome,"Just don't."),
                     new SlashCommandWithOptions(Learn, "Get ready to learn <Your Input>, buddy!", LearnOptions),
-                    new SlashCommandWithOptions(Apprendre, "Préparez-vous à apprendre <Votre Apport>, mon pote!", ApprendreOptions)
+                    new SlashCommandWithOptions(Apprendre, "Préparez-vous à apprendre <Votre Apport>, mon pote!", ApprendreOptions),
+                    new SlashCommandWithOptions(Prosecuted, "She Prosecuted <Your Input>", ProsecutedOptions)
                 }
             }
         };

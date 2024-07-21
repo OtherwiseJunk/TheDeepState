@@ -139,7 +139,8 @@ namespace DeepState
                     }
                 }
                 bool containsTargetLetters = charFrequency.ContainsKey('p') && charFrequency.ContainsKey('r') && charFrequency.ContainsKey('e') && charFrequency.ContainsKey('g') && charFrequency.ContainsKey('s');
-                if(containsTargetLetters && charFrequency['p'] >= 2 && charFrequency['r'] >= 2 && charFrequency['e'] >= 2 && charFrequency['g'] >= 2 && charFrequency['s'] >= 1){
+                if (containsTargetLetters && charFrequency['p'] >= 2 && charFrequency['r'] >= 2 && charFrequency['e'] >= 2 && charFrequency['g'] >= 2 && charFrequency['s'] >= 1)
+                {
                     failingMessageCount++;
                 }
 
@@ -369,8 +370,25 @@ namespace DeepState
         private string GetReadyToLearn(string input, bool isFrench = false)
         {
             string response;
-            string thingToLearn = input
-                        .Replace("_", "__")
+            string thingToLearn = 
+
+            string memeUrl = isFrench ? $"Preparez--vous_a_apprendre_{thingToLearn}_mon_pote!.png" : $"get_ready_to_learn_{thingToLearn}_buddy..png";
+
+            if (OnMessageHandlers.IsPreggers(thingToLearn))
+            {
+                response = "https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/YouDidThis.png";
+            }
+            else
+            {
+                response = $"https://api.memegen.link/images/custom/_/{memeUrl}?background=https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/Get_Ready_to_Learn.jpg";
+            }
+
+            return response;
+        }
+
+        private string SanitizeMemeAPIUrl(string url)
+        {
+            return url.Replace("_", "__")
                         .Replace("-", "--")
                         .Replace("/", "~s")
                         .Replace("?", "~q")
@@ -382,16 +400,22 @@ namespace DeepState
                         .Replace(">", "~g")
                         .Replace("\"", "''")
                         .Replace(' ', '_');
+        }
 
-            string memeUrl = isFrench ? $"Preparez--vous_a_apprendre_{thingToLearn}_mon_pote!.png" : $"get_ready_to_learn_{thingToLearn}_buddy..png";
+        private string GetThingSheProsecuted(string input)
+        {
+            string response;
+            string thingToProsecute = SanitizeMemeAPIUrl(input);
 
-            if (OnMessageHandlers.IsPreggers(thingToLearn))
+            string memeUrl = $"she_prosecuted_{{thingToProsecute}}.png?background=https://i0.wp.com/calmatters.org/wp-content/uploads/2024/07/071024-WIDE-Kamala-Harris-REUTERS-CM-01.jpg";
+
+            if (OnMessageHandlers.IsPreggers(thingToProsecute))
             {
                 response = "https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/YouDidThis.png";
             }
             else
             {
-                response = $"https://api.memegen.link/images/custom/_/{memeUrl}?background=https://cacheblasters.nyc3.cdn.digitaloceanspaces.com/Get_Ready_to_Learn.jpg";
+                response = $"https://api.memegen.link/images/custom/_/{memeUrl}?background=https://i0.wp.com/calmatters.org/wp-content/uploads/2024/07/071024-WIDE-Kamala-Harris-REUTERS-CM-01.jpg";
             }
 
             return response;
@@ -458,10 +482,13 @@ namespace DeepState
                     embed = builder.Build();
                     break;
                 case SlashCommands.Learn:
-                    response = GetReadyToLearn(((string)command.Data.Options.First().Value));
+                    response = GetReadyToLearn((string)command.Data.Options.First().Value);
                     break;
                 case SlashCommands.Apprendre:
-                    response = GetReadyToLearn(((string)command.Data.Options.First().Value), isFrench: true);
+                    response = GetReadyToLearn((string)command.Data.Options.First().Value, isFrench: true);
+                    break;
+                case SlashCommands.Prosecuted:
+                    response = GetThingSheProsecuted((string)command.Data.Options.First().Value);
                     break;
             }
             if (response != null)
@@ -551,8 +578,10 @@ namespace DeepState
         }
         private async Task OnMessage(SocketMessage messageParam)
         {
-            if(messageParam.Content == "Make It So" && messageParam.Author.Id == 94545463906144256){
-                new Thread(async () => {
+            if (messageParam.Content == "Make It So" && messageParam.Author.Id == 94545463906144256)
+            {
+                new Thread(async () =>
+                {
                     await messageParam.Channel.SendMessageAsync(await CursedCheck(messageParam.Channel as SocketTextChannel));
                 }).Start();
             }
