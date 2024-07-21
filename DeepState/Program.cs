@@ -370,7 +370,7 @@ namespace DeepState
         private string GetReadyToLearn(string input, bool isFrench = false)
         {
             string response;
-            string thingToLearn = 
+            string thingToLearn = SanitizeMemeAPIUrl(input);
 
             string memeUrl = isFrench ? $"Preparez--vous_a_apprendre_{thingToLearn}_mon_pote!.png" : $"get_ready_to_learn_{thingToLearn}_buddy..png";
 
