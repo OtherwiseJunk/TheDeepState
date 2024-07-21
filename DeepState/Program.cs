@@ -407,7 +407,7 @@ namespace DeepState
             string response;
             string thingToProsecute = SanitizeMemeAPIUrl(input);
 
-            string memeUrl = $"she_prosecuted_{{thingToProsecute}}.png?background=https://i0.wp.com/calmatters.org/wp-content/uploads/2024/07/071024-WIDE-Kamala-Harris-REUTERS-CM-01.jpg";
+            string memeUrl = $"she_prosecuted_{thingToProsecute}.png?background=https://i0.wp.com/calmatters.org/wp-content/uploads/2024/07/071024-WIDE-Kamala-Harris-REUTERS-CM-01.jpg";
 
             if (OnMessageHandlers.IsPreggers(thingToProsecute))
             {
