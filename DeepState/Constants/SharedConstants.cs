@@ -315,6 +315,7 @@ namespace DeepState.Constants
         public static string PreggersDetector => Regexes.PreggersDetector; // this alias is just so i don't have to modify other files
 		public static string FlaggedTwitterUserDetector = @"https?://(c.vx|vx|fx|www.)?twitter.com/(realdonaldtrump|elonmusk|kanyewest)+/status/\d+\??(\w*=?[\w\d-]*&?)*";
 		public static string TwitterStatusDetector = @"http(s)?://[c.]*[fx]*[vx]*twitter.com/.+/status/\d+[?]*.+";
+		public static string HawkTuahDetector = @"[Hh][Aa](W|w|VV|vv)[Kk].+[Tt][UuVv][Aa][Kk]";
 		#endregion
 
 		#region Strings

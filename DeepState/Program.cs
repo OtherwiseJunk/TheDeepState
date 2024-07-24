@@ -206,7 +206,8 @@ namespace DeepState
 
         private async Task OnEdit(Cacheable<IMessage, ulong> cacheableMessage, SocketMessage message, ISocketMessageChannel channel)
         {
-            new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();
+            new Thread(async () => await OnMessageHandlers.DeletePreggersMessage(message)).Start();
+            new Thread(async () => await OnMessageHandlers.DeleteHawkTuahMessage(message)).Start();
         }
 
         private async Task HandleAutoResponseCommands(SocketSlashCommand command)
@@ -333,6 +334,7 @@ namespace DeepState
             new Thread(async () => { await LibcoinUtilities.LibcraftCoinMessageHandler(messageParam, urservice); }).Start();
             new Thread(async () => { await OnMessageHandlers.DownloadUsersForGuild(message, guild); }).Start();
             new Thread(async () => { await OnMessageHandlers.DeletePreggersMessage(message); }).Start();            
+            new Thread(async () => { await OnMessageHandlers.DeleteHawkTuahMessage(message); }).Start();            
 
             if (!ids.Contains(guild.Id) && !message.Content.StartsWith(BotProperties.CommandPrefix))
             {

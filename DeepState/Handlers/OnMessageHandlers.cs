@@ -82,6 +82,14 @@ namespace DeepState.Handlers
 				_ = msg.DeleteAsync();
             }
         }
+		public static async Task DeleteHawkTuahMessage(SocketMessage msg)
+		{
+			if(Regex.IsMatch(msg.Content, SharedConstants.HawkTuahDetector, RegexOptions.IgnoreCase))
+			{
+				Console.WriteLine($"Deleting {msg.Content}... (matched hawk tuah)");
+				_ = msg.DeleteAsync();
+			}
+		}
 		public static async Task RandomReactCheck(SocketMessage msg)
 		{
 			if (msg.Content.ToLower() == "!rank") Console.WriteLine("Rolling for rank...");
